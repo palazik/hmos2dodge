@@ -83,7 +83,7 @@ packages of other phones are skipped. To share a new Pura 70 package with everyb
 ## Usage
 
 ```sh
-git clone https://github.com/<you>/hmos2sweet && cd hmos2sweet
+git clone https://github.com/tsryzenstech/hmos2sweet && cd hmos2sweet
 tools/fetch_tools.sh                     # downloads the EROFS tools into tools/bin
 python3 hmos2sweet.py --ota ~/update_full_base.zip --sweet-rom ~/lineage-sweet.zip --out out
 ```
