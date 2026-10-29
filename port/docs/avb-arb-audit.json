@@ -1,0 +1,35 @@
+{
+  "source": {
+    "path": "/home/palaziks/cos17/boot.img",
+    "size": 100663296,
+    "sha256": "ac26f34d76d4af5d8aa4b58df3f5abbb9d1921c551b4be1ddc5b3a17ba6afedd",
+    "boot_header_version": 4,
+    "boot_os_version_field": 0,
+    "avb_footer": "present",
+    "footer_version": "1.0",
+    "original_image_size": 36888576,
+    "vbmeta_offset": 36888576,
+    "vbmeta_size": 2368,
+    "algorithm_type": 2,
+    "rollback_index": 0,
+    "flags": 0,
+    "rollback_index_location": 0
+  },
+  "candidate": {
+    "path": "/home/palaziks/hmosnext5_op13/out/boot/op13-hmos-test.img",
+    "size": 37597184,
+    "sha256": "f024f95963f66541a0880c0444d24a0389c52cf857fe6a98e3a82482ffdd1308",
+    "boot_header_version": 4,
+    "boot_os_version_field": 0,
+    "avb_footer": "absent",
+    "rollback_index": null,
+    "rollback_index_location": null
+  },
+  "source_matches_pack_manifest": true,
+  "candidate_matches_pack_manifest": true,
+  "device_stored_avb_rollback_indexes": "unknown",
+  "oplus_firmware_arb_state": "unknown",
+  "arb_compatibility_established": false,
+  "scope": "offline read-only image metadata; footer absence is not ARB bypass or compatibility proof",
+  "device_writes": "none"
+}

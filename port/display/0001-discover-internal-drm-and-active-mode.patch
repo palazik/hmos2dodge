@@ -1,0 +1,294 @@
+--- a/src/display/buffer/sweet_buffer_vdi.cpp
++++ b/src/display/buffer/sweet_buffer_vdi.cpp
+@@ -29,6 +29,7 @@
+ #include "idisplay_buffer_vdi.h"
+ #include "v1_0/display_composer_type.h"
+ #include "sweet_log.h"
++#include "ohos_drm_device.h"
+ 
+ using namespace OHOS::HDI::Display::Buffer::V1_0;
+ using namespace OHOS::HDI::Display::Composer::V1_0;
+@@ -92,22 +93,18 @@
+ int DrmFd()
+ {
+     static int fd = -1;
+-    static std::once_flag once;
+-    std::call_once(once, [] {
+-        const char *nodes[] = {"/dev/dri/card0", "/dev/dri/renderD128"};
+-        for (const char *n : nodes) {
+-            fd = open(n, O_RDWR | O_CLOEXEC);
+-            if (fd >= 0) {
+-                /* never keep DRM master: the composer needs it for KMS */
+-                if (drmIsMaster(fd)) {
+-                    drmDropMaster(fd);
+-                }
+-                SLOGI("using %{public}s fd %{public}d", n, fd);
+-                break;
+-            }
+-            SLOGE("open %{public}s failed: %{public}d", n, errno);
+-        }
+-    });
++    static std::mutex lock;
++    std::lock_guard<std::mutex> guard(lock);
++    if (fd >= 0) return fd;
++    char node[64] = {};
++    fd = OhosOpenInternalDrm(node, sizeof(node));
++    if (fd >= 0) {
++        if (drmIsMaster(fd)) drmDropMaster(fd);
++        SLOGI("using %{public}s fd %{public}d", node, fd);
++    } else {
++        SLOGE("internal DSI primary with dumb buffers unavailable: %{public}d", errno);
++    }
++    /* Retry a failed discovery on the next allocation: DRM may appear late. */
+     return fd;
+ }
+ 
+--- /dev/null
++++ b/src/display/common/ohos_drm_device.h
+@@ -0,0 +1,48 @@
++/* SPDX-License-Identifier: Apache-2.0
++ * Share the same internal-display selection between composer and allocator.
++ */
++#ifndef OHOS_DRM_DEVICE_H
++#define OHOS_DRM_DEVICE_H
++#include <errno.h>
++#include <fcntl.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <xf86drm.h>
++#include <xf86drmMode.h>
++
++static inline int OhosOpenInternalDrm(char *selected, size_t selected_size)
++{
++    for (unsigned card = 0; card < 64; card++) {
++        char path[64];
++        snprintf(path, sizeof(path), "/dev/dri/card%u", card);
++        int fd = open(path, O_RDWR | O_CLOEXEC);
++        if (fd < 0) continue;
++        uint64_t dumb = 0;
++        if (drmGetCap(fd, DRM_CAP_DUMB_BUFFER, &dumb) || !dumb) {
++            close(fd);
++            continue;
++        }
++        drmModeRes *resources = drmModeGetResources(fd);
++        int internal = 0;
++        if (resources) {
++            for (int index = 0; index < resources->count_connectors; index++) {
++                drmModeConnector *connector = drmModeGetConnector(fd, resources->connectors[index]);
++                if (!connector) continue;
++                internal = connector->connector_type == DRM_MODE_CONNECTOR_DSI &&
++                           connector->connection == DRM_MODE_CONNECTED && connector->count_modes > 0;
++                drmModeFreeConnector(connector);
++                if (internal) break;
++            }
++            drmModeFreeResources(resources);
++        }
++        if (internal) {
++            if (selected && selected_size) snprintf(selected, selected_size, "%s", path);
++            return fd;
++        }
++        close(fd);
++    }
++    errno = ENODEV;
++    return -1;
++}
++#endif
+--- a/src/display/composer/src/drm_crtc.cpp
++++ b/src/display/composer/src/drm_crtc.cpp
+@@ -99,7 +99,7 @@
+ int32_t DrmCrtc::SetActivieMode(int32_t id)
+ {
+     DISPLAY_LOGD("set activie modeid to %{public}d", id);
+-    DISPLAY_CHK_RETURN((id > 0), DISPLAY_PARAM_ERR, DISPLAY_LOGE("id %{public}d is invalid ", id));
++    DISPLAY_CHK_RETURN((id < 0), DISPLAY_PARAM_ERR, DISPLAY_LOGE("id %{public}d is invalid ", id));
+     if (mActiveModeId != id) {
+         mNeedModeSet = true;
+     }
+--- a/src/display/composer/src/drm_device.cpp
++++ b/src/display/composer/src/drm_device.cpp
+@@ -14,6 +14,7 @@
+  */
+ 
+ #include "drm_device.h"
++#include "ohos_drm_device.h"
+ #include <string>
+ #include <cerrno>
+ #include <fcntl.h>
+@@ -32,13 +33,14 @@
+ {
+     DISPLAY_LOGD();
+     if (mDrmFd == nullptr) {
+-        const std::string name("rockchip");
+-        int drmFd = open("/dev/dri/card0", O_RDWR | O_CLOEXEC); // drmOpen(name.c_str(), nullptr);
++        char node[64] = {};
++        const std::string name("internal DSI display");
++        int drmFd = OhosOpenInternalDrm(node, sizeof(node));
+         if (drmFd < 0) {
+             DISPLAY_LOGE("drm file:%{public}s open failed %{public}s", name.c_str(), strerror(errno));
+             return nullptr;
+         }
+-        DISPLAY_LOGD("the drm fd is %{public}d", drmFd);
++        DISPLAY_LOGI("using %{public}s fd %{public}d", node, drmFd);
+         /* KMS needs DRM master; the allocator and Mesa drop it, so retry for a while */
+         for (int i = 0; i < 50; i++) {
+             if (drmSetMaster(drmFd) == 0 || drmIsMaster(drmFd)) {
+--- a/src/display/composer/src/drm_display.cpp
++++ b/src/display/composer/src/drm_display.cpp
+@@ -59,7 +59,7 @@
+     DISPLAY_LOGI("%{public}s", buf + 4);
+ }
+ static uint32_t g_hmosSavedLevel = 0;
+-extern std::atomic<int> g_hmosVirtualMode;
++extern std::atomic<uint64_t> g_hmosVsyncPeriodNs;
+ }
+ }
+ 
+@@ -113,54 +113,32 @@
+     return DISPLAY_SUCCESS;
+ }
+ 
+-/*
+- * sweet: the panel exposes one DRM mode (1080x2400@120).  The HarmonyOS frame
+- * rate manager (HGM) wants to drop to 60 Hz when idle or when the screen goes
+- * off; when that switch fails its vsync model stays at 60 Hz while the
+- * hardware vsync keeps arriving every 8.3 ms, every period is rejected
+- * ("UpdatePeriodLocked: update period failed") and apps stop getting frames.
+- * So offer a second, virtual 60 Hz mode (id 1): the panel stays at 120 Hz and
+- * the vsync worker hands out every other vblank.
+- */
++// Expose only actual connector modes; IDs retain their DRM meaning.
+ int32_t DrmDisplay::GetDisplaySupportedModes(uint32_t *num, DisplayModeInfo *modes)
+ {
+-    uint32_t n = 0;
+-    mConnector->GetDisplaySupportedModes(&n, nullptr);
+-    if (modes != nullptr) {
+-        mConnector->GetDisplaySupportedModes(&n, modes);
+-        if (n == 1 && modes[0].freshRate == 120) {
+-            modes[1] = modes[0];
+-            modes[1].id = 1;
+-            modes[1].freshRate = 60;
+-        }
+-    }
+-    *num = (n == 1) ? 2 : n;
+-    return DISPLAY_SUCCESS;
++    return mConnector->GetDisplaySupportedModes(num, modes);
+ }
+ 
+ int32_t DrmDisplay::GetDisplayMode(uint32_t *modeId)
+ {
+-    DISPLAY_CHK_RETURN((modeId == nullptr), DISPLAY_NULL_PTR, DISPLAY_LOGE("the in modeId is nullptr"));
+-    /* sweet: the panel runs its only mode (1080x2400@120) from boot; before
+-     * anyone sets a mode report it instead of -1, otherwise render_service
+-     * assumes 60 Hz and its vsync model rejects the real 8.3 ms period
+-     * ("UpdatePeriodLocked: update period failed"), freezing app frames */
+-    (void)mCrtc;
+-    *modeId = static_cast<uint32_t>(g_hmosVirtualMode.load());
++    DISPLAY_CHK_RETURN((modeId == nullptr), DISPLAY_NULL_PTR, DISPLAY_LOGE("modeId is null"));
++    int32_t active = mCrtc->GetActiveModeId();
++    DISPLAY_CHK_RETURN((active < 0), DISPLAY_FAILURE, DISPLAY_LOGE("no selected mode"));
++    *modeId = static_cast<uint32_t>(active);
+     return DISPLAY_SUCCESS;
+ }
+ 
+ int32_t DrmDisplay::SetDisplayMode(uint32_t modeId)
+ {
+-    if (modeId == 1) {
+-        g_hmosVirtualMode.store(1); /* virtual 60 Hz: same scanout, half the vsyncs */
+-        DISPLAY_LOGI("display mode 1 (60 Hz, virtual)");
+-        return DISPLAY_SUCCESS;
+-    }
++    DrmMode mode;
++    if (mConnector->GetModeFromId(modeId, mode) != DISPLAY_SUCCESS) return DISPLAY_PARAM_ERR;
++    DisplayModeInfo info{};
++    mode.ConvertToHdiMode(info);
++    if (!info.freshRate) return DISPLAY_PARAM_ERR;
+     int32_t ret = mCrtc->SetActivieMode(modeId);
+     if (ret == DISPLAY_SUCCESS) {
+-        g_hmosVirtualMode.store(static_cast<int>(modeId));
+-        DISPLAY_LOGI("display mode %{public}u", modeId);
++        g_hmosVsyncPeriodNs.store(1000000000ULL / info.freshRate);
++        DISPLAY_LOGI("selected real mode %{public}u at %{public}u Hz", modeId, info.freshRate);
+     }
+     return ret;
+ }
+--- a/src/display/composer/src/drm_vsync_worker.cpp
++++ b/src/display/composer/src/drm_vsync_worker.cpp
+@@ -28,7 +28,7 @@
+ namespace HDI {
+ namespace DISPLAY {
+ extern std::atomic<bool> g_hmosDisplayOff;
+-extern std::atomic<int> g_hmosVirtualMode;
++extern std::atomic<uint64_t> g_hmosVsyncPeriodNs;
+ }
+ }
+ 
+@@ -158,19 +158,18 @@
+     while (WaitSignalAndCheckRuning()) {
+         // wait the vblank
+         uint64_t time = WaitNextVBlank(seq);
+-        bool synthetic = (time == 0);
+         static uint64_t lastTs = 0;
+         static unsigned int synthSeq = 0;
+         static int synthCount = 0;
+         if (time == 0) {
+             /* no real vblank: with the panel off stay quiet, otherwise keep a
+-             * steady 120 Hz software vsync on the grid of the last real one,
++             * software vsync at the selected refresh rate on the grid of the last real one,
+              * never a zero timestamp (render_service drops those) */
+             if (g_hmosDisplayOff.load()) {
+                 usleep(16000);
+                 continue;
+             }
+-            const uint64_t PERIOD = g_hmosVirtualMode.load() == 1 ? 16666667 : 8333333;
++            const uint64_t PERIOD = g_hmosVsyncPeriodNs.load();
+             struct timespec now;
+             clock_gettime(CLOCK_MONOTONIC, &now);
+             uint64_t n = (uint64_t)now.tv_sec * 1000000000ULL + (uint64_t)now.tv_nsec;
+@@ -190,13 +189,6 @@
+             }
+         }
+         lastTs = time;
+-        if (!synthetic && g_hmosVirtualMode.load() == 1) {
+-            /* virtual 60 Hz mode: forward every other vblank */
+-            static unsigned int parity = 0;
+-            if ((parity++ & 1) != 0) {
+-                continue;
+-            }
+-        }
+         if (mCallBack != nullptr) {
+             mCallBack->Vsync(seq, time);
+         } else {
+--- a/src/display/composer/src/hdi_drm_composition.cpp
++++ b/src/display/composer/src/hdi_drm_composition.cpp
+@@ -50,7 +50,7 @@
+ 
+ 
+ std::atomic<bool> g_hmosDisplayOff{false};
+-std::atomic<int> g_hmosVirtualMode{0};
++std::atomic<uint64_t> g_hmosVsyncPeriodNs{16666667};
+ 
+ /* bootevent.boot.completed is set by init internally (no kmsg line), so ask
+  * the parameter service directly; checked at most once per second */
+@@ -689,10 +689,19 @@
+     int fd = mDrmDevice->GetDrmFd();
+     static uint32_t blackFb = 0;
+     static int bw = 0, bh = 0;
+-    int w = 1080, h = 2400;
+-    if (!mCompLayers.empty() && mCompLayers[0]->GetCurrentBuffer() != nullptr) {
++    int w = 0, h = 0;
++    drmModeCrtc *active = drmModeGetCrtc(fd, mCrtc->GetId());
++    if (active) {
++        if (active->mode_valid) { w = active->mode.hdisplay; h = active->mode.vdisplay; }
++        drmModeFreeCrtc(active);
++    }
++    if ((w <= 0 || h <= 0) && !mCompLayers.empty() && mCompLayers[0]->GetCurrentBuffer() != nullptr) {
+         w = mCompLayers[0]->GetCurrentBuffer()->GetWight();
+         h = mCompLayers[0]->GetCurrentBuffer()->GetHeight();
++    }
++    if (w <= 0 || h <= 0) {
++        DISPLAY_LOGE("blank: active mode dimensions unavailable");
++        return;
+     }
+     if (blackFb == 0 || bw != w || bh != h) {
+         struct drm_mode_create_dumb cd = {};

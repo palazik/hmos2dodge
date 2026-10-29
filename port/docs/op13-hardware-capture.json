@@ -1,0 +1,98 @@
+{
+  "archive": "20261029-163450.zip",
+  "archive_sha256": "9c393413b269947a77a6813a8041675a66f6cad07bc7646c7d1c59f161920fae",
+  "properties": {
+    "ro.product.model": "CPH2649",
+    "ro.soc.model": "SM8750",
+    "ro.build.display.id": "CPH2649_17.0.0.102(EX01)",
+    "ro.build.version.release": "17",
+    "ro.build.version.security_patch": "2026-10-05",
+    "ro.boot.verifiedbootstate": "green",
+    "ro.boot.slot_suffix": "_a",
+    "ro.gsid.image_running": "0"
+  },
+  "display": {
+    "connector": "card0-DSI-1",
+    "status": "connected",
+    "sysfs_modes": [
+      "1440x3168x120cmd",
+      "1440x3168x60cmd",
+      "1440x3168x90cmd",
+      "1440x3168x120cmd"
+    ],
+    "android_active_mode": {
+      "width": 1080,
+      "height": 2376,
+      "refresh_hz": 90
+    },
+    "backlight": "/sys/class/backlight/panel0-backlight",
+    "max_brightness": 4094,
+    "dumb_buffer_support": "not measured",
+    "kms_modesetting": "not tested"
+  },
+  "graphics": {
+    "drm_nodes": [
+      "/dev/dri/card0",
+      "/dev/dri/renderD128"
+    ],
+    "gpu_node": "/dev/kgsl-3d0",
+    "ion_node": false,
+    "dma_heap_nodes": [
+      "system",
+      "qcom,system",
+      "qcom,display"
+    ]
+  },
+  "modules": {
+    "captured_unique": 464,
+    "crc_mismatches": 0,
+    "matching_import_checks": 24564,
+    "missing_display_gpu_dependencies": [
+      "boot_mode",
+      "clk_qcom",
+      "cmd_db",
+      "crm_v2",
+      "device_info",
+      "gh_dbl",
+      "gh_msgq",
+      "gh_rm_drv",
+      "gunyah_loader",
+      "ipclite",
+      "kernel_fb",
+      "llcc_qcom",
+      "mdt_loader",
+      "mem_buf_dev",
+      "minidump",
+      "msm_dma_iommu_mapping",
+      "olc",
+      "oplus_bsp_boot_projectinfo",
+      "oplus_bsp_fpga_monitor",
+      "oplus_bsp_mm_osvelte",
+      "oplus_mdmrst",
+      "pinctrl_msm",
+      "qcom_aoss",
+      "qcom_dcvs",
+      "qcom_dma_heaps",
+      "qcom_iommu_util",
+      "qcom_ipc_logging",
+      "qcom_pmu_lib",
+      "qcom_scm",
+      "qti_regmap_debugfs",
+      "sched_walt",
+      "secure_buffer",
+      "smem",
+      "socinfo",
+      "spmi_pmic_arb"
+    ],
+    "load_tested": false
+  },
+  "firmware": "filenames captured; firmware contents not captured",
+  "dsu": {
+    "running_in_capture": false,
+    "existing_experiment_avb_security_patch": "2026-07-01",
+    "host_security_patch": "2026-10-05",
+    "metadata_alignment": "not resolved; existing July development metadata predates captured host; no automatic date bump",
+    "native_boot": "not tested"
+  },
+  "arb": "capture does not establish stored rollback indices or OEM ARB rules"
+}

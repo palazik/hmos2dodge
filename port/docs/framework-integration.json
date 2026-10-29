@@ -1,0 +1,2325 @@
+{
+  "scope": "Static service/SA mapping. Does not start services, establish readiness, or certify full boot.",
+  "config_files_scanned": 257,
+  "parse_errors": [],
+  "unique_services": 268,
+  "service_definitions": 280,
+  "services_with_multiple_definitions": {
+    "pin_auth_host": [
+      "work/donor-configs/chip_prod/etc/init/hdf_devhost.cfg",
+      "work/ohos-runtime/system/system/etc/init/resource_schedule_service.cfg"
+    ],
+    "fingerprint_auth_host": [
+      "work/donor-configs/chip_prod/etc/init/hdf_devhost.cfg",
+      "work/donor-configs/vendor/etc/init/fingerprint.cfg"
+    ],
+    "accesstoken_service": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/access_token.cfg"
+    ],
+    "accountmgr": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/accountmgr.cfg"
+    ],
+    "appspawn": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/appspawn.cfg"
+    ],
+    "foundation": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/foundation.cfg"
+    ],
+    "render_service": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/graphic.cfg"
+    ],
+    "param_watcher": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/param_watcher.cfg"
+    ],
+    "privacy_service": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/privacy.cfg"
+    ],
+    "samgr": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/samgr_standard.cfg"
+    ],
+    "storage_daemon": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/storage_daemon.cfg"
+    ],
+    "storage_manager": [
+      "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+      "work/ohos-runtime/system/system/etc/init/storage_manager.cfg"
+    ]
+  },
+  "system_ability_ids": 265,
+  "imports": [
+    {
+      "file": "work/donor-configs/vendor/etc/init/init.modem_entry.cfg",
+      "import": "/vendor/modem/modem_vendor/init/init.modem.cfg"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init/init_connectivity.cfg",
+      "import": "/vendor/etc/init/connectivity/init_start_connectivity_${ohos.boot.odm.conn.schiptype}_ohos.cfg"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "import": "/etc/init.usb.cfg"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "import": "/etc/init.usb.configfs.cfg"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "import": "/vendor/etc/init.${ohos.boot.hardware}.cfg"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.usb.cfg",
+      "import": "/vendor/etc/init.${ohos.boot.hardware}.usb.cfg"
+    }
+  ],
+  "focus_services": {
+    "accesstoken_service": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "accesstoken_service",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/accesstoken_service.json"
+            ],
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "importance": -20,
+            "uid": "access_token",
+            "gid": [
+              "access_token",
+              "access_token",
+              "data_reserve"
+            ],
+            "permission": [
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.KILL_APP_PROCESSES"
+            ],
+            "secon": "u:r:accesstoken_service:s0"
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/access_token.cfg",
+          "definition": {
+            "name": "accesstoken_service",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/accesstoken_service.json"
+            ],
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "importance": -20,
+            "uid": "access_token",
+            "gid": [
+              "access_token",
+              "access_token",
+              "data_reserve"
+            ],
+            "permission": [
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.KILL_APP_PROCESSES"
+            ],
+            "secon": "u:r:accesstoken_service:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "accountmgr": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "accountmgr",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/accountmgr.json"
+            ],
+            "permission": [
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.ENFORCE_USER_IDM",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.MANAGE_USER_IDM",
+              "ohos.permission.ACCESS_USER_AUTH_INTERNAL",
+              "ohos.permission.ACCESS_PIN_AUTH",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.REPORT_SECURITY_EVENT",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.STORAGE_MANAGER_CRYPT",
+              "ohos.permission.ACTIVATE_THEME_PACKAGE",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.CLEAN_BACKGROUND_PROCESSES",
+              "ohos.permission.VERIFY_ACTIVATION_LOCK",
+              "ohos.permission.INTERNET",
+              "ohos.permission.ACCESS_CERT_MANAGER",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
+            ],
+            "permission_acls": [
+              "ohos.permission.ENFORCE_USER_IDM",
+              "ohos.permission.STORAGE_MANAGER_CRYPT"
+            ],
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "uid": "account",
+            "gid": [
+              "account",
+              "shell",
+              "access_token",
+              "netsys_socket",
+              "data_reserve"
+            ],
+            "caps": [
+              "CAP_NET_RAW"
+            ],
+            "bootevents": [
+              "bootevent.account.ready"
+            ],
+            "writepid": [
+              "/dev/cpuset/foreground/tasks",
+              "/dev/stune/foreground/tasks",
+              "/dev/blkio/foreground/tasks"
+            ],
+            "jobs": {
+              "on-start": "services:accountmgr"
+            },
+            "secon": "u:r:accountmgr:s0"
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/accountmgr.cfg",
+          "definition": {
+            "name": "accountmgr",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/accountmgr.json"
+            ],
+            "permission": [
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.ENFORCE_USER_IDM",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.MANAGE_USER_IDM",
+              "ohos.permission.ACCESS_USER_AUTH_INTERNAL",
+              "ohos.permission.ACCESS_PIN_AUTH",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.REPORT_SECURITY_EVENT",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.STORAGE_MANAGER_CRYPT",
+              "ohos.permission.ACTIVATE_THEME_PACKAGE",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.CLEAN_BACKGROUND_PROCESSES",
+              "ohos.permission.VERIFY_ACTIVATION_LOCK",
+              "ohos.permission.INTERNET",
+              "ohos.permission.ACCESS_CERT_MANAGER",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
+            ],
+            "permission_acls": [
+              "ohos.permission.ENFORCE_USER_IDM",
+              "ohos.permission.STORAGE_MANAGER_CRYPT"
+            ],
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "uid": "account",
+            "gid": [
+              "account",
+              "shell",
+              "access_token",
+              "netsys_socket",
+              "data_reserve"
+            ],
+            "caps": [
+              "CAP_NET_RAW"
+            ],
+            "bootevents": [
+              "bootevent.account.ready"
+            ],
+            "writepid": [
+              "/dev/cpuset/foreground/tasks",
+              "/dev/stune/foreground/tasks",
+              "/dev/blkio/foreground/tasks"
+            ],
+            "jobs": {
+              "on-start": "services:accountmgr"
+            },
+            "secon": "u:r:accountmgr:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "allocator_host": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/chip_prod/etc/init/hdf_devhost.cfg",
+          "definition": {
+            "name": "allocator_host",
+            "path": [
+              "/vendor/bin/hdf_devhost",
+              "8",
+              "allocator_host",
+              "0",
+              "0"
+            ],
+            "uid": "allocator_host",
+            "gid": [
+              "allocator_host",
+              "graphics",
+              "dev_dma_heap"
+            ],
+            "secon": "u:r:allocator_host:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "appspawn": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "appspawn",
+            "path": [
+              "/system/bin/appspawn",
+              "-mode appspawn",
+              "--process-name com.ohos.appspawn.startup --start-flags daemon --type standard ",
+              "--sandbox-switch on --bundle-name com.ohos.appspawn.startup --app-operate-type operate ",
+              "--render-command command --app-launch-type singleton --app-visible true"
+            ],
+            "importance": -20,
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "uid": "root",
+            "gid": [
+              "root"
+            ],
+            "setuid": true,
+            "socket": [
+              {
+                "name": "AppSpawn",
+                "family": "AF_LOCAL",
+                "type": "SOCK_STREAM",
+                "protocol": "default",
+                "permissions": "0660",
+                "uid": "root",
+                "gid": "appspawn",
+                "option": []
+              },
+              {
+                "name": "NWebSpawn",
+                "family": "AF_LOCAL",
+                "type": "SOCK_STREAM",
+                "protocol": "default",
+                "permissions": "0666",
+                "uid": "nwebspawn",
+                "gid": "nwebspawn",
+                "option": []
+              }
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:appspawn:s0",
+            "bootevents": "bootevent.appspawn.started"
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/appspawn.cfg",
+          "definition": {
+            "name": "appspawn",
+            "path": [
+              "/system/bin/appspawn",
+              "-mode appspawn",
+              "--process-name com.ohos.appspawn.startup --start-flags daemon --type standard ",
+              "--sandbox-switch on --bundle-name com.ohos.appspawn.startup --app-operate-type operate ",
+              "--render-command command --app-launch-type singleton --app-visible true"
+            ],
+            "importance": -20,
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "uid": "root",
+            "gid": [
+              "root"
+            ],
+            "setuid": true,
+            "socket": [
+              {
+                "name": "AppSpawn",
+                "family": "AF_LOCAL",
+                "type": "SOCK_STREAM",
+                "protocol": "default",
+                "permissions": "0660",
+                "uid": "root",
+                "gid": "appspawn",
+                "option": []
+              },
+              {
+                "name": "NWebSpawn",
+                "family": "AF_LOCAL",
+                "type": "SOCK_STREAM",
+                "protocol": "default",
+                "permissions": "0666",
+                "uid": "nwebspawn",
+                "gid": "nwebspawn",
+                "option": []
+              }
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:appspawn:s0",
+            "bootevents": "bootevent.appspawn.started"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "composer_host": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/chip_prod/etc/init/hdf_devhost.cfg",
+          "definition": {
+            "name": "composer_host",
+            "path": [
+              "/vendor/bin/hdf_devhost",
+              "7",
+              "composer_host",
+              "0",
+              "0"
+            ],
+            "uid": "composer_host",
+            "gid": [
+              "composer_host",
+              "graphics",
+              "dev_dma_heap",
+              "dev_memory",
+              "dev_lcd_backlight",
+              "oeminfo_nvme_server"
+            ],
+            "secon": "u:r:composer_host:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "foundation": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "foundation",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/foundation.json"
+            ],
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "importance": -20,
+            "uid": "foundation",
+            "permission": [
+              "ohos.permission.INPUT_MONITORING",
+              "ohos.permission.PERMISSION_USED_STATS",
+              "ohos.permission.DISTRIBUTED_SOFTBUS_CENTER",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.MANAGE_AUDIO_CONFIG",
+              "ohos.permission.WRITE_CALL_LOG",
+              "ohos.permission.READ_CALL_LOG",
+              "ohos.permission.READ_CONTACTS",
+              "ohos.permission.READ_DFX_SYSEVENT",
+              "ohos.permission.GRANT_SENSITIVE_PERMISSIONS",
+              "ohos.permission.REVOKE_SENSITIVE_PERMISSIONS",
+              "ohos.permission.MANAGE_SETTINGS",
+              "ohos.permission.MANAGE_SECURE_SETTINGS",
+              "ohos.permission.START_ABILITIES_FROM_BACKGROUND",
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.ACCESS_SERVICE_DP",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.PROXY_AUTHORIZATION_URI",
+              "ohos.permission.ABILITY_BACKGROUND_COMMUNICATION",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.LISTEN_BUNDLE_CHANGE",
+              "ohos.permission.GET_TELEPHONY_STATE",
+              "ohos.permission.SEND_MESSAGES",
+              "ohos.permission.CONNECT_CELLULAR_CALL_SERVICE",
+              "ohos.permission.SET_TELEPHONY_STATE",
+              "ohos.permission.VIBRATE",
+              "ohos.permission.SYSTEM_LIGHT_CONTROL",
+              "ohos.permission.MANAGE_HAP_TOKENID",
+              "ohos.permission.UPDATE_CONFIGURATION",
+              "ohos.permission.WRITE_WHOLE_CALENDAR",
+              "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+              "ohos.permission.START_INVISIBLE_ABILITY",
+              "ohos.permission.GET_BUNDLE_INFO",
+              "ohos.permission.GET_SUSPEND_STATE",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.PUBLISH_DISPLAY_ROTATION_EVENT",
+              "ohos.permission.PUBLISH_CAST_PLUGGED_EVENT",
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.CLEAN_APPLICATION_DATA",
+              "ohos.permission.REMOVE_CACHE_FILES",
+              "ohos.permission.INSTALL_SANDBOX_BUNDLE",
+              "ohos.permission.USE_BLUETOOTH",
+              "ohos.permission.GET_SENSITIVE_PERMISSIONS",
+              "ohos.permission.CONNECTIVITY_INTERNAL",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.ACCESS_BLUETOOTH",
+              "ohos.permission.MANAGE_BLUETOOTH",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.GET_INSTALLED_BUNDLE_LIST",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS_EXTENSION",
+              "ohos.permission.MANAGE_USER_ACCOUNT_INFO",
+              "ohos.permission.GET_NETWORK_INFO",
+              "ohos.permission.VERIFY_ACTIVATION_LOCK",
+              "ohos.permission.CAPTURE_SCREEN",
+              "ohos.permission.GRANT_URI_PERMISSION_PRIVILEGED",
+              "ohos.permission.START_SYSTEM_DIALOG",
+              "ohos.permission.GET_BUNDLE_RESOURCES",
+              "ohos.permission.REQUIRE_FORM",
+              "ohos.permission.MODIFY_AUDIO_SETTINGS",
+              "ohos.permission.ACCESS_SPAMSHIELD_SERVICE",
+              "ohos.permission.APPROXIMATELY_LOCATION",
+              "ohos.permission.LOCATION",
+              "ohos.permission.LOCATION_IN_BACKGROUND",
+              "ohos.permission.BUNDLE_ACTIVE_INFO",
+              "ohos.permission.GET_SUPER_PRIVACY",
+              "ohos.permission.FILE_ACCESS_PERSIST",
+              "ohos.permission.SET_SANDBOX_POLICY",
+              "ohos.permission.SET_SUPER_PRIVACY",
+              "ohos.permission.ACCESS_USER_AUTH_INTERNAL",
+              "ohos.permission.MANAGE_MISSIONS",
+              "ohos.permission.CONNECT_FORM_EXTENSION",
+              "ohos.permission.CONNECT_STATIC_SUBSCRIBER_EXTENSION",
+              "ohos.permission.KILL_PROCESS_DEPENDED_ON_ARKWEB",
+              "ohos.permission.ACCESS_LOWPOWER_MANAGER",
+              "ohos.permission.RECEIVER_STARTUP_COMPLETED",
+              "ohos.permission.ATTEST_KEY",
+              "ohos.permission.START_RESTORE_NOTIFICATION",
+              "ohos.permission.READ_WHOLE_CALENDAR",
+              "ohos.permission.ACCESS_SEARCH_SERVICE",
+              "ohos.permission.NOTIFICATION_CONTROLLER"
+            ],
+            "permission_acls": [
+              "ohos.permission.MANAGE_HAP_TOKENID",
+              "ohos.permission.GRANT_SENSITIVE_PERMISSIONS",
+              "ohos.permission.INPUT_MONITORING",
+              "ohos.permission.REVOKE_SENSITIVE_PERMISSIONS",
+              "ohos.permission.START_INVISIBLE_ABILITY",
+              "ohos.permission.INSTALL_SANDBOX_BUNDLE",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS_EXTENSION",
+              "ohos.permission.GRANT_URI_PERMISSION_PRIVILEGED",
+              "ohos.permission.MANAGE_USER_ACCOUNT_INFO",
+              "ohos.permission.CAPTURE_SCREEN",
+              "ohos.permission.SET_SANDBOX_POLICY",
+              "ohos.permission.SET_SUPER_PRIVACY",
+              "ohos.permission.MANAGE_MISSIONS",
+              "ohos.permission.PUBLISH_DISPLAY_ROTATION_EVENT",
+              "ohos.permission.PUBLISH_CAST_PLUGGED_EVENT",
+              "ohos.permission.NOTIFICATION_CONTROLLER"
+            ],
+            "gid": [
+              "system",
+              "appspawn",
+              "update",
+              "data_reserve",
+              "app_install"
+            ],
+            "caps": [
+              "SYS_PTRACE",
+              "KILL"
+            ],
+            "bootevents": [
+              "bootevent.appfwk.ready",
+              "bootevent.lockscreen.ready",
+              "bootevent.launcher.ready",
+              "bootevent.wms.ready",
+              "bootevent.bms.main.bundles.ready"
+            ],
+            "jobs": {
+              "on-start": "services:foundation",
+              "on-restart": "services:restartfoundation"
+            },
+            "secon": "u:r:foundation:s0"
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/foundation.cfg",
+          "definition": {
+            "name": "foundation",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/foundation.json"
+            ],
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "importance": -20,
+            "uid": "foundation",
+            "permission": [
+              "ohos.permission.INPUT_MONITORING",
+              "ohos.permission.PERMISSION_USED_STATS",
+              "ohos.permission.DISTRIBUTED_SOFTBUS_CENTER",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.MANAGE_AUDIO_CONFIG",
+              "ohos.permission.WRITE_CALL_LOG",
+              "ohos.permission.READ_CALL_LOG",
+              "ohos.permission.READ_CONTACTS",
+              "ohos.permission.READ_DFX_SYSEVENT",
+              "ohos.permission.GRANT_SENSITIVE_PERMISSIONS",
+              "ohos.permission.REVOKE_SENSITIVE_PERMISSIONS",
+              "ohos.permission.MANAGE_SETTINGS",
+              "ohos.permission.MANAGE_SECURE_SETTINGS",
+              "ohos.permission.START_ABILITIES_FROM_BACKGROUND",
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.ACCESS_SERVICE_DP",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.PROXY_AUTHORIZATION_URI",
+              "ohos.permission.ABILITY_BACKGROUND_COMMUNICATION",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.LISTEN_BUNDLE_CHANGE",
+              "ohos.permission.GET_TELEPHONY_STATE",
+              "ohos.permission.SEND_MESSAGES",
+              "ohos.permission.CONNECT_CELLULAR_CALL_SERVICE",
+              "ohos.permission.SET_TELEPHONY_STATE",
+              "ohos.permission.VIBRATE",
+              "ohos.permission.SYSTEM_LIGHT_CONTROL",
+              "ohos.permission.MANAGE_HAP_TOKENID",
+              "ohos.permission.UPDATE_CONFIGURATION",
+              "ohos.permission.WRITE_WHOLE_CALENDAR",
+              "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+              "ohos.permission.START_INVISIBLE_ABILITY",
+              "ohos.permission.GET_BUNDLE_INFO",
+              "ohos.permission.GET_SUSPEND_STATE",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.PUBLISH_DISPLAY_ROTATION_EVENT",
+              "ohos.permission.PUBLISH_CAST_PLUGGED_EVENT",
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.CLEAN_APPLICATION_DATA",
+              "ohos.permission.REMOVE_CACHE_FILES",
+              "ohos.permission.INSTALL_SANDBOX_BUNDLE",
+              "ohos.permission.USE_BLUETOOTH",
+              "ohos.permission.GET_SENSITIVE_PERMISSIONS",
+              "ohos.permission.CONNECTIVITY_INTERNAL",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.ACCESS_BLUETOOTH",
+              "ohos.permission.MANAGE_BLUETOOTH",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.GET_INSTALLED_BUNDLE_LIST",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS_EXTENSION",
+              "ohos.permission.MANAGE_USER_ACCOUNT_INFO",
+              "ohos.permission.GET_NETWORK_INFO",
+              "ohos.permission.VERIFY_ACTIVATION_LOCK",
+              "ohos.permission.CAPTURE_SCREEN",
+              "ohos.permission.GRANT_URI_PERMISSION_PRIVILEGED",
+              "ohos.permission.START_SYSTEM_DIALOG",
+              "ohos.permission.GET_BUNDLE_RESOURCES",
+              "ohos.permission.REQUIRE_FORM",
+              "ohos.permission.MODIFY_AUDIO_SETTINGS",
+              "ohos.permission.ACCESS_SPAMSHIELD_SERVICE",
+              "ohos.permission.APPROXIMATELY_LOCATION",
+              "ohos.permission.LOCATION",
+              "ohos.permission.LOCATION_IN_BACKGROUND",
+              "ohos.permission.BUNDLE_ACTIVE_INFO",
+              "ohos.permission.GET_SUPER_PRIVACY",
+              "ohos.permission.FILE_ACCESS_PERSIST",
+              "ohos.permission.SET_SANDBOX_POLICY",
+              "ohos.permission.SET_SUPER_PRIVACY",
+              "ohos.permission.ACCESS_USER_AUTH_INTERNAL",
+              "ohos.permission.MANAGE_MISSIONS",
+              "ohos.permission.CONNECT_FORM_EXTENSION",
+              "ohos.permission.CONNECT_STATIC_SUBSCRIBER_EXTENSION",
+              "ohos.permission.KILL_PROCESS_DEPENDED_ON_ARKWEB",
+              "ohos.permission.ACCESS_LOWPOWER_MANAGER",
+              "ohos.permission.RECEIVER_STARTUP_COMPLETED",
+              "ohos.permission.ATTEST_KEY",
+              "ohos.permission.START_RESTORE_NOTIFICATION",
+              "ohos.permission.READ_WHOLE_CALENDAR",
+              "ohos.permission.ACCESS_SEARCH_SERVICE",
+              "ohos.permission.NOTIFICATION_CONTROLLER"
+            ],
+            "permission_acls": [
+              "ohos.permission.MANAGE_HAP_TOKENID",
+              "ohos.permission.GRANT_SENSITIVE_PERMISSIONS",
+              "ohos.permission.INPUT_MONITORING",
+              "ohos.permission.REVOKE_SENSITIVE_PERMISSIONS",
+              "ohos.permission.START_INVISIBLE_ABILITY",
+              "ohos.permission.INSTALL_SANDBOX_BUNDLE",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS_EXTENSION",
+              "ohos.permission.GRANT_URI_PERMISSION_PRIVILEGED",
+              "ohos.permission.MANAGE_USER_ACCOUNT_INFO",
+              "ohos.permission.CAPTURE_SCREEN",
+              "ohos.permission.SET_SANDBOX_POLICY",
+              "ohos.permission.SET_SUPER_PRIVACY",
+              "ohos.permission.MANAGE_MISSIONS",
+              "ohos.permission.PUBLISH_DISPLAY_ROTATION_EVENT",
+              "ohos.permission.PUBLISH_CAST_PLUGGED_EVENT",
+              "ohos.permission.NOTIFICATION_CONTROLLER"
+            ],
+            "gid": [
+              "system",
+              "appspawn",
+              "update",
+              "data_reserve",
+              "app_install"
+            ],
+            "caps": [
+              "SYS_PTRACE",
+              "KILL"
+            ],
+            "bootevents": [
+              "bootevent.appfwk.ready",
+              "bootevent.lockscreen.ready",
+              "bootevent.launcher.ready",
+              "bootevent.wms.ready",
+              "bootevent.bms.main.bundles.ready"
+            ],
+            "jobs": {
+              "on-start": "services:foundation",
+              "on-restart": "services:restartfoundation"
+            },
+            "secon": "u:r:foundation:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "hdf_devmgr": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hdf_devmgr.cfg",
+          "definition": {
+            "name": "hdf_devmgr",
+            "path": [
+              "/vendor/bin/hdf_devmgr"
+            ],
+            "uid": "hdf_devmgr",
+            "gid": [
+              "hdf_devmgr",
+              "readproc",
+              "uhdf_driver",
+              "data_reserve"
+            ],
+            "start-mode": "boot",
+            "secon": "u:r:hdf_devmgr:s0",
+            "critical": [
+              0,
+              4,
+              60
+            ],
+            "bootevents": [
+              "bootevent.hdf_devmgr.ready"
+            ]
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "hilogd": {
+      "definitions": [
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/hilogd.cfg",
+          "definition": {
+            "name": "hilogd",
+            "path": [
+              "/system/bin/hilogd"
+            ],
+            "disabled": 1,
+            "uid": "logd",
+            "gid": [
+              "log",
+              "system",
+              "readproc",
+              "shell",
+              "servicectrl"
+            ],
+            "sandbox": 0,
+            "file": [
+              "/dev/kmsg rd 0640 root root"
+            ],
+            "socket": [
+              {
+                "name": "hilogInput",
+                "family": "AF_UNIX",
+                "type": "SOCK_DGRAM",
+                "protocol": "default",
+                "permissions": "0222",
+                "uid": "logd",
+                "gid": "log",
+                "option": [
+                  "SOCKET_OPTION_PASSCRED"
+                ]
+              },
+              {
+                "name": "hilogOutput",
+                "family": "AF_UNIX",
+                "type": "SOCK_SEQPACKET",
+                "protocol": "default",
+                "permissions": "0666",
+                "uid": "logd",
+                "gid": "log",
+                "option": [
+                  "SOCKET_OPTION_PASSCRED"
+                ]
+              },
+              {
+                "name": "hilogControl",
+                "family": "AF_UNIX",
+                "type": "SOCK_SEQPACKET",
+                "protocol": "default",
+                "permissions": "0660",
+                "uid": "logd",
+                "gid": "log",
+                "option": []
+              },
+              {
+                "name": "hilogControlPub",
+                "family": "AF_UNIX",
+                "type": "SOCK_SEQPACKET",
+                "protocol": "default",
+                "permissions": "0666",
+                "uid": "logd",
+                "gid": "log",
+                "option": []
+              }
+            ],
+            "start-mode": "condition",
+            "secon": "u:r:hilogd:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "multimodalinput": {
+      "definitions": [
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/multimodalinput.cfg",
+          "definition": {
+            "name": "multimodalinput",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/multimodalinput.json"
+            ],
+            "critical": [
+              0,
+              5,
+              6
+            ],
+            "uid": "input",
+            "gid": [
+              "input",
+              "tp_host",
+              "lcd_host",
+              "sensor_host",
+              "consumerir_host"
+            ],
+            "permission": [
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.GET_RUNNING_INFO",
+              "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+              "ohos.permission.RUNNING_STATE_OBSERVER",
+              "ohos.permission.START_SYSTEM_DIALOG",
+              "ohos.permission.ACCESS_NOTIFICATION_POLICY",
+              "ohos.permission.SET_TELEPHONY_STATE",
+              "ohos.permission.MANAGE_SECURE_SETTINGS",
+              "ohos.permission.MANAGE_SETTINGS",
+              "ohos.permission.GET_TELEPHONY_STATE",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS"
+            ],
+            "start-mode": "condition",
+            "secon": "u:r:multimodalinput:s0"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "render_service": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "render_service",
+            "path": [
+              "/system/bin/render_service"
+            ],
+            "critical": [
+              0,
+              5,
+              60
+            ],
+            "importance": -20,
+            "uid": "graphics",
+            "gid": [
+              "system",
+              "tp_host",
+              "data_reserve",
+              "dev_dma_heap"
+            ],
+            "writepid": [
+              "/dev/memcg/perf_sensitive/cgroup.procs"
+            ],
+            "caps": [
+              "SYS_NICE"
+            ],
+            "bootevents": [
+              "bootevent.renderservice.ready"
+            ],
+            "permission": [
+              "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+              "ohos.permission.MANAGE_SETTINGS"
+            ],
+            "secon": "u:r:render_service:s0",
+            "jobs": {
+              "on-restart": "services:restartrender_service"
+            },
+            "once": 0
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/graphic.cfg",
+          "definition": {
+            "name": "render_service",
+            "path": [
+              "/system/bin/render_service"
+            ],
+            "critical": [
+              1,
+              5,
+              60
+            ],
+            "importance": -20,
+            "uid": "graphics",
+            "gid": [
+              "system",
+              "tp_host",
+              "data_reserve",
+              "dev_dma_heap"
+            ],
+            "writepid": [
+              "/dev/memcg/perf_sensitive/cgroup.procs"
+            ],
+            "caps": [
+              "SYS_NICE"
+            ],
+            "bootevents": [
+              "bootevent.renderservice.ready"
+            ],
+            "permission": [
+              "ohos.permission.REPORT_RESOURCE_SCHEDULE_EVENT",
+              "ohos.permission.MANAGE_SETTINGS"
+            ],
+            "secon": "u:r:render_service:s0",
+            "jobs": {
+              "on-restart": "services:restartrender_service"
+            },
+            "once": 0
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "samgr": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "samgr",
+            "path": [
+              "/system/bin/samgr"
+            ],
+            "critical": [
+              0,
+              1,
+              60
+            ],
+            "uid": "samgr",
+            "gid": [
+              "samgr",
+              "system",
+              "readproc",
+              "data_reserve"
+            ],
+            "file": [
+              "/dev/kmsg rd 0660 root system"
+            ],
+            "bootevents": "bootevent.samgr.ready",
+            "permission": [
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.RECEIVER_STARTUP_COMPLETED",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.LOCATION",
+              "ohos.permission.GET_WIFI_INFO",
+              "ohos.permission.USE_BLUETOOTH",
+              "ohos.permission.DISCOVER_BLUETOOTH",
+              "ohos.permission.MANAGE_SECURE_SETTINGS",
+              "ohos.permission.LISTEN_BUNDLE_CHANGE",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.RECEIVE_SMS",
+              "ohos.permission.GET_TELEPHONY_STATE",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.MONITOR_DEVICE_NETWORK_STATE",
+              "ohos.permission.MANAGE_SYSTEM_ABILITY",
+              "ohos.permission.START_RESTORE_NOTIFICATION",
+              "ohos.permission.ACCESS_BLUETOOTH"
+            ],
+            "permission_acls": [
+              "ohos.permission.MONITOR_DEVICE_NETWORK_STATE",
+              "ohos.permission.MANAGE_SYSTEM_ABILITY"
+            ],
+            "secon": "u:r:samgr:s0",
+            "start-mode": "boot"
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/samgr_standard.cfg",
+          "definition": {
+            "name": "samgr",
+            "path": [
+              "/system/bin/samgr"
+            ],
+            "critical": [
+              1,
+              1,
+              60
+            ],
+            "uid": "samgr",
+            "gid": [
+              "samgr",
+              "system",
+              "readproc",
+              "data_reserve"
+            ],
+            "file": [
+              "/dev/kmsg rd 0660 root system"
+            ],
+            "bootevents": "bootevent.samgr.ready",
+            "permission": [
+              "ohos.permission.DISTRIBUTED_DATASYNC",
+              "ohos.permission.ACCESS_SERVICE_DM",
+              "ohos.permission.RECEIVER_STARTUP_COMPLETED",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.INTERACT_ACROSS_LOCAL_ACCOUNTS",
+              "ohos.permission.LOCATION",
+              "ohos.permission.GET_WIFI_INFO",
+              "ohos.permission.USE_BLUETOOTH",
+              "ohos.permission.DISCOVER_BLUETOOTH",
+              "ohos.permission.MANAGE_SECURE_SETTINGS",
+              "ohos.permission.LISTEN_BUNDLE_CHANGE",
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.RECEIVE_SMS",
+              "ohos.permission.GET_TELEPHONY_STATE",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT",
+              "ohos.permission.MONITOR_DEVICE_NETWORK_STATE",
+              "ohos.permission.MANAGE_SYSTEM_ABILITY",
+              "ohos.permission.START_RESTORE_NOTIFICATION",
+              "ohos.permission.ACCESS_BLUETOOTH"
+            ],
+            "permission_acls": [
+              "ohos.permission.MONITOR_DEVICE_NETWORK_STATE",
+              "ohos.permission.MANAGE_SYSTEM_ABILITY"
+            ],
+            "secon": "u:r:samgr:s0",
+            "start-mode": "boot"
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "storage_daemon": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "storage_daemon",
+            "path": [
+              "/system/bin/storage_daemon"
+            ],
+            "disabled": 1,
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "uid": "root",
+            "gid": [
+              "root"
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:storage_daemon:s0",
+            "permission": [
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.ACCESS_SCREEN_LOCK",
+              "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+              "ohos.permission.RUNNING_STATE_OBSERVER"
+            ]
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/storage_daemon.cfg",
+          "definition": {
+            "name": "storage_daemon",
+            "path": [
+              "/system/bin/storage_daemon"
+            ],
+            "disabled": 1,
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "uid": "root",
+            "gid": [
+              "root"
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:storage_daemon:s0",
+            "permission": [
+              "ohos.permission.STORAGE_MANAGER",
+              "ohos.permission.USE_USER_IDM",
+              "ohos.permission.ACCESS_SCREEN_LOCK",
+              "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+              "ohos.permission.RUNNING_STATE_OBSERVER"
+            ]
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    },
+    "storage_manager": {
+      "definitions": [
+        {
+          "file": "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg",
+          "definition": {
+            "name": "storage_manager",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/storage_manager.json"
+            ],
+            "critical": [
+              0,
+              4,
+              240
+            ],
+            "uid": "storage_manager",
+            "gid": [
+              "storage_manager"
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:storage_manager:s0",
+            "apl": "system_basic",
+            "permission": [
+              "ohos.permission.READ_MEDIA",
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.ACCESS_SCREEN_LOCK",
+              "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+              "ohos.permission.REMOVE_CACHE_FILES",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT"
+            ]
+          }
+        },
+        {
+          "file": "work/ohos-runtime/system/system/etc/init/storage_manager.cfg",
+          "definition": {
+            "name": "storage_manager",
+            "path": [
+              "/system/bin/sa_main",
+              "/system/profile/storage_manager.json"
+            ],
+            "critical": [
+              1,
+              4,
+              240
+            ],
+            "uid": "storage_manager",
+            "gid": [
+              "storage_manager"
+            ],
+            "sandbox": 0,
+            "start-mode": "boot",
+            "secon": "u:r:storage_manager:s0",
+            "apl": "system_basic",
+            "permission": [
+              "ohos.permission.READ_MEDIA",
+              "ohos.permission.GET_BUNDLE_INFO_PRIVILEGED",
+              "ohos.permission.MANAGE_LOCAL_ACCOUNTS",
+              "ohos.permission.ACCESS_SCREEN_LOCK",
+              "ohos.permission.ACCESS_SCREEN_LOCK_INNER",
+              "ohos.permission.REMOVE_CACHE_FILES",
+              "ohos.permission.PUBLISH_SYSTEM_COMMON_EVENT"
+            ]
+          }
+        }
+      ],
+      "effective_definition": "not inferred; directory/import load order must be established"
+    }
+  },
+  "foundation_declared_dependencies": {
+    "3299": [
+      {
+        "process": "foundation",
+        "profile": "foundation.json",
+        "definition": {
+          "name": 3299,
+          "libpath": "libcesfwk_services.z.so",
+          "run-on-create": true,
+          "distributed": false,
+          "dump_level": 1
+        }
+      }
+    ],
+    "3503": [
+      {
+        "process": "accesstoken_service",
+        "profile": "accesstoken_service.json",
+        "definition": {
+          "name": 3503,
+          "libpath": "libaccesstoken_manager_service.z.so",
+          "run-on-create": true,
+          "distributed": false,
+          "dump_level": 1
+        }
+      }
+    ]
+  },
+  "foundation_abilities": [
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 401,
+        "libpath": "libbms.z.so",
+        "run-on-create": true,
+        "depend_time_out": 60000,
+        "distributed": false,
+        "bootphase": "CoreStartPhase",
+        "dump_level": 1,
+        "depend": [
+          3503
+        ]
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 4606,
+        "libpath": "libwms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "bootphase": "CoreStartPhase",
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 4607,
+        "libpath": "libscreen_session_manager.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "bootphase": "CoreStartPhase",
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 3299,
+        "libpath": "libcesfwk_services.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 3203,
+        "libpath": "libans.z.so",
+        "run-on-create": true,
+        "depend": [
+          3299
+        ],
+        "extension": [
+          "backup",
+          "restore"
+        ],
+        "depend_time_out": 60000,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 4005,
+        "libpath": "libtel_call_manager.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 4009,
+        "libpath": "libtel_state_registry.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 3704,
+        "libpath": "libscreenlock_server.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 180,
+        "libpath": "libabilityms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 182,
+        "libpath": "libdataobsms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 183,
+        "libpath": "libupms.z.so",
+        "run-on-create": false,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 501,
+        "libpath": "libappms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 1404,
+        "libpath": "libdistributed_ability_manager_svr.z.so",
+        "run-on-create": true,
+        "distributed": false
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 403,
+        "libpath": "libfms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 6200,
+        "libpath": "libapp_domain_verify_mgr_service.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    },
+    {
+      "process": "foundation",
+      "profile": "foundation.json",
+      "definition": {
+        "name": 6105,
+        "libpath": "liberms.z.so",
+        "run-on-create": true,
+        "distributed": false,
+        "dump_level": 1
+      }
+    }
+  ],
+  "startup_commands_needing_adaptation": [
+    {
+      "file": "work/donor-configs/vendor/etc/init/hmos2sweet.cfg",
+      "job": "pre-init",
+      "command": "mount vfat /dev/block/by-name/modem /vendor/firmware_mnt ro nosuid nodev shortname=lower,uid=0,gid=1000,dmask=0222,fmask=0333",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init/hmos2sweet.cfg",
+      "job": "pre-init",
+      "command": "mount ext4 /dev/block/by-name/persist /vendor/persist nosuid nodev noatime",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init/hmos2sweet.cfg",
+      "job": "pre-init",
+      "command": "mount vfat /dev/block/by-name/bluetooth /vendor/bt_firmware ro nosuid nodev shortname=lower,uid=0,gid=0,dmask=0222,fmask=0333",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init/init.hw_battery.cfg",
+      "job": "boot",
+      "command": "chmod 0660 /sys/class/misc/hw_bfm/bfm_ctl",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init/init.hw_battery.cfg",
+      "job": "boot",
+      "command": "chown battery_extra_host battery_extra_host /sys/class/misc/hw_bfm/bfm_ctl",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init.Kirin9010E.cfg",
+      "job": "init",
+      "command": "write /sys/module/nve_ap_kernel/parameters/nve /dev/block/by-name/nvme",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init.Kirin9010E.cfg",
+      "job": "boot",
+      "command": "swapoff /dev/block/zram0",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init.Kirin9010E.cfg",
+      "job": "boot",
+      "command": "mkswap /dev/block/zram0",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/donor-configs/vendor/etc/init.Kirin9010E.cfg",
+      "job": "boot",
+      "command": "swapon /dev/block/zram0",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/activation_lock.cfg",
+      "job": "services:activation_lock",
+      "command": "restorecon /data/service/el2/100/activation_lock",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/data/.pulse_dir/runtime",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/data/.pulse_dir/state",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "audio_server:restart_audio_server",
+      "command": "restorecon /data/data/.pulse_dir/runtime",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "audio_server:restart_audio_server",
+      "command": "restorecon /data/data/.pulse_dir/state",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "audio_server:restart_audio_server",
+      "command": "restorecon /data/data/.pulse_dir/audiofocus",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "param:startup.service.ctl.audio_server",
+      "command": "restorecon /data/data/.pulse_dir/runtime",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "param:startup.service.ctl.audio_server",
+      "command": "restorecon /data/data/.pulse_dir/state",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/audio_server.cfg",
+      "job": "param:startup.service.ctl.audio_server",
+      "command": "restorecon /data/data/.pulse_dir/audiofocus",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/broker.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.state=true || (const.app_eco.support_linux=true && startup.service.ctl.broker=2)",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_graphic_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/distributedfile.cfg",
+      "job": "services:cloudfileservice",
+      "command": "restorecon /data/service/el1/public/cloudfile",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/faultloggerd.cfg",
+      "job": "init",
+      "command": "restorecon /log/crash",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/faultloggerd.cfg",
+      "job": "services:faultloggerd",
+      "command": "restorecon /dev/unix/socket/faultloggerd.server",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/faultloggerd.cfg",
+      "job": "services:faultloggerd",
+      "command": "restorecon /dev/unix/socket/faultloggerd.crash.server",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hdcd.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/public/hdc",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/healthsport_services.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/healthsport",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hiview_engine.cfg",
+      "job": "param:bootevent.boot.completed=true",
+      "command": "restorecon -F /log",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hiview_engine.cfg",
+      "job": "services:hiview",
+      "command": "restorecon /data/log/UserView/",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/usb_accessory",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_cache",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/container",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/container/clone",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "pre-rgm-fs",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_log",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/apex",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/dalvik-cache",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/data",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/system",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/user",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "param:hmos_fusion_mgr.ctl.restorecon=true",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/user_de",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/anco_decoupling",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/system",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/app",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/misc",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/anco_hmos_data/log",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/iSulad.cfg",
+      "job": "boot",
+      "command": "restorecon /data/service/el1/public/rgm_engine/isula",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/memmgrservice.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/public/memmgr",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/memmgrservice.cfg",
+      "job": "init",
+      "command": "restorecon /dev/shm",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/multimodalinput.cfg",
+      "job": "early-boot",
+      "command": "restorecon -F /data/service/el1/public/multimodalinput",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/multimodalinput.cfg",
+      "job": "early-boot",
+      "command": "restorecon -F /data/service/el1/public/udev",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/quickfix.cfg",
+      "job": "pre-init",
+      "command": "restorecon -i /data/update/quickfix/package/app.apqf",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/quickfix.cfg",
+      "job": "pre-init",
+      "command": "restorecon -i /data/update/quickfix/package/quickfix_sign.bin",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "boot",
+      "command": "restorecon /data/service/el1/public/rgm_manager",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "boot",
+      "command": "restorecon /data/service/el1/public/rgm_manager/data",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_ril",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_linux",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_linux",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "pre-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_linux/uds",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/cust_ver.bin",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/custom.bin",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/custom_cota.bin",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/product.bin",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon  /data/virt_service/rgm_hmos/anco_hmos_data/service",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/service",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon  /data/virt_service/rgm_hmos/anco_hmos_data/systemfeature",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/systemfeature",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/systemfeature/systemfeature",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg",
+      "job": "restorecon-rgm-fs-data",
+      "command": "restorecon -F /data/virt_service/rgm_hmos/anco_hmos_data/systemfeature/systemservicefeature",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/teecd.cfg",
+      "job": "init",
+      "command": "mount ext4 /dev/block/by-name/secure_storage /sec_storage nosuid nodev noatime wait context=u:object_r:teecd_data_file:s0",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/teecd.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/public/sec_storage_data",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_device_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_factory_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_sensors_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_vibrator_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_input_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_gnss_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_wifi_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/input",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_keymaster_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/rgm_hmos/cross/uds/virt_consumerir_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_device_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_factory_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_sensors_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_vibrator_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_input_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_gnss_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_wifi_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/input",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_keymaster_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg",
+      "job": "post-rgm-fs-data",
+      "command": "restorecon /data/virt_service/virt_comm/rgm_hmos/uds/virt_consumerir_broker",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/wear_link_service.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/wearlink",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init/xlogcat.cfg",
+      "job": "fs",
+      "command": "restorecon /log",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "pre-init",
+      "command": "mount_fstab /vendor/etc/fstab.${ohos.boot.hardware}",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "pre-init",
+      "command": "restorecon /data --skip-ELX",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "post-fs-data",
+      "command": "mkdir /data/misc 01771 system misc",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "post-fs-data",
+      "command": "mkdir /data/misc/shared_relro 0771 root root",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/public",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/public/activation_lock",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "post-fs-data",
+      "command": "restorecon /data/service/el1/startup/parameters",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "boot",
+      "command": "chown update update /dev/block/by-name/misc",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "services:console",
+      "command": "chmod 0773 /data/misc/trace",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    },
+    {
+      "file": "work/ohos-runtime/system/system/etc/init.cfg",
+      "job": "services:console",
+      "command": "chmod 0775 /data/misc/wmtrace",
+      "disposition": "requires explicit adaptation before full DSU startup"
+    }
+  ],
+  "source_hashes": {
+    "work/donor-configs/chip_prod/etc/init/CameraDaemon.cfg": "f464adfb4ed52c4d72fd7174532a698f7e7af2e338dd4ffd150f39b4f95f5432",
+    "work/donor-configs/chip_prod/etc/init/hdf_devhost.cfg": "9863255562970b1522713cd449eedfd8af159be2867963095c69543556592c8d",
+    "work/donor-configs/vendor/etc/init/audio_driver.cfg": "ab3695d961631093ae378d5a8dad8cb3d24b56c370349726a4473f248a830b76",
+    "work/donor-configs/vendor/etc/init/connected_nfc_driver.cfg": "43b405b1ba9ceb92ddf24b0661f9b5b8794a2239f285bf5b621d15e298b7ce67",
+    "work/donor-configs/vendor/etc/init/consumer_ir.cfg": "bf863456f022556d43983db1f0e50656098d72fec75a784c0247a4c12258d383",
+    "work/donor-configs/vendor/etc/init/displayengine.cfg": "0269fa7fdb4d5f43a82f93536309d35d009d1b8dd6d05bea4ee3c1f8544eb801",
+    "work/donor-configs/vendor/etc/init/fingerprint.cfg": "0b75e0c75926c51f1a54206bbd5b1030447baa3cfa2d8e07c23cd3fafccb5405",
+    "work/donor-configs/vendor/etc/init/hdf_devmgr.cfg": "04769a8a9d3155c3e257b7845cd22c79087b524fca7f1021a18f146e2f67cb41",
+    "work/donor-configs/vendor/etc/init/hdf_peripheral.cfg": "b2d060895af79e7c1ee5fff8e7f7db13056e8d1454f573db523aa0c7b27cb92e",
+    "work/donor-configs/vendor/etc/init/hmos2sweet.cfg": "ca0ae923be82a8c3b8513f83ee6f20c904b47d8bcc6a2ee421d066986f7cf73a",
+    "work/donor-configs/vendor/etc/init/hmos2sweet_nocritical.cfg": "e632cf02459df7c849abbf6e3b6aef209d39a63b58d2020f8fac25ea789ef42a",
+    "work/donor-configs/vendor/etc/init/init.gpu.cfg": "1231b634acaedc884b37752296e5219b22574d4a1f76afb3b2969b6d2b17b87b",
+    "work/donor-configs/vendor/etc/init/init.hw_battery.cfg": "9b746fa57a34eb79845222f6f704ba6880bc59a87a670e469614b65aab18545f",
+    "work/donor-configs/vendor/etc/init/init.hw_usb.cfg": "ac2fae0f974d665fd2cae4aec097b29ae89c7b62310a5cb36ffcb39d1afd1370",
+    "work/donor-configs/vendor/etc/init/init.modem_entry.cfg": "2c6bc7dd53022ebb8429290dc80984b27d2f35a8a52815d62d01979b5bba5e38",
+    "work/donor-configs/vendor/etc/init/init.thermal.cfg": "ad3598ad22df0b3adb200854c1f715615ba7af599f416b273afc9c3be1e29a51",
+    "work/donor-configs/vendor/etc/init/init.usb.configfs.cfg": "c18d414997c1e62526b2864952944bd853b7372c6403e927c59896e19613626a",
+    "work/donor-configs/vendor/etc/init/init_connectivity.cfg": "3d1ef32cd8ccc5dd1b2e0e9fb5f41a7dd1e928b9bfaf3b76f31623916cd10e03",
+    "work/donor-configs/vendor/etc/init/intelligent_voice_engine.cfg": "f858095d8a9db201d5d89a45005524f0fc9695e8c58c281e023fbb319db3ddd4",
+    "work/donor-configs/vendor/etc/init/lcdscreen.cfg": "b05d882ac715d05e7c45e78d7ca835011dfaf81ad072c890f927e8b73477ab9c",
+    "work/donor-configs/vendor/etc/init/riladapter_host.cfg": "cb7faa597ec4cf0279e1198d9c87bf1a4ce50b954aef0e1531139ada391f7f34",
+    "work/donor-configs/vendor/etc/init/sensor_extra.cfg": "e33ed40c99d044bd1c00881b2aefb0232dbb4945ad0a7adce79febe4e1b2dc2c",
+    "work/donor-configs/vendor/etc/init/touchscreen.cfg": "e2eb820c1ee192a93500f64b92ceaa4b11e197780ce08bde4eb0ac50e759e72e",
+    "work/donor-configs/vendor/etc/init/vibrator_init.cfg": "70c1e26a827c5f49f58c2d85fd7619f73b26c57ef96f1604423c0cf93577d075",
+    "work/donor-configs/vendor/etc/init/wiseplay_host.cfg": "dc6d51382301c806520250ac7672e93871c990f44501efa87e9e87aa141595d0",
+    "work/donor-configs/vendor/etc/init.Kirin9010E.cfg": "d1688235cd7ad20185d621b1ca13a2e54e2975bb2c84db401358c6855dd50341",
+    "work/donor-configs/vendor/etc/init.Kirin9010E.usb.cfg": "b1459ac5b7ca61fdf9f094eefa2e4aba85ace65eb911794879fc349bf40293cb",
+    "work/donor-configs/vendor/etc/init.sweet.usb.cfg": "1b5d8ff1a78eb921fb16f0a9fa814c35c064336224168eec79a2e62bffb28e15",
+    "work/ohos-runtime/system/system/etc/init/CollaborationFwk.cfg": "be6c20f2d0a9a4ef25cdb8ad0b6af05db4ac6d1dcc738525817a973d85388351",
+    "work/ohos-runtime/system/system/etc/init/aam_connection_svc.cfg": "be178c2094ef04f648c5ab2a22beb0a44dad557446a77cf10ba5781b90f37a88",
+    "work/ohos-runtime/system/system/etc/init/access_token.cfg": "66e8d9678b73322dcff5ffcf8faf12716c62da0690a7e4318906af4f4bdf54b5",
+    "work/ohos-runtime/system/system/etc/init/accessibility.cfg": "d52a71d9a4e51d8097bf2001adf69c3436e2894da80d935ff7f6f78e2d8def94",
+    "work/ohos-runtime/system/system/etc/init/accountmgr.cfg": "f022e8501078858455db92c999ccaaf3e8eeb73e4c3f072532c6f5bafce4d0d2",
+    "work/ohos-runtime/system/system/etc/init/activation_lock.cfg": "e18ee7ee982640e9236ddf23608f35dbf963ab4a35d86e4b38466ef831ecdd56",
+    "work/ohos-runtime/system/system/etc/init/advertising_service.cfg": "d72e34367b02926197bede6826df734f8ad01c5701edfd0d8e6908aadd47f4f5",
+    "work/ohos-runtime/system/system/etc/init/ai_app_controller_service.cfg": "1ca1ca8dd50476bb9ce26c5a9d098b3503b36b79fe5c4122e1689c45508ae55a",
+    "work/ohos-runtime/system/system/etc/init/ai_dispatcher_engine_service.cfg": "fb2b0a79d20ed17ff48c9f29dd5b8ea5251981204dbf3e04098f71b0f5c3c939",
+    "work/ohos-runtime/system/system/etc/init/aiengine.cfg": "16dab1bb33d132a348f9075e469492fb3ea5a2e7a4a105147e57a6a51956c2b4",
+    "work/ohos-runtime/system/system/etc/init/anco_audio.cfg": "7ef20bbc46f760e1644ae45cf6e51296ba08ea2fa451fe96ad4d8d6a733af606",
+    "work/ohos-runtime/system/system/etc/init/aod_service.cfg": "7c6e6c980c9ff86d84538227239ae35114efcdd44dae9982ce4a32c363ba2076",
+    "work/ohos-runtime/system/system/etc/init/api_policy_service.cfg": "31b304d91b56be5081edbf9febed7a9e3217769a3bba14e4ca7d4a4d4261601a",
+    "work/ohos-runtime/system/system/etc/init/app_domain_verify_agent.cfg": "b40f0d8bbeb7a4b02d47c6323aaa0943eb74b74075417d0700e16562017ae9e6",
+    "work/ohos-runtime/system/system/etc/init/app_fwk_update_service.cfg": "6ad27a5328afc81c452914ce74103780d73c5e6f6e46b080a2b93af78feac11c",
+    "work/ohos-runtime/system/system/etc/init/app_lock_service.cfg": "de4d352266633b81cdada99700260ae95bb3ab6b638c71b57adfc123c63ff207",
+    "work/ohos-runtime/system/system/etc/init/appgallery_service.cfg": "4d224b6bf067a17ec447d08e889c410abdcb0d0f7f3bd474b3a1a1275d34ebdc",
+    "work/ohos-runtime/system/system/etc/init/appspawn.cfg": "fb5636ce55d0c3e828c0c134ba7fc6eb1ac9b3ed136467ba97b0131339e9a88b",
+    "work/ohos-runtime/system/system/etc/init/aps_manager.cfg": "663d9f0cf2e4f210ca0efd1cdaf3084c33d886f73ada85fad034a44b40e7ddd5",
+    "work/ohos-runtime/system/system/etc/init/asset_service.cfg": "558489219fdf8853cc81b3b3f0edb58bd4c134091c90691992caf9bdd9277735",
+    "work/ohos-runtime/system/system/etc/init/atomicservice_ecological_rule_manager.cfg": "8ef8e0ff8b5512777396f20bbd51907414fef3b0bb28574b422231c6c424ef0b",
+    "work/ohos-runtime/system/system/etc/init/audio_policy.cfg": "8eb95bcbc154530931e15fc418c8b1fe991095671409552099ea1aa596999ede",
+    "work/ohos-runtime/system/system/etc/init/audio_server.cfg": "c681365104948d1fc5f5c596f31f6cd39a486aeb0846322c77051b9c518f6c71",
+    "work/ohos-runtime/system/system/etc/init/av_codec_service.cfg": "41566e88afbab1b4f7dd5e7af34e607d7b9160d4d67b3c2f113f97fa8197dc53",
+    "work/ohos-runtime/system/system/etc/init/avsession_service.cfg": "63525e9cf66d2226af8799d80af5ed54d7cd877f96668130a6464974335a3f73",
+    "work/ohos-runtime/system/system/etc/init/backup.cfg": "1fd8da9ad6eeb51bc59739a9336ba487c678b5b65b600e9d1ddc5346ffe47bfb",
+    "work/ohos-runtime/system/system/etc/init/batterycareservice.cfg": "9f679366cee9f1f1d3e26bd8c91664fa15fec63adcf5d5efd258259f389b4059",
+    "work/ohos-runtime/system/system/etc/init/bgtaskmgr_service.cfg": "469c44ec541b1992953d3f275e8d35384251a468837cd11a3985a0fc6190cc09",
+    "work/ohos-runtime/system/system/etc/init/bluetooth_service.cfg": "ea5c868ff42df5401077b9c522a38997bc1f1417ba577f5f8a20e8cfb453cf15",
+    "work/ohos-runtime/system/system/etc/init/brightness_wrapper.cfg": "dd40818ea39ebaac464518b48d965da23d59b4fc91e79e303040efe64498d5ea",
+    "work/ohos-runtime/system/system/etc/init/broker.cfg": "dd6fd9893f4e36cf2cb998baeaeb9fca91121b35b07bcec3e692e2e698ebe833",
+    "work/ohos-runtime/system/system/etc/init/caas_service.cfg": "b4ddde5a546b6c1707a89226aa22a855e449a26d33316169ed0a688cc7fe7715",
+    "work/ohos-runtime/system/system/etc/init/cadaemon.cfg": "10d6988755eab7aed35ecd5fb51209b0ebb44c99ecca96e8cff36ddb0e976ca4",
+    "work/ohos-runtime/system/system/etc/init/camera_service.cfg": "504a06ab24cc7cb50e0798959579adce5e7347b2e4dfbd0b83e85a022cdfe29d",
+    "work/ohos-runtime/system/system/etc/init/car_distributed_engine.cfg": "12c9e702a9e1aaccbdefecb3faafcb49b56785f290172804987558b87a36c55b",
+    "work/ohos-runtime/system/system/etc/init/cast_engine_service.cfg": "4824bff7195f53ee56a76fc7b4ec1d392a67a37e36f90c6864fb6b9757fb039f",
+    "work/ohos-runtime/system/system/etc/init/cert_manager_service.cfg": "42f51ef9b65f9d7bb490b8dd5048248ede83125fa54939b698954fc0fab4751e",
+    "work/ohos-runtime/system/system/etc/init/check_module_update.cfg": "8f91781fd9885d35589465056783d589fb7fa650178071e757bf16325cba15b6",
+    "work/ohos-runtime/system/system/etc/init/chrservice.cfg": "a5ba31ed2800ced13dd81ed12bcc94851bfff6252b7e2419821deed015de22de",
+    "work/ohos-runtime/system/system/etc/init/cjappspawn.cfg": "360abcb6fd8d910265f4d3c903dfb175d89458b56b2dccec501048491fe53e06",
+    "work/ohos-runtime/system/system/etc/init/client_cloud_accelerate.cfg": "9ad2418d72b65dd60e1a5ed8c1ee393df551a15a2c5237a983da8fbbe1f494d9",
+    "work/ohos-runtime/system/system/etc/init/client_cloud_cache_service.cfg": "7d6a37cf0e061ca0a5a369e5ecd9b30026dc4f8ffd468bf24e52cd119bb2e253",
+    "work/ohos-runtime/system/system/etc/init/cloud_backup_service.cfg": "9dad169c2aac0d53d2a8cfb0a2b39e630defd8a27597c9d909485864ad848550",
+    "work/ohos-runtime/system/system/etc/init/cloud_develop_proxy.cfg": "81323b39e79fd25c634bed549243d9a20ce69a9ec6ed61af4770c652c68adbd7",
+    "work/ohos-runtime/system/system/etc/init/cloud_interface_auth.cfg": "5941135ff6c2f565636090344464f023cca75b03287c5309866ecbc0d63bc762",
+    "work/ohos-runtime/system/system/etc/init/code_crypto.cfg": "464f6060f19f9b2c18707dd4faf488f09bdbc9d51f5286eb07b47b16508ca8fc",
+    "work/ohos-runtime/system/system/etc/init/code_protect.cfg": "1cfea675acb4263a4bf88ab56b3c827ff7b29accca52d583e0592f268449652c",
+    "work/ohos-runtime/system/system/etc/init/collaboration_service.cfg": "ae6a9bd64b6769474369a65bf00009c2af6466d8793e02cceb0b024428b5074e",
+    "work/ohos-runtime/system/system/etc/init/comm_protocol_resource_manager.cfg": "4338967512065021320fb87db05e1eb38da5e20f9a6475be50970a954444f489",
+    "work/ohos-runtime/system/system/etc/init/compiler_service.cfg": "b87a8945198fef6b36ddab27d3399030a5e45041bd27c4f9ae19f21d6530b49c",
+    "work/ohos-runtime/system/system/etc/init/concurrent_task_service.cfg": "81c3f176247cf6d8d3c65ffae34846493e0dc9838dece236f966a88b3456713a",
+    "work/ohos-runtime/system/system/etc/init/console.cfg": "3ea599714f57046ad35b48578fd78f1af9aa9191f16ee5e74d8f5f476fcc3991",
+    "work/ohos-runtime/system/system/etc/init/cups_service.cfg": "033a422c6ba279960fdeb415ba9392a6e8a5c90e1cc61bcffe91c275c6804e12",
+    "work/ohos-runtime/system/system/etc/init/data_monitor_service.cfg": "e32e50a36f16b7ca4c1ab23524237f95dcab000a968504acbad5351060ca6d81",
+    "work/ohos-runtime/system/system/etc/init/daudio.cfg": "24330782417add51d63e223bf3ee1bbd1095a2fdb1a89ca9f279991564580aca",
+    "work/ohos-runtime/system/system/etc/init/dcall.cfg": "51b2693fbc46561dce3fb30d45fc54a36aadd2b9fb901ed957a7cec265c5c3ba",
+    "work/ohos-runtime/system/system/etc/init/dcamera.cfg": "75175e3db9483eca812a50d6b03634ee8923a3e3f91aafd9ef8c2f31d43c16ee",
+    "work/ohos-runtime/system/system/etc/init/dcm_service.cfg": "cb3a3b7a41b45cffbebb9c48297c99de5f90c12fd8fe0882a61ddc63914cc083",
+    "work/ohos-runtime/system/system/etc/init/devattest_service.cfg": "1e468edde7c57315a5b0fd0b76032aa5d038f6f45af1f4f4e60e89e9274b2e41",
+    "work/ohos-runtime/system/system/etc/init/device_activate_service.cfg": "8e4a4d15a6399bb2244f1e345799d12eddb763e9d392d990b09a17676d5ac66f",
+    "work/ohos-runtime/system/system/etc/init/device_manager.cfg": "51523e1c7d703906edd92ad48e6ff1780d55d1ed05133783f052e90a45ff91cf",
+    "work/ohos-runtime/system/system/etc/init/device_usage_statistics_service.cfg": "371d4ab3096631d0ada35349ecb2cc1c76d5b8ca175c9c2fb3e318b12161ef58",
+    "work/ohos-runtime/system/system/etc/init/deviceauth_service.cfg": "08c65d4dea5de0ace631eca0189816f1e752e7f1611e3d803283804ea51b9883",
+    "work/ohos-runtime/system/system/etc/init/deviceinfoservice.cfg": "1ef95b6381cd8a43f95dd485129097ddfe1f5f3a9e09613359bf0558fd3dd223",
+    "work/ohos-runtime/system/system/etc/init/deviceprofile.cfg": "c8238b8c3673dff51a99e5a56fb33f2b681fd19aa453e8b6f55c450bb59670c0",
+    "work/ohos-runtime/system/system/etc/init/dha_service.cfg": "f7413a70bbe3ed8de31e4d8df8f61db631068f80acf5e713ad2bc5f0cab6adfb",
+    "work/ohos-runtime/system/system/etc/init/dhardware.cfg": "cc32c219f4d8ab3bf3f42dfd8e2957673da2f57a3242a3033a64a56b2a7bb6d0",
+    "work/ohos-runtime/system/system/etc/init/dinput.cfg": "37a5b50d119ed291378e22a5ddbca6f1f5c8b8b540f0649d7243c889fabbf647",
+    "work/ohos-runtime/system/system/etc/init/display_engine_service.cfg": "ecd041d494c82df58706fa9bff19715c5f25168c16d0acb8c9aae03afe28b21a",
+    "work/ohos-runtime/system/system/etc/init/distributed_data.cfg": "f657e0b18fa2f14304d6057fe18da9012eeba19d19a6d33987862feafa239325",
+    "work/ohos-runtime/system/system/etc/init/distributedbms.cfg": "b1ed57dcd5e5724fe998fcaa64f69bccd0e0c8c72b70f818d21eb5f96435a796",
+    "work/ohos-runtime/system/system/etc/init/distributedfile.cfg": "6f3fb6bdb46c5ade25be3d1c094b8a9b8ab50d1ae434e4eda7d4bc5a13902fc8",
+    "work/ohos-runtime/system/system/etc/init/distributedsched.cfg": "8fbfb9ee3bc4a59b584eaa1d129cc8c8cf6e31dc02c644a069481a11ef311248",
+    "work/ohos-runtime/system/system/etc/init/dllite_service.cfg": "1225fe6ad7ea4d28ab40c8f222535312dfabc6d3e9f2c0df4dbe92c822d59da1",
+    "work/ohos-runtime/system/system/etc/init/dlp_credential_service.cfg": "e2d1890f2e52469f46f343de0742d7b2d122ba6467f155c910f7abfb3f990c37",
+    "work/ohos-runtime/system/system/etc/init/dlp_permission_service.cfg": "23e177bc89753d06f17c7f137ac222cdfc2bef3c75a4a2c7c883db4676d1d64f",
+    "work/ohos-runtime/system/system/etc/init/dmodem.cfg": "2282a1667a15e810bb6b1b0fbbce7c0510103797285e863431fb3197aae81d2d",
+    "work/ohos-runtime/system/system/etc/init/dmsdpadapter.cfg": "eea5331e8bef66c37bf31f34484a3a70ba561beee716526920fb4163ccc486b7",
+    "work/ohos-runtime/system/system/etc/init/downloadservice.cfg": "df6f8a372af185c40a1208e1c0ef24599c3db8a938788085acd313db6d8e3dc7",
+    "work/ohos-runtime/system/system/etc/init/drm_service.cfg": "54d4e28bda98516d847104d864be9c9775d7a73f4badc132f020a80567fcf983",
+    "work/ohos-runtime/system/system/etc/init/dscreen.cfg": "cc965694f60143280e1a410e6889c6c8e6918ea3c68e34c7798f04a3426fd9b9",
+    "work/ohos-runtime/system/system/etc/init/dslm_service.cfg": "92f2339f03e53eabe751b4c393d4379f54939442ca6c7e1d99485e3517719750",
+    "work/ohos-runtime/system/system/etc/init/dsmm_service.cfg": "e5f973231e60f5ea48df7b270793e3abca6bb0222aecfeb7ed6341c0f26c9575",
+    "work/ohos-runtime/system/system/etc/init/edc.cfg": "909462bc3b9edde9650b19509a673ce4702c43a5c634efb9b23c5e35806e4098",
+    "work/ohos-runtime/system/system/etc/init/edm.cfg": "b5c11f90a294cb9906c79aab96eeb20656ddad5622bd4d79a8ec9bbc5942e9d9",
+    "work/ohos-runtime/system/system/etc/init/el5_filekey_manager.cfg": "fb6f58567ba03f9de1a83fb178b1deab1c521642d72090f9b54c80eea940eee9",
+    "work/ohos-runtime/system/system/etc/init/faultloggerd.cfg": "fa15dba944ea2b5021f767e40843f733c1def12d2efb2b67c2fd2782a183bd86",
+    "work/ohos-runtime/system/system/etc/init/file_access_service.cfg": "2769406df3ef33ad6870671ecba1140b6b9688a7cad1f4feca2f0aadb04e2fb7",
+    "work/ohos-runtime/system/system/etc/init/file_manager_service.cfg": "4881fc11255a569151d9aebd646adbdfc113d8579702fccc2147a8ba5dfac83d",
+    "work/ohos-runtime/system/system/etc/init/file_migrate_ability.cfg": "58fe34fd1320aaf726160ae6e2ca3dab47cb36c84f6dc7c41ea842118a032511",
+    "work/ohos-runtime/system/system/etc/init/file_monitor_service.cfg": "13b194cd34358d94ccf21b0dc7cea17e9dcba34c54359acfc243d543cbe3380e",
+    "work/ohos-runtime/system/system/etc/init/file_system_service.cfg": "40e38472401f776b6df41d7b044fc1fb345c08ebb8fd12732e499ee9533d7817",
+    "work/ohos-runtime/system/system/etc/init/findnetwork.cfg": "7b196c728293b6b2fe4b6e7a8d3352c4bb24a330bb12c56dd21caa6ef2bebb2f",
+    "work/ohos-runtime/system/system/etc/init/flashlight_service.cfg": "00c6af257408f7b2fe9a4de74540be81c43d540ffaffa05f2238d5ff326ac7ff",
+    "work/ohos-runtime/system/system/etc/init/foundation.cfg": "d0d174bffd7459e918f382fdbb6f7f2791784841b2ecbb54618e368d1a056add",
+    "work/ohos-runtime/system/system/etc/init/game_accelerate_schedule.cfg": "8796811d7535b6a6c898628062567539bec9025a6f752233e8eeb856ebe72679",
+    "work/ohos-runtime/system/system/etc/init/gameservice_server.cfg": "821c969051400bed78cb85af9f4910af6c084b803099d357959e5e327f758e3b",
+    "work/ohos-runtime/system/system/etc/init/graphic.cfg": "8bbb54a8b474bdfdd3fd60a9871d9bed59b6c680c96cd5b6fcec56b56a15eb41",
+    "work/ohos-runtime/system/system/etc/init/hdcd.cfg": "647814d2f6990cfe140346f00e1b606b22853e68a2af2d837b5e784aabd50d69",
+    "work/ohos-runtime/system/system/etc/init/healthsport_services.cfg": "5880bea489e124d7b487f2433bcc394fc857f8008007445e94954f05fc800a07",
+    "work/ohos-runtime/system/system/etc/init/hianalytics.cfg": "80d0b5c9e6ec1bfd8ea98ba730440b62c430809dcc46ccae92842064d522a12f",
+    "work/ohos-runtime/system/system/etc/init/hiar_acc_service.cfg": "71d84198f4e6f3d75b84d8fbf3aca5ba7b93a283ec72a02d092fbcd6a643c4e7",
+    "work/ohos-runtime/system/system/etc/init/hidumper_service.cfg": "fffa51930e082f47658579db857c3263b42a226fe2500bf1cfb134a4a969be1c",
+    "work/ohos-runtime/system/system/etc/init/hilogd.cfg": "41169718d05a8b685109629344b4a691eb9720b1986a95e4338bb5d73eae68de",
+    "work/ohos-runtime/system/system/etc/init/hiperf.cfg": "965eaa932c3e929ae408f9525aa1cecb3ebd3353a3ece3c5a14443363c6dc9c1",
+    "work/ohos-runtime/system/system/etc/init/hiprofiler_daemon.cfg": "dd0a47fc3fca3f75a11adda3e38c010ba5adaeb83646da7ab1a9990080f7e658",
+    "work/ohos-runtime/system/system/etc/init/hiprofiler_plugins.cfg": "6edb42eeab7d651eb6f19fac8cbf3b2a89dbf0166917ff954078385e7f63f3df",
+    "work/ohos-runtime/system/system/etc/init/hiprofilerd.cfg": "97d972d8ebc081c8912e8ab841962315adae8ce654b4dc26a0aeae84497ec9fc",
+    "work/ohos-runtime/system/system/etc/init/hitrace.cfg": "fe9088be02c35bde066dbd535df1e4d6f8e520e0de51730e8b9d94fc53739165",
+    "work/ohos-runtime/system/system/etc/init/hiview.cfg": "6bdc19715e5dea058a78b358b0ade0ca84a9993d6a4b0dfb1176ec9f84a59e2d",
+    "work/ohos-runtime/system/system/etc/init/hiview_engine.cfg": "0ea76a0de4f32421b5591fcedb9af09d265d53e6af0a9416abdca7a0d345005a",
+    "work/ohos-runtime/system/system/etc/init/hiviewcare_manager_service.cfg": "71fcfd559687877a4fba19c3df3c0cd10e84fdf5d623852e90af02376d06761a",
+    "work/ohos-runtime/system/system/etc/init/hmos_cust_ext.cfg": "cf97425bbf98ee07cc4eaf59919e5e24535c690d8a0396038def11f6a91bd25f",
+    "work/ohos-runtime/system/system/etc/init/hmos_fusion_manager.cfg": "064e802b334ac374f40164e224952ccec12c99278b4ff156a65bd16a4f6c4b34",
+    "work/ohos-runtime/system/system/etc/init/hmos_init_cust_ext.cfg": "460e61ca89f34dff17695780176d53c50cfa32c475ca4aa887f559bb80bc2e67",
+    "work/ohos-runtime/system/system/etc/init/huawei_id_svc.cfg": "2f788c9c347324e454a0e0147e40edf963a8d7c85ee843e89c12ba6b9ddd882e",
+    "work/ohos-runtime/system/system/etc/init/huks_service.cfg": "0409c6790fbbf1edfc7769ab792a8b0bcc40abf8e1683f906f8459552c39a8cd",
+    "work/ohos-runtime/system/system/etc/init/hwnffserver.cfg": "040a37dcf536562d6f81af66af2fa891009624ea298a2a6d6f06cd63c44aed5c",
+    "work/ohos-runtime/system/system/etc/init/i18n_service.cfg": "a9200f0a66e9af603b1e7bcaeef1ff75a62bfd68324e84ef07f1a3e88c863aff",
+    "work/ohos-runtime/system/system/etc/init/iSulad.cfg": "5791db2d07cd9bbf12632e18150264eb0f257cd226b01dfcaa94dcc4add1c317",
+    "work/ohos-runtime/system/system/etc/init/ifaa.cfg": "d05d1db5f7bc13886f4a45dfea71a09be6d3775a19527bcee943bcbc735b8c0c",
+    "work/ohos-runtime/system/system/etc/init/index_insert_service.cfg": "00cee3fa34388557c685183640ac0b8f9125c4079810548fb898063da41ff8cf",
+    "work/ohos-runtime/system/system/etc/init/init.reboot.cfg": "f6032d9edcae6b6b1ecd56b907367df92f5bd6f90aeec9f07fbca4cb1105db87",
+    "work/ohos-runtime/system/system/etc/init/init.sched.cfg": "fafdccc9f6146ac7200521af2157578be45c62c0e74dc0839b3707ef79b6e0f9",
+    "work/ohos-runtime/system/system/etc/init/init_dec.cfg": "e228f8483ba7d7c506cfd45a409aa81a2bb5e5fe48fb5461ae83a77929292a84",
+    "work/ohos-runtime/system/system/etc/init/inputmethodservice.cfg": "dac047aad4e0f64636afec5877e541bcb9559c4c5c3bf0dc335f0b019a36d5f0",
+    "work/ohos-runtime/system/system/etc/init/installs.cfg": "7ae6984334c125f3cc24d6604e72635bd036ad26675ecd1c3bb65373aaef3d77",
+    "work/ohos-runtime/system/system/etc/init/intell_voice_service.cfg": "5c1d93da7083095b5d8fc3ef8528405356ac4b3d83165d403d15478d00e540df",
+    "work/ohos-runtime/system/system/etc/init/kdump_resize.cfg": "2bfda83593f62061214d9adf5f220d38144f194c3220fd3cdd148d514f7b7a25",
+    "work/ohos-runtime/system/system/etc/init/key_enable.cfg": "31df2a3f1d51791820d5089d6d05eb8abda670811e9d44ced5d13c72a5759be4",
+    "work/ohos-runtime/system/system/etc/init/kingkongd.cfg": "58009a9e175e23ab4f52ba2ded057d6fd2631decb8ce837b3e93889f1cacadcb",
+    "work/ohos-runtime/system/system/etc/init/large_model_engine.cfg": "f9d90e9263420b481310500c14d000c392984c1e068dded785b870fb67949560",
+    "work/ohos-runtime/system/system/etc/init/local_code_sign.cfg": "a45e49d7a7fce16969c64872caebf047a3a6f43ebe637981bb640d743c2ea9fc",
+    "work/ohos-runtime/system/system/etc/init/locationsa.cfg": "1b5d446133930b4afb6c66a724543249540bb75347f9cada21621f370cfce264",
+    "work/ohos-runtime/system/system/etc/init/maintenance_service.cfg": "f21cb271e0fc9463d93a3f9c0f975527ce6eaf5c50bd1bdf22665f1389f0aa3a",
+    "work/ohos-runtime/system/system/etc/init/mdnsmanager.cfg": "f63aac11aa6f0da380d4100d1e4ecf4efa927bcd16c44e782b7f3541b5b78466",
+    "work/ohos-runtime/system/system/etc/init/media_analysis_service.cfg": "b254e1f013bd5077941b530d9591b9e8d51cccc7eb16c549ba4e3fe5944c55e0",
+    "work/ohos-runtime/system/system/etc/init/media_cloud_enhance_service.cfg": "bc13353b91844c776a52aae86472783e5fcf7ab8cd80892fa820a63b83203810",
+    "work/ohos-runtime/system/system/etc/init/media_monitor.cfg": "8ba89e8a10cc50b317f88bbd670fd33074392a941c97db7fec556d5a4068cfc3",
+    "work/ohos-runtime/system/system/etc/init/media_service.cfg": "20b709c1aaccbc8aa83c6167be5b4b3a1a6864a6c5e5c3237e33d530f859402d",
+    "work/ohos-runtime/system/system/etc/init/memleak_tracker.cfg": "7236d0b258b9cd518e3444422cd1e2bb088d800a702c55dd2648d50246353ae8",
+    "work/ohos-runtime/system/system/etc/init/memmgrservice.cfg": "25484d3d2814f568da5ef7fb66c98e3de0f697a1b11b355e7aab4451f715656e",
+    "work/ohos-runtime/system/system/etc/init/migrate_server.cfg": "2aaed1b65d03018987e49540f09ae466fb69e4a9f447b2c330575979791ac7f3",
+    "work/ohos-runtime/system/system/etc/init/module_update_sa.cfg": "2684bf6f30f05cd95f11fe039db3669957065994fc9c45f264072cd8acf551ab",
+    "work/ohos-runtime/system/system/etc/init/msdp_musl.cfg": "5a4dd7a7f3b6b0f58865443e4959206f8066abbe0e74ef4f81ee82b5198c2a71",
+    "work/ohos-runtime/system/system/etc/init/multimodalinput.cfg": "3f6b08f9dabbd819dd80842f0f94c9c559ddd9861ec8ae1aef2f43a8a2b33b0f",
+    "work/ohos-runtime/system/system/etc/init/nativespawn.cfg": "770aa0f43d15400541587030327b490a94d43582dc3dd127e5acd0d1fc1eda10",
+    "work/ohos-runtime/system/system/etc/init/nav_info_service.cfg": "5bba4a95136f8094d2b28ff81fbe5e0618cc998c918f0445d8092ef7bd685ed2",
+    "work/ohos-runtime/system/system/etc/init/nearlink_service.cfg": "82e8fab55ac035eb5e5f1c94452323e705e438c0189d2560e750e699d11953ff",
+    "work/ohos-runtime/system/system/etc/init/netmanager_base.cfg": "e8a81ff042b92179e2aa5cc52c040591bb2d46d3a56c7f90e1229496d0ba6810",
+    "work/ohos-runtime/system/system/etc/init/netsysnative.cfg": "bafabdc8597be62458f5ad234fc24e51f34e5d0e216f8f8d514f24fe1f35146c",
+    "work/ohos-runtime/system/system/etc/init/nfc_service.cfg": "0444bc7007328ad88fbd925c3c9b1d1dfb63c3dc981bffc07b0fc27fc2bd19fe",
+    "work/ohos-runtime/system/system/etc/init/oaidservice.cfg": "3acb6042f350b8008d4a9b2989269dc4d35b695c365304bcfa6b116629dffa2d",
+    "work/ohos-runtime/system/system/etc/init/param_watcher.cfg": "f4cf050be1b0a8eb6907b7b46f0840a069fa6e19f35bb6c4b374fdaf9c2210c9",
+    "work/ohos-runtime/system/system/etc/init/parentcontrolservice.cfg": "5c76b35591c6524e6a56537e76b8659cbab6b4d344acea08328701454daa7c89",
+    "work/ohos-runtime/system/system/etc/init/pasteboardservice.cfg": "a5eb7bdb24ca382b67031176904c057f2737c5e2bd1fa15fcee9f50a54776ed8",
+    "work/ohos-runtime/system/system/etc/init/pinauth_sa_profile.cfg": "29e4896d3e164521f9c675521c84478ab2af17865c9c745539963a2aa5735c7e",
+    "work/ohos-runtime/system/system/etc/init/powermgr.cfg": "df6ee586ffad1e8d95481d71316e24c2324c045e31efbb3919c5e10873bb784e",
+    "work/ohos-runtime/system/system/etc/init/printservice.cfg": "dad45d888ca281e8d2149803b7d49d17e2e85408451c04452d1a0bce620f928a",
+    "work/ohos-runtime/system/system/etc/init/privacy.cfg": "39384eba0531dfe9d927ce4c10e255b5c284f780bb279146344210a417786b09",
+    "work/ohos-runtime/system/system/etc/init/private_space_service.cfg": "dcd85e332e6c5bf8c88e14f62ec5379521ebaa6dba0473441f4ef9d23528becb",
+    "work/ohos-runtime/system/system/etc/init/pulseaudio.cfg": "8eb95bcbc154530931e15fc418c8b1fe991095671409552099ea1aa596999ede",
+    "work/ohos-runtime/system/system/etc/init/push_manager_service.cfg": "10fdd577079c611be62b52f26bd0974dcc4a0c8c8a83af3f5d2b8424476fe017",
+    "work/ohos-runtime/system/system/etc/init/quick_fix.cfg": "0da8ae00f41639140bf7db1e7c44a23bb0cb2f4eb095964e8b8e97e4acddde4e",
+    "work/ohos-runtime/system/system/etc/init/quickfix.cfg": "f92ea0022b282ad0f62df6b61591b9f0d790f8a172f7cd4b1f64fda6ecda1601",
+    "work/ohos-runtime/system/system/etc/init/rcsservice.cfg": "f572359f3ee1daf5d0df61ded64743319a39922397b9818db21ee1804e6eac3f",
+    "work/ohos-runtime/system/system/etc/init/resource_schedule_executor.cfg": "ea1773f31fc6b86bfa572550795414a37903bf2fe3ee3b67b91bd2d47fb59ad4",
+    "work/ohos-runtime/system/system/etc/init/resource_schedule_service.cfg": "9e5aabcd32d1697e51f421f3f0042b1b177a131e7ef25cd3d5c0460e296d8890",
+    "work/ohos-runtime/system/system/etc/init/rgm_engine_plugin.cfg": "a1127947a935423dd295d03095ffe7af27030ce17bcb9cdff489067749e43da8",
+    "work/ohos-runtime/system/system/etc/init/rgm_manager.cfg": "4e71923f95f1f9de9153a86902ed1df9edfb38d21d8dc3f733cf3985d953c091",
+    "work/ohos-runtime/system/system/etc/init/samgr_standard.cfg": "291aac5f9875c2f6dc5a19d6dead7e86b16d08009bf92473291bc6546a684547",
+    "work/ohos-runtime/system/system/etc/init/sandbox_manager_service.cfg": "f8c93ed44f3588f3301ee50cff57d57ac4b8ce9289a72db40cea33932af95e89",
+    "work/ohos-runtime/system/system/etc/init/saneservice.cfg": "14e2d770e440313ac0aac0eae097b12e345668c0335da7984114724fe4ba0c19",
+    "work/ohos-runtime/system/system/etc/init/satellite_service.cfg": "3c22f52448acfbfef739c14e2248f5f3ff427fba98e2b06f3bcd438f0f7260df",
+    "work/ohos-runtime/system/system/etc/init/scanservice.cfg": "1a105dcd2159c1e4f51c193f0e645d6da5cfa4fd8ffc807b989336024b251892",
+    "work/ohos-runtime/system/system/etc/init/screenlock.cfg": "914772e193ff14f8bfa6610dfc2503267fd727ed838bc77b4bc178a3738bcd30",
+    "work/ohos-runtime/system/system/etc/init/se_service.cfg": "9d1947cb50eab0d58def3827ff5b8255f4a42f3061d3c0b2cdc1533bf7f51237",
+    "work/ohos-runtime/system/system/etc/init/security_collector.cfg": "756e67b55c27232b6e30ae42434980feba2d5dc28386294a35f55514f4c83da7",
+    "work/ohos-runtime/system/system/etc/init/security_component_service.cfg": "aa923cb9770ef03a06eaec4c4db6fb37d7e2d7c8bfbc614d9f0d586674942b86",
+    "work/ohos-runtime/system/system/etc/init/security_guard.cfg": "f2e479b3a79c90a03c55ddd924d3a4f4102c00dd87c9a90333dd37fba5765a54",
+    "work/ohos-runtime/system/system/etc/init/security_privacy_server.cfg": "235de89cbbd335af4998fce66b14da9975477670db991fdac9d8bd81278563d2",
+    "work/ohos-runtime/system/system/etc/init/sensors_musl.cfg": "5885a935d38dd9f5006eac01dbf509cdddd697341999095283577e8ae50a6326",
+    "work/ohos-runtime/system/system/etc/init/sharing_service.cfg": "02d46966166bd62a73c4c3e71032be1bac47e344de011182169742edbff32c4c",
+    "work/ohos-runtime/system/system/etc/init/skytone_service.cfg": "4d3a2ab126c76ddca4750699a14f6bc5bc951bb6c6a7fded4587e967f8b0ad09",
+    "work/ohos-runtime/system/system/etc/init/softbus_server_musl.cfg": "60400f4e2e5fa7739349357f028ca223943875bc0ec048d8b332be5f22f2905e",
+    "work/ohos-runtime/system/system/etc/init/soter.cfg": "8012c58b5ef48ffc97457d2173ab53f972007901e278fd28986ee79071ebd714",
+    "work/ohos-runtime/system/system/etc/init/srms.cfg": "b189f19efb5a75afac13a3320948d3abb458ca078105358269abd2102eb7a52a",
+    "work/ohos-runtime/system/system/etc/init/stop_watchdog_service.cfg": "1a48d57bd745e68d1d914566cfa50d8604d965c711b540cbfccb532aa88f8863",
+    "work/ohos-runtime/system/system/etc/init/storage_daemon.cfg": "06f9f7ce5c8d5caf66394bb72cf9046233abd8378708b60970fedea1c4c2d4df",
+    "work/ohos-runtime/system/system/etc/init/storage_manager.cfg": "d3ecb37c3a483960b75f7dcc35c6eb04cd98b4fafe9322d51fb1d8d8c8474656",
+    "work/ohos-runtime/system/system/etc/init/super_privacy_server.cfg": "230e1bce196eafa0f9bc82af969eb9dee093c41ffdb72533dcd297768d396a59",
+    "work/ohos-runtime/system/system/etc/init/swing_service.cfg": "2600a7e02653a479b636234c51736011a4d4ff7d086138ccc058110e00c1bc21",
+    "work/ohos-runtime/system/system/etc/init/sys_installer_sa.cfg": "439069c0cdd287b8f5e04fd48e8f51bcab58714015dd307c676850cd8d73938c",
+    "work/ohos-runtime/system/system/etc/init/teecd.cfg": "d7ac6327d6affd1c1f57250d717e5a3df085744e8c31ce537c808f09662e9066",
+    "work/ohos-runtime/system/system/etc/init/telephony.cfg": "f1d2a9db5ee6d4526286ec0bc871ee64d5dd54dd2041107bbb0490593208577b",
+    "work/ohos-runtime/system/system/etc/init/testserver.cfg": "7fd2325ce1f780279f1e6c101bcf6c9921d0605f3cfb0e8d5fd3245188cb2b44",
+    "work/ohos-runtime/system/system/etc/init/themeManagerServer.cfg": "0a2d153b178019ffcc6e0a1ea7a79c9ce44df9440b646d60cf3f2af763de3954",
+    "work/ohos-runtime/system/system/etc/init/thp_extra.cfg": "bcfa0db5e1a0d69f7ab6371e4d840591d5150a42cb9e9638590d644ec9289b1f",
+    "work/ohos-runtime/system/system/etc/init/timeservice.cfg": "d08f7e4005d7dec6e70ef5862564a2cf910db460df0bd9952fe84840d2ef3109",
+    "work/ohos-runtime/system/system/etc/init/tlogcat.cfg": "dad64bee96eaa8902483e6189db103ad216c89a64349bf0243902ee833368b49",
+    "work/ohos-runtime/system/system/etc/init/token_sync.cfg": "19b8b903996ad87b3d37a405bc7a2c1de07c5317b53d62d196fd2322853e14a0",
+    "work/ohos-runtime/system/system/etc/init/trusted_app_service.cfg": "56a214094b3c8d540a5ae2589635d58969d6c0d5a5a6b8e09867faf7494e85dd",
+    "work/ohos-runtime/system/system/etc/init/trusted_ring_service.cfg": "b6db0e8878cdf6c6cb151f77eeedb7d131573fe5d704fe67410ac9920f39d6e3",
+    "work/ohos-runtime/system/system/etc/init/ubsan.cfg": "ee439927b94b17c988a8b3bb07565c5b2f44f030ae3685019eef48d83b435a6b",
+    "work/ohos-runtime/system/system/etc/init/ueventd.cfg": "d363279b2b46e1bda9c04b1860e9ec12f68f8b5c8010f23eb2684e3d389da609",
+    "work/ohos-runtime/system/system/etc/init/ui_service.cfg": "ba59b1cae274b4ac762b1e894cbcbe40ee90211d2e15555e2b225e85f3ee06f4",
+    "work/ohos-runtime/system/system/etc/init/updater_normal.cfg": "1b5a6340342a46701cf0da417e4788a124b462f51acd8e9dc304453432b280a0",
+    "work/ohos-runtime/system/system/etc/init/updater_sa.cfg": "f10ac1d59093a216da601633f7871fd7702ac36c02fab98b7624703de81c2204",
+    "work/ohos-runtime/system/system/etc/init/usb_service.cfg": "26e7de2c67352d8b0a40314cd69523d4f884f3d0bedfb05690a23e467b304b10",
+    "work/ohos-runtime/system/system/etc/init/useriam.cfg": "1eb7868572d83f142a5fafe99624766b9cfd1c3f9a98e2c549036bea08f22061",
+    "work/ohos-runtime/system/system/etc/init/uwb_service.cfg": "c89d688fbaf982a1762bfbb5096e6e2afc80e6bc202d308bd5c6b2da2b67d967",
+    "work/ohos-runtime/system/system/etc/init/video_processing_service.cfg": "436e249afb59c230c3d151fb23d21867c1417dcd0c93478156b8bf617343ff57",
+    "work/ohos-runtime/system/system/etc/init/virt_device_broker.cfg": "ad0c34338c90d839294b22a34f994acd8293a6cfac90d534a34b204b25043461",
+    "work/ohos-runtime/system/system/etc/init/voip_call_manager.cfg": "1ef264e3f75649ce9f266ff7dc161b3a620211851b9d4d520347ea1d37504558",
+    "work/ohos-runtime/system/system/etc/init/vpnmanager.cfg": "c7ffd2c5ac791f359c147a55d15bf5a3dce9dba665ca76d7bf042710cb0a5369",
+    "work/ohos-runtime/system/system/etc/init/wallpaperservice.cfg": "2611a4d4a1b84c17a57252fb94493e180f35a88a6e094cf78d6f8e662c2b9a5f",
+    "work/ohos-runtime/system/system/etc/init/watchdog.cfg": "474ae16436b206f2617205810611ed94e62c4fb16413618c821260dc6745db39",
+    "work/ohos-runtime/system/system/etc/init/wear_link_service.cfg": "2603bb509f334eae3e030189feed17e6b5f7ea81d56b34fac64a27ef1b4ccf6b",
+    "work/ohos-runtime/system/system/etc/init/wifi_hal_service.cfg": "0e716d4fc7c66e289277c75d3c53a8f0c988305b7fd7ba6def3ed9423763d467",
+    "work/ohos-runtime/system/system/etc/init/wifi_standard.cfg": "96d50bb0f8c976bf268fa8dd0ba1e16ec9298e2bcba4c94046e4ad66475c6a9a",
+    "work/ohos-runtime/system/system/etc/init/wireless_hid_accessory_manager_ability.cfg": "636e8721edefe201a251bd0eff03f535bd81113402ff73e76705c685c727eef8",
+    "work/ohos-runtime/system/system/etc/init/wireless_hid_accessory_manager_service.cfg": "7a41459aee405b4552ae3c07ec3391fc3dc691c49e63f2bfb29dd3cbcd2fbb9e",
+    "work/ohos-runtime/system/system/etc/init/wiseplay_oem.cfg": "399454cb1e770d5a3dbdf868d02b67886d30ac78a674341b8efa9ce328055cd4",
+    "work/ohos-runtime/system/system/etc/init/xlogcat.cfg": "8fe52fc8a2a78959eb6c90231e2a29c4e11166937592926d9fb77c5da83338e6",
+    "work/ohos-runtime/system/system/etc/init/xperf.cfg": "4289b3d532023fd436fdf098ecc5b49c4478f34863afa6a5e568a684de5de10f",
+    "work/ohos-runtime/system/system/etc/init/xpower.cfg": "4f387d169562a2dda878eba8b2cecf3ad6de41dcb453a99925c99c0740930b37",
+    "work/ohos-runtime/system/system/etc/init.cfg": "eb17693c448bcd0d2e1b6b38dcbcf183f04f97a92e4d64de96228fee375d36f6",
+    "work/ohos-runtime/system/system/etc/init.usb.cfg": "97a7a74985554b5919b7d24e61dab8ebb77f2eda17c16c3b50bbc9f8b3c51949",
+    "work/ohos-runtime/system/system/etc/init_trace.cfg": "2d5a96ad060bf44aaa1c19669432ca1a217f5e4ca75e899db0f5d51264e24a5b"
+  },
+  "sceneboard": "Application launched by framework, not a standalone init service; full application startup remains unwired"
+}

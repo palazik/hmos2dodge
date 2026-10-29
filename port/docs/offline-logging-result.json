@@ -1,0 +1,28 @@
+{
+  "kind": "ARM64 userspace emulation in isolated user/PID/mount/network namespaces",
+  "init": "original donor binary; no executable patch",
+  "profile": "ohos-init-logging",
+  "external_init_modules": false,
+  "ohos_selinux_policy_loaded": false,
+  "pid1_startup_jobs_passed": true,
+  "observed_jobs": [
+    [
+      "1",
+      "pre-init"
+    ],
+    [
+      "1",
+      "init"
+    ],
+    [
+      "1",
+      "post-init"
+    ]
+  ],
+  "marker": "reached-post-init",
+  "dsu_emulated": false,
+  "op13_hardware_emulated": false,
+  "complete_harmonyos_boot": false,
+  "hilog_client_read_passed": true,
+  "samgr_ready": false
+}
