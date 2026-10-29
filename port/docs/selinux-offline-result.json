@@ -1,0 +1,232 @@
+{
+  "scope": "Offline compilation and selected libsepol decisions only; no kernel policy load or native readiness proof",
+  "compiler_results": {
+    "strict": {
+      "mode": "strict",
+      "exit_code": 255,
+      "compile_passed": false,
+      "neverallow_checks_enabled": true,
+      "neverallow_failures_reported": 390,
+      "policy_version": 31,
+      "source_inputs_modified": false,
+      "policy_loaded_into_host_or_device": false,
+      "native_service_readiness": "not established",
+      "compiler_sha256": "dfce11d267e4c3eafbf7212c8345995b9ff072c54f7251a2177686908eee4635",
+      "input_sha256": {
+        "work/ohos-runtime/system/system/etc/selinux/system_common.cil": "927ecdc6953664ef5469b6e152dbc8cafae723c1e0864a0046adc86de2e69de1",
+        "work/donor-configs/vendor/etc/selinux/vendor_common.cil": "363849f95c1b318de8c64157661dcf041c7ff2b102999d1f19fe43be4be181a6",
+        "work/donor-configs/vendor/etc/selinux/public_common.cil": "84a884d65f769599aa6abce82db3b4f5d4210d60e0d23aa30e82007ca38421af",
+        "work/ohos-runtime/system/system/etc/selinux/system.cil": "74b6229b3845ea244e1b51e4e63b6e4a2481e9bb82c9a3de99692d6480f1afb9",
+        "work/donor-configs/vendor/etc/selinux/vendor.cil": "6efae91ef5d88a48fc3a816659054b58b2aca97f7abe09b69d830876f58b7545",
+        "work/donor-configs/vendor/etc/selinux/public.cil": "6ce4fe1d0ff4c48524ef25bd78d58df3500c3e0e9f739206aed435309f54289e",
+        "work/ohos-runtime/system/system/etc/selinux/compatible/40.cil": "82f821e3bcad9055311678a4df1d61af43d48d8b5a4a5d5e9c1f0ce8215c0dd4"
+      },
+      "log": "out/selinux/strict/compiler.log",
+      "upstream_runtime_reference": "https://github.com/openharmony/security_selinux_adapter/blob/OpenHarmony-5.1.0-Release/framework/policycoreutils/src/load_policy.cpp"
+    },
+    "strict-op13": {
+      "mode": "strict",
+      "exit_code": 255,
+      "op13_supplement": true,
+      "compile_passed": false,
+      "neverallow_checks_enabled": true,
+      "neverallow_failures_reported": 390,
+      "policy_version": 31,
+      "source_inputs_modified": false,
+      "policy_loaded_into_host_or_device": false,
+      "native_service_readiness": "not established",
+      "compiler_sha256": "dfce11d267e4c3eafbf7212c8345995b9ff072c54f7251a2177686908eee4635",
+      "input_sha256": {
+        "work/ohos-runtime/system/system/etc/selinux/system_common.cil": "927ecdc6953664ef5469b6e152dbc8cafae723c1e0864a0046adc86de2e69de1",
+        "work/donor-configs/vendor/etc/selinux/vendor_common.cil": "363849f95c1b318de8c64157661dcf041c7ff2b102999d1f19fe43be4be181a6",
+        "work/donor-configs/vendor/etc/selinux/public_common.cil": "84a884d65f769599aa6abce82db3b4f5d4210d60e0d23aa30e82007ca38421af",
+        "work/ohos-runtime/system/system/etc/selinux/system.cil": "74b6229b3845ea244e1b51e4e63b6e4a2481e9bb82c9a3de99692d6480f1afb9",
+        "work/donor-configs/vendor/etc/selinux/vendor.cil": "6efae91ef5d88a48fc3a816659054b58b2aca97f7abe09b69d830876f58b7545",
+        "work/donor-configs/vendor/etc/selinux/public.cil": "6ce4fe1d0ff4c48524ef25bd78d58df3500c3e0e9f739206aed435309f54289e",
+        "work/ohos-runtime/system/system/etc/selinux/compatible/40.cil": "82f821e3bcad9055311678a4df1d61af43d48d8b5a4a5d5e9c1f0ce8215c0dd4",
+        "port/selinux/op13-drm.cil": "f78f7b407a891dd65061188c43abfc93bea759359b7e1095f5be2ce6170e467a"
+      },
+      "log": "out/selinux/strict-op13/compiler.log",
+      "upstream_runtime_reference": "https://github.com/openharmony/security_selinux_adapter/blob/OpenHarmony-5.1.0-Release/framework/policycoreutils/src/load_policy.cpp"
+    },
+    "donor-runtime": {
+      "mode": "donor-runtime",
+      "exit_code": 0,
+      "compile_passed": true,
+      "neverallow_checks_enabled": false,
+      "neverallow_failures_reported": 0,
+      "policy_version": 31,
+      "source_inputs_modified": false,
+      "policy_loaded_into_host_or_device": false,
+      "native_service_readiness": "not established",
+      "compiler_sha256": "dfce11d267e4c3eafbf7212c8345995b9ff072c54f7251a2177686908eee4635",
+      "input_sha256": {
+        "work/ohos-runtime/system/system/etc/selinux/system_common.cil": "927ecdc6953664ef5469b6e152dbc8cafae723c1e0864a0046adc86de2e69de1",
+        "work/donor-configs/vendor/etc/selinux/vendor_common.cil": "363849f95c1b318de8c64157661dcf041c7ff2b102999d1f19fe43be4be181a6",
+        "work/donor-configs/vendor/etc/selinux/public_common.cil": "84a884d65f769599aa6abce82db3b4f5d4210d60e0d23aa30e82007ca38421af",
+        "work/ohos-runtime/system/system/etc/selinux/system.cil": "74b6229b3845ea244e1b51e4e63b6e4a2481e9bb82c9a3de99692d6480f1afb9",
+        "work/donor-configs/vendor/etc/selinux/vendor.cil": "6efae91ef5d88a48fc3a816659054b58b2aca97f7abe09b69d830876f58b7545",
+        "work/donor-configs/vendor/etc/selinux/public.cil": "6ce4fe1d0ff4c48524ef25bd78d58df3500c3e0e9f739206aed435309f54289e",
+        "work/ohos-runtime/system/system/etc/selinux/compatible/40.cil": "82f821e3bcad9055311678a4df1d61af43d48d8b5a4a5d5e9c1f0ce8215c0dd4"
+      },
+      "log": "out/selinux/donor-runtime/compiler.log",
+      "upstream_runtime_reference": "https://github.com/openharmony/security_selinux_adapter/blob/OpenHarmony-5.1.0-Release/framework/policycoreutils/src/load_policy.cpp",
+      "policy_sha256": "e12b23e0e543effbcd9e5df1012076355159317efc1bc3310f465e119eb6d3f7",
+      "policy_bytes": 2270281
+    },
+    "donor-runtime-op13": {
+      "mode": "donor-runtime",
+      "exit_code": 0,
+      "op13_supplement": true,
+      "compile_passed": true,
+      "neverallow_checks_enabled": false,
+      "neverallow_failures_reported": 0,
+      "policy_version": 31,
+      "source_inputs_modified": false,
+      "policy_loaded_into_host_or_device": false,
+      "native_service_readiness": "not established",
+      "compiler_sha256": "dfce11d267e4c3eafbf7212c8345995b9ff072c54f7251a2177686908eee4635",
+      "input_sha256": {
+        "work/ohos-runtime/system/system/etc/selinux/system_common.cil": "927ecdc6953664ef5469b6e152dbc8cafae723c1e0864a0046adc86de2e69de1",
+        "work/donor-configs/vendor/etc/selinux/vendor_common.cil": "363849f95c1b318de8c64157661dcf041c7ff2b102999d1f19fe43be4be181a6",
+        "work/donor-configs/vendor/etc/selinux/public_common.cil": "84a884d65f769599aa6abce82db3b4f5d4210d60e0d23aa30e82007ca38421af",
+        "work/ohos-runtime/system/system/etc/selinux/system.cil": "74b6229b3845ea244e1b51e4e63b6e4a2481e9bb82c9a3de99692d6480f1afb9",
+        "work/donor-configs/vendor/etc/selinux/vendor.cil": "6efae91ef5d88a48fc3a816659054b58b2aca97f7abe09b69d830876f58b7545",
+        "work/donor-configs/vendor/etc/selinux/public.cil": "6ce4fe1d0ff4c48524ef25bd78d58df3500c3e0e9f739206aed435309f54289e",
+        "work/ohos-runtime/system/system/etc/selinux/compatible/40.cil": "82f821e3bcad9055311678a4df1d61af43d48d8b5a4a5d5e9c1f0ce8215c0dd4",
+        "port/selinux/op13-drm.cil": "f78f7b407a891dd65061188c43abfc93bea759359b7e1095f5be2ce6170e467a"
+      },
+      "log": "out/selinux/donor-runtime-op13/compiler.log",
+      "upstream_runtime_reference": "https://github.com/openharmony/security_selinux_adapter/blob/OpenHarmony-5.1.0-Release/framework/policycoreutils/src/load_policy.cpp",
+      "policy_sha256": "edecf7f7d838e3d5585f45b286acc6c57f9fc8d5a992e1f844afc1f6ca48f3fc",
+      "policy_bytes": 2270281
+    }
+  },
+  "access_decisions": {
+    "original": {
+      "scope": "Offline policy decisions only; no kernel policy load, device access or service readiness test",
+      "policy_sha256": "e12b23e0e543effbcd9e5df1012076355159317efc1bc3310f465e119eb6d3f7",
+      "ioctl_limitation": "Base ioctl permission only; driver-specific extended ioctl permissions are not evaluated",
+      "decisions": [
+        {
+          "source": "u:r:samgr:s0",
+          "target": "u:object_r:bootevent_param:s0",
+          "class": "parameter_service",
+          "allowed": {
+            "set": true
+          }
+        },
+        {
+          "source": "u:r:samgr:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "map": false
+          }
+        },
+        {
+          "source": "u:r:render_service:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": false,
+            "ioctl": true
+          }
+        },
+        {
+          "source": "u:r:composer_host:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": false,
+            "ioctl": true
+          }
+        },
+        {
+          "source": "u:r:allocator_host:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": false,
+            "ioctl": true
+          }
+        }
+      ]
+    },
+    "op13_supplement": {
+      "scope": "Offline policy decisions only; no kernel policy load, device access or service readiness test",
+      "policy_sha256": "edecf7f7d838e3d5585f45b286acc6c57f9fc8d5a992e1f844afc1f6ca48f3fc",
+      "ioctl_limitation": "Base ioctl permission only; driver-specific extended ioctl permissions are not evaluated",
+      "decisions": [
+        {
+          "source": "u:r:samgr:s0",
+          "target": "u:object_r:bootevent_param:s0",
+          "class": "parameter_service",
+          "allowed": {
+            "set": true
+          }
+        },
+        {
+          "source": "u:r:samgr:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "map": false
+          }
+        },
+        {
+          "source": "u:r:render_service:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": false,
+            "ioctl": true
+          }
+        },
+        {
+          "source": "u:r:composer_host:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": true,
+            "ioctl": true
+          }
+        },
+        {
+          "source": "u:r:allocator_host:s0",
+          "target": "u:object_r:dev_dri_file:s0",
+          "class": "chr_file",
+          "allowed": {
+            "open": true,
+            "read": true,
+            "write": true,
+            "map": false,
+            "ioctl": true
+          }
+        }
+      ]
+    }
+  },
+  "regression": "Only composer_host DRM map changes among queried accesses; strict failure locations unchanged",
+  "core_image_policy_integration": "Not enabled; raw core image and Android-tested kernel unchanged",
+  "host_tool_packages": {
+    "libsepol2_3.8.1-1_amd64.deb": "3595d2d3a6d24695e7953f4f00cdfe6974c9242d9a8dfee8998e77fbf7b2ba09",
+    "secilc_3.8.1-1_amd64.deb": "6654e0322d678e51cb2ce0d741c3feac44fe38c234a567a7cbb3c1ccc838dc5a",
+    "libsepol-dev_3.8.1-1_amd64.deb": "c085881d0546f6d539909f5710d7a3243aeb24338f6dc455b0ef6199f45bd753"
+  }
+}

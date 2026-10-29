@@ -11,7 +11,8 @@ from OpenHarmony drivers_peripheral and generated HDI interfaces.
 - `port/display/*.patch`: modifications to that Apache-2.0 display code.
 - `port/kernel/`: modifications to Linux/Android kernel code and the Huawei
   access-token driver, adapted through hmos2sweet. GPL-2.0; upstream notices
-  are preserved in the patch. The complete kernel is not distributed here.
+  are preserved in the patch. The OP13 kernel checkout and binary are not
+  included in the OP13 additions.
 - `port/src/`: MIT where stated in the source.
 - Original project scripts, documentation and tests: Apache-2.0 unless a
   per-file notice states otherwise.
@@ -19,4 +20,6 @@ from OpenHarmony drivers_peripheral and generated HDI interfaces.
 Apache-2.0 is reproduced in `LICENSE`; the Linux kernel's GPL-2.0 text is in
 `LICENSES/GPL-2.0.txt`. Upstream component provenance and header-source metadata
 are recorded in `port/docs/`. Proprietary donor and stock images, libraries,
-firmware and the local SDK/sysroot are excluded from this source repository.
+firmware and the local SDK/sysroot are excluded from the OP13 additions.
+The upstream fork's existing files and commit history are retained and remain
+subject to their upstream notices and licenses.

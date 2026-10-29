@@ -1,0 +1,11 @@
+; SPDX-License-Identifier: Apache-2.0
+; Supplemental policy source for the OP13 DRM dumb-buffer path.
+; This is not an edited donor-generated CIL file.
+;
+; HdiDrmComposition maps dumb buffers through the primary DRM fd for its
+; blank-frame and diagnostic shadow-buffer paths. The donor already grants
+; composer_host open, read, write and base ioctl permissions but omits map.
+; Limit this addition to that domain and the existing DRM device type.
+; The allocator maps exported dma-bufs, which is a separate label/access path.
+; Driver-specific extended ioctl policy also remains separate.
+(allow composer_host dev_dri_file (chr_file (map)))

@@ -17,6 +17,10 @@ Current results:
   and real-mode regression checks in the lab. Native graphics remain untested.
 - OP13 window geometry and discrete refresh policy overlays are generated
   from the owner's hardware capture without modifying the donor images.
+- [SELinux integration](port/selinux/README.md) now includes offline compiler
+  and access-decision checks plus a narrowly scoped composer DRM-map policy
+  supplement. Strict donor-policy validation currently fails; native policy
+  integration is unfinished.
 - A RAM-only DSU startup image can be built. Its core profile starts hilogd
   and samgr, does not start SceneBoard, and is not a full ROM.
 
@@ -35,6 +39,7 @@ unresolved.
 - `port/kernel/`: Linux 6.6 patch, preserving the upstream GPL notices.
 - `port/display/`: adapted display sources and regression tests.
 - `port/src/`: experimental DSU PID-1 bootstrap sources.
+- `port/selinux/`: supplemental policy source and offline validation scope.
 - `port/scripts/`: build, inspection and offline verification helpers.
 
 These scripts currently expect the original development workspace layout,
@@ -42,10 +47,11 @@ including user-supplied images, a matching kernel checkout, and local build
 tools. A clean checkout alone is not a complete build environment. The
 reconstruction steps are being documented; this is not a one-command porter.
 
-No ROM images, firmware blobs, device captures, private signing keys, kernel
-binaries or build outputs are published here. Obtain inputs independently.
-Published source hashes and reduced audit reports document the development
-inputs and checks.
+The OP13 additions exclude ROM images, firmware blobs, device captures,
+private signing keys, kernel binaries and build outputs. Obtain OP13 inputs
+independently. The inherited upstream tree and history, including its own
+prebuilt files, are preserved as part of this GitHub fork. Published source
+hashes and reduced audit reports document the OP13 development checks.
 
 ## Device constraints
 

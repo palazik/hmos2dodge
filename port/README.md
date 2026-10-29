@@ -11,6 +11,10 @@ remains a fallback.
 
 Current additional work:
 
+- `port/selinux/`: offline policy compilation/access checks and the composer
+  DRM-map supplement. Unchanged donor policy fails strict neverallow checking;
+  successful donor-runtime builds are reported separately. No kernel policy
+  is loaded by these tools, and the core image does not load this candidate.
 - [Porter audit](docs/PORTER-AUDIT.md): all 436 selected upstream text files
   match the pinned commit; native Redmi flash/startup assumptions are mapped
   separately from the OP13 work. Full binary/functionality auditing is not claimed.
