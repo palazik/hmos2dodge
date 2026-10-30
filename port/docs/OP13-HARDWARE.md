@@ -69,7 +69,7 @@ and the four concrete mismatches.
 Reproduce this rejected-candidate audit with regular local image files:
 
 ```sh
-python3 port/scripts/extract_vendor_boot_modules.py /home/palaziks/stockfiles/vendor_boot.img
+python3 work/tools/extract_vendor_boot_modules.py /home/palaziks/stockfiles/vendor_boot.img
 python3 port/scripts/audit_module_candidates.py \
   --captured work/device-hardware/20261029-163450/vendor_lib_modules \
   --candidates work/module-sources/78ade331516f5db0 \
@@ -77,12 +77,26 @@ python3 port/scripts/audit_module_candidates.py \
   --output out/kernel/early-module-candidates.json
 ```
 
-The extractor prints its image-hash-specific output directory. It writes only
+The workspace-local extractor is an ignored inspection utility, not port code.
+It prints its image-hash-specific output directory. It writes only
 regular `.ko` entries into workspace work/, skips recovery-only fragments,
 and records the extraction hashes. The audit verifies those hashes and exits
 nonzero for CRC mismatches or unresolved imports. A future startup must verify
 the required providers are already resident, or obtain matching provider
 files. The older rejected files must not become a load-order script.
+
+The newly supplied workspace `vendor_boot.img` supersedes that rejected set.
+Its modules identify as 6.6.118; all 367 modules overlapping the Android
+capture are byte-identical. Combining the capture with 55 early providers
+gives a complete 109-module display/GPU dependency closure: 7,342 comparable
+import CRCs match, with no mismatches, unresolved imports or conflicting
+exports. All 109 names were loaded in the Android capture. Native HarmonyOS
+loading and hardware behavior remain untested.
+
+`prepare_op13_modules.py` stages this exact audited set and an ordered manifest
+in `out/modules/op13-current`, with automatic loading disabled. Its source
+hashes and the current audit are recorded in `current-early-modules.json`.
+The supplied vendor_boot image is preserved and is not a flashing target.
 
 Only firmware filenames were captured, including `gen80000_*` GPU files.
 Do not substitute the Redmi firmware or treat the filename list as firmware

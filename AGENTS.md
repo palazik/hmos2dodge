@@ -20,3 +20,11 @@
   copies in `out/baseline-android/`.
 - Report actual build/emulation results separately from untested OP13 boot,
   DSU, SceneBoard and hardware functionality.
+- Use this project's supplied ROM inputs, OP13 capture and new vendor_boot.img.
+  Do not substitute images from other porting projects.
+- The user specifically allows ancillary-image extraction from
+  /home/palaziks/claudefix/stock/payload.bin, but excludes boot, vendor_boot,
+  vendor, odm, system, product, system_ext and every my_* partition. Do not
+  extract or substitute those excluded images; the user supplied good inputs.
+- Keep generic ROM extraction and one-off inspection utilities in ignored
+  work/tools. Published code should implement, build or validate the HMOS5 port.
