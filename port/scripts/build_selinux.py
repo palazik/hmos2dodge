@@ -15,7 +15,8 @@ def main():
     parser.add_argument('--mode', choices=('strict', 'donor-runtime'), default='strict')
     parser.add_argument('--compiler', type=Path,
                         default=ROOT / 'work/policy-tools/usr/bin/secilc')
-    parser.add_argument('--with-op13', action='store_true', help='include the supplemental OP13 DRM map policy')
+    parser.add_argument('--with-op13', action='store_true', help='include OP13 DRM map and BinderFS label supplements')
+    parser.add_argument('--vm-diagnostics', action='store_true', help='guest observer policy only; never use for a phone image')
     args = parser.parse_args()
     system = ROOT / 'work/ohos-runtime/system/system/etc/selinux'
     vendor = ROOT / 'work/donor-configs/vendor/etc/selinux'
@@ -25,11 +26,14 @@ def main():
               system / 'compatible/40.cil']
     if args.with_op13:
         inputs.append(ROOT / 'port/selinux/op13-drm.cil')
+        inputs.append(ROOT / 'port/selinux/op13-binderfs.cil')
+    if args.vm_diagnostics:
+        inputs.append(ROOT / 'port/selinux/vm-diagnostics.cil')
     for path in inputs:
         if not path.is_file():
             raise SystemExit('Missing original policy input: ' + str(path))
     input_hashes = {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
-    output = ROOT / 'out/selinux' / (args.mode + ('-op13' if args.with_op13 else ''))
+    output = ROOT / 'out/selinux' / (args.mode + ('-op13' if args.with_op13 else '') + ('-vm' if args.vm_diagnostics else ''))
     output.mkdir(parents=True, exist_ok=True)
     temporary = output / 'policy.31.partial'
     command = [str(args.compiler), '-m', '-M', 'true', '-G', '-c', '31', '-O',
@@ -53,6 +57,7 @@ def main():
     report = {
         'mode': args.mode, 'exit_code': result.returncode,
         'op13_supplement': args.with_op13,
+        'vm_diagnostics_only': args.vm_diagnostics,
         'compile_passed': result.returncode == 0,
         'neverallow_checks_enabled': args.mode == 'strict',
         'neverallow_failures_reported': result.stderr.count('neverallow check failed'),

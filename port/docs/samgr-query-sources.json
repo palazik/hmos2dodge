@@ -1,0 +1,70 @@
+{
+  "repository": "openharmony/systemabilitymgr_samgr",
+  "commit": "2bdf36e3db0fe5ed185e5711ab5b287a391a0695",
+  "headers": [
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/if_local_ability_manager.h",
+      "git_blob_sha1": "2fcedb6b4c5cf43fd5c02caa5de78047c35a9247"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/if_system_ability_manager.h",
+      "git_blob_sha1": "c2395d8d7125cac114279abd959a935cc089188b"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/iservice_registry.h",
+      "git_blob_sha1": "715b9b26863ca2e0efcf3bcda6ad8b1054dc63c2"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/isystem_ability_load_callback.h",
+      "git_blob_sha1": "ca0f16219cccf4c71f80039c0b94da9cc139d7b5"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/isystem_ability_status_change.h",
+      "git_blob_sha1": "679a05ed5591d81fa363d53e8c76aea7a9dfc486"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/isystem_process_status_change.h",
+      "git_blob_sha1": "6719e775381272c7ef87bdfa8d7e0e25fa11cce5"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/local_ability_manager_proxy.h",
+      "git_blob_sha1": "7fb3a630b9150734760a75439dfac13e8f1c32c8"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/safwk_ipc_interface_code.h",
+      "git_blob_sha1": "708df087f566d03273d0423ca77b088356be5efa"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/sam_log.h",
+      "git_blob_sha1": "240e686b4ca096aaa2f155977809f2802d8f8846"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/samgr_ipc_interface_code.h",
+      "git_blob_sha1": "5ca883b6cb81ce211d99cd6e1e465a97d39d1b56"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_definition.h",
+      "git_blob_sha1": "b7b64cb68579e9555e8570eec9457207718640a8"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_load_callback_stub.h",
+      "git_blob_sha1": "0d9a9871016749df2c080691dc461f22490b20ec"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_manager_proxy.h",
+      "git_blob_sha1": "4e30f72dd1a8fba37a5657bee5fa04a6cf595428"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_on_demand_event.h",
+      "git_blob_sha1": "ceef961c617b054b6a21a15ce8235cb6f41fbe15"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_ability_status_change_stub.h",
+      "git_blob_sha1": "070a8683eb8ba20c4538a3aa4833a89ee2f51fb3"
+    },
+    {
+      "path": "interfaces/innerkits/samgr_proxy/include/system_process_status_change_stub.h",
+      "git_blob_sha1": "515d904d8ee8a4ed3d1aa1a07cb0f7ba61c5c51d"
+    }
+  ]
+}

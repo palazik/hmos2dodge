@@ -19,6 +19,7 @@ def main():
     parser.add_argument('--library', type=Path,
                         default=ROOT / 'work/policy-tools/usr/lib/x86_64-linux-gnu/libsepol.so.2')
     parser.add_argument('--output', type=Path, default=ROOT / 'out/selinux/access-decisions.json')
+    parser.add_argument('--include-vm-observer', action='store_true', help='also query guest observer SA permissions')
     args = parser.parse_args()
     lib = C.CDLL(str(args.library.resolve()))
     libc = C.CDLL(None)
@@ -55,6 +56,9 @@ def main():
                ('render_service', 'dev_dri_file', 'chr_file', ['open', 'read', 'write', 'map', 'ioctl']),
                ('composer_host', 'dev_dri_file', 'chr_file', ['open', 'read', 'write', 'map', 'ioctl']),
                ('allocator_host', 'dev_dri_file', 'chr_file', ['open', 'read', 'write', 'map', 'ioctl'])]
+    if args.include_vm_observer:
+        queries += [('init', 'sa_accesstoken_manager_service', 'samgr_class', ['get']),
+                    ('accesstoken_service', 'sa_accesstoken_manager_service', 'samgr_class', ['get', 'add'])]
     decisions = []
     for source, target, class_name, permissions in queries:
         source_context, target_context = f'u:r:{source}:s0', f'u:object_r:{target}:s0'

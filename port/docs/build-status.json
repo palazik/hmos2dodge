@@ -25,7 +25,7 @@
   "native_harmonyos_test": "not yet reported",
   "root_and_susfs": "User cancelled; not added",
   "logging": "Daemon starts and hilog -x reads buffers in ARM64 userspace lab",
-  "samgr": "Starts but exits in lab; permission errors recorded; native readiness unverified",
+  "samgr": "Native-kernel ARM64 virt guest: donor UID/domain preserved, ready=true and Binder wait observed; native OP13 readiness remains unverified",
   "display_unload": "QEMU explicit-unload failure also reproduced with original donor libraries; native behavior unknown",
   "native_kernel_for_dsu": "Must account for transient fastboot-boot kernel across DSU reboot; exact sequence untested",
   "hardware_capture": "20261029-163450.zip inspected; 464 vendor modules, connected DSI panel and KGSL; see OP13-HARDWARE.md",
@@ -37,7 +37,10 @@
   "delivery": "raw .img files per user request; no ZIP package",
   "repository": "https://github.com/palazik/hmos2dodge; proper hmos2sweet fork preserving all six upstream commits",
   "initial_repository_snapshot": "https://github.com/palazik/hmos2dodge-initial-snapshot",
-  "selinux_offline": "Donor-runtime policy v31 compiles; strict original and supplemented policies each report 390 neverallow failures at unchanged locations; selected policy query confirms only composer DRM-map addition; no policy loaded",
-  "framework_candidate": "10 canonical services and 46 private-data directories staged offline; identities/socket owners validated; no automatic startup; not integrated into core image",
-  "hdf_display_candidate": "Kirin displayengine device removed from HCB; original byte-identical compiler round-trip, candidate token round-trip, host order/positions 7 and 8 preserved; not integrated or native tested"
+  "selinux_offline": "Regular donor-runtime-op13 policy compiles with BinderFS labels and composer DRM-map permission; 390 unchanged strict donor neverallow locations; loaded only in diskless guest with a separate diagnostic supplement, never host or phone",
+  "framework_candidate": "10 canonical services, 47 private-data directories and donor resource-limit prerequisites staged; no automatic startup; separate native guest core tested; not integrated into raw core image",
+  "hdf_display_candidate": "Kirin displayengine device removed from HCB; original byte-identical compiler round-trip, candidate token round-trip, host order/positions 7 and 8 preserved; not integrated or native tested",
+  "native_kernel_lab": "QEMU ARM64 virt: Android-tested kernel probe passes; samgr ready and donor domain observed; access-token SA 3503 publishes and observer obtains its Binder object; final SELinux enforcing; guest-only observer policy and early permissive label preparation; not OP13/DSU emulation",
+  "stage2_image_sha256": "3a1352e1801f75f86c9f6f6d8fba786997b77cf91698dd4ae598be602c1dacc8",
+  "stage2_binder": "Actual BinderFS inodes bound to aliases with donor modes before policy; image rebuilt and all six embedded payloads/bootstrap/display/UI verified"
 }

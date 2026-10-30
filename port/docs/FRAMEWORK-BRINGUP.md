@@ -14,10 +14,11 @@ declarations, executable arguments and socket ownership are retained. Tests
 also resolve service and socket owners against the donor account databases.
 
 The candidate disables automatic service startup, critical reboot behavior,
-donor cgroup writes and restart cascades. Its data job creates 46 private-data
+donor cgroup writes and restart cascades. Its data job creates 47 private-data
 directories with donor modes/owners and ordered parent prerequisites for a
 fresh RAM filesystem. A second explicit job invokes the builtin token-table
-loader after data setup; neither job is triggered automatically. It imports
+loader after data setup. A third preserves the donor RLIMIT_NICE and
+RLIMIT_NOFILE prerequisites before service startup. None is triggered automatically. It imports
 no other configuration. Discarded donor
 commands remain visible in the adaptation report, including Mali device
 permissions, cgroup mounts and restart operations.
@@ -80,3 +81,7 @@ not device emulation or a native DSU test.
 Raw-image builds now generate `out/experiments/stage2/build-manifest.json`
 with image, wrapper, config and override hashes. Local AVB verification uses
 the development key; it establishes neither OEM trust nor ARB compatibility.
+
+A separate [native-kernel guest lab](NATIVE-KERNEL-LAB.md) now exercises
+service startup under the Android-tested kernel. Its policy and observer
+preparation are distinct from the current raw core image.

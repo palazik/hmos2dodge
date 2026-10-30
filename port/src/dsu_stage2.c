@@ -40,7 +40,19 @@ static int prepare_ipc(void)
             snprintf(path, sizeof(path), "/dev/hmos-binderfs/%s", names[i]);
             snprintf(alias, sizeof(alias), "/dev/%s", names[i]);
             if (access(path, F_OK) && ioctl(control, BINDER_CTL_ADD, &device)) { close(control); return -1; }
-            if (access(alias, F_OK) && symlink(path, alias)) { close(control); return -1; }
+            if (access(alias, F_OK)) {
+                /* Bind the actual binderfs inode. A symlink gains the donor's
+                   chr-device label but requires a separate lnk_file read
+                   permission, which its service domains do not have. */
+                int placeholder = open(alias, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC, 0600);
+                if (placeholder < 0) { close(control); return -1; }
+                close(placeholder);
+                if (mount(path, alias, NULL, MS_BIND, NULL)) { close(control); return -1; }
+                /* Match donor ueventd.config before the HarmonyOS policy is
+                   loaded. Its init domain may relabel, but cannot chmod,
+                   an already labeled Binder character device. */
+                if (chmod(alias, 0666)) { close(control); return -1; }
+            }
         }
         close(control);
         binder = open("/dev/binder", O_RDWR | O_CLOEXEC);

@@ -1,0 +1,7 @@
+; SPDX-License-Identifier: Apache-2.0
+; Linux 6.6 binderfs inodes must carry the existing HarmonyOS device types.
+; The donor predates binderfs; do not add broad access to unlabeled devices.
+(genfscon binder / (u object_r dev_file ((s0) (s0))))
+(genfscon binder /binder (u object_r dev_binder_file ((s0) (s0))))
+(genfscon binder /hwbinder (u object_r dev_hwbinder_file ((s0) (s0))))
+(genfscon binder /vndbinder (u object_r dev_vndbinder_file ((s0) (s0))))

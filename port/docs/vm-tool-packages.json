@@ -1,0 +1,41 @@
+{
+  "scope": "Local extracted Debian tools; not firmware or phone dependencies",
+  "packages": [
+    {
+      "url": "https://deb.debian.org/debian/pool/main/c/capstone/libcapstone4_4.0.2-5_amd64.deb",
+      "sha256": "41277f0388184f6e3b9fc02eda3184afbc999314b25b77ed75e8049428bdfe5e"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/f/fuse3/libfuse3-3_3.14.0-4_amd64.deb",
+      "sha256": "bf535cec5e965823fd03199b4029f9e9f3952111eb12824b5d2b96c8cca1a918"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/n/nettle/libhogweed6_3.8.1-2_amd64.deb",
+      "sha256": "ed8185c28b2cb519744a5a462dcd720d3b332c9b88a1d0002eac06dc8550cb94"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/libj/libjpeg-turbo/libjpeg62-turbo_2.1.5-2_amd64.deb",
+      "sha256": "95ec30140789a342add8f8371ed018924de51b539056522b66f207b25cba9cad"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/n/nettle/libnettle8_3.8.1-2_amd64.deb",
+      "sha256": "45922e6e289ffd92f0f92d2bb9159e84236ff202d552a461bf10e5335b3f0261"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/p/pmdk/libpmem1_1.12.1-2_amd64.deb",
+      "sha256": "63ed00821aecdb5537b51b6f378cf571144d02ac3af2f95141bfa0e397359a76"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.28+dfsg-10_amd64.deb",
+      "sha256": "11ee190ad39f8d7af441d2c8347388b9449434c73acc67b4b372445ac4152efa"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/v/vdeplug4/libvdeplug2_4.0.1-2_amd64.deb",
+      "sha256": "3c7a5b77b59d10d1d437c2ba92a870f7e05ae8d5406e14bbee2520a49f9bcc70"
+    },
+    {
+      "url": "https://deb.debian.org/debian/pool/main/q/qemu/qemu-system-arm_7.2+dfsg-7+deb12u18+b3_amd64.deb",
+      "sha256": "78c4adf16152bb8ae1994784e966365128cae04d8ae37bc161bb0b6617c17d9c"
+    }
+  ]
+}

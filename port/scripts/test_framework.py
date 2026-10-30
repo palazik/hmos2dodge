@@ -28,6 +28,9 @@ for job in config['jobs']:
     if job['name'] == 'hmos-framework-token':
         assert job['cmds'] == ['load_access_token_id ']
         continue
+    if job['name'] == 'hmos-framework-resources':
+        assert job['cmds'] == ['setrlimit RLIMIT_NICE 40 40', 'setrlimit RLIMIT_NOFILE 32768 32768']
+        continue
     assert job['name'] == 'hmos-framework-data'
     for command in job['cmds']:
         assert data_mkdir(command), command
@@ -39,6 +42,7 @@ for command in ('mkdir /data/../metadata/foo 0700 root root',
                 'mkdir /data/${unexpected} 0700 root root',
                 'mkdir /data/a 0700 root root; reboot'):
     assert not data_mkdir(command)
+assert '/data/service/el1/public/access_token/lock' in created
 assert '/data/samgr' in created
 assert '/data/service/el1/public/access_token' in created
 assert '/data/service/el1/public/database/bundle_manager_service' in created

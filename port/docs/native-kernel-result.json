@@ -1,0 +1,54 @@
+{
+  "scope": "Diskless QEMU ARM64 virt with the Android-tested kernel; no DSU or OP13 hardware emulation",
+  "inputs": {
+    "profile": "native-kernel core lab",
+    "services": [
+      "accesstoken_service",
+      "hilogd",
+      "samgr"
+    ],
+    "donor_identities_preserved": true,
+    "kernel": "out/baseline-android/Image",
+    "kernel_sha256": "d143c09bfc88d555e5144dbcd7015475d2f795f27ee78d99154a0ff8852b65b2",
+    "source_sha256": {
+      "port/src/vm_init.c": "1238d7c197b546131ec33f0ca02168bbfc1026cf585e498123c4a8a15c0e7bfc",
+      "port/src/dsu_stage2.c": "3545385417ee352792f930e94a23ff5a4a42bc4bb6c0c41e786db08c03593d4d",
+      "port/src/dsu_probe.c": "031db9b9adcee1b3941a1e81470676dda254895cbb8b5f99a412cdb79d4e8505",
+      "port/scripts/prepare_vm_runtime.py": "f027d6008042376e6eb5c885185e955f4923ca1b599d10fea0f4779fc7c0c9b9",
+      "port/scripts/vm_file_list.py": "83e5bc0635ed8a0b0ed5480077f1ba13348dc6a184c89419763216af218a275e"
+    },
+    "disks": [],
+    "network": false,
+    "private_data": "128 MiB ext4 file inside cpio, loop-mounted from guest RAM only",
+    "observer_policy": "port/selinux/vm-diagnostics.cil; guest only, never a phone policy",
+    "policy_sha256": "9a38402fcaef68d2bce0a8ab12a93560f6ce7bb606061420b8c49d4f59f6dc92",
+    "init_config_sha256": "f0ddea9a6e14dc90a5e61bf404e9bbc3f2841c2caf9fb8d320c17c781e137ac3",
+    "init_plugins": [
+      "libselinuxadp.z.so"
+    ],
+    "hardware_emulated": "QEMU virt only; OP13 hardware is not emulated",
+    "native_phone_tested": false
+  },
+  "log": "work/logs/vm-core.log",
+  "log_sha256": "7afb1ccd685097d304ce501c029016af44ecd33a6e0423006ae53b7e3dc7eadc",
+  "archive_sha256": "78666352e111db1047d1d39294abb17deb60955a42824b48fa6fd4dcb8eca673",
+  "checks": {
+    "kernel_probe_passed": true,
+    "samgr_donor_domain_observed": true,
+    "samgr_ready_parameter_set": true,
+    "access_token_service_published_sa3503": true,
+    "observer_obtained_sa3503": true,
+    "final_selinux_enforcing": true,
+    "ext4_io_errors_absent": true
+  },
+  "early_label_preparation_permissive": true,
+  "observer_policy_is_guest_only": true,
+  "known_limitations": [
+    "Original init policy reload logs a failure after the lab preloads policy",
+    "Core services only; no application launch or full framework readiness",
+    "Missing system services/configuration still produce runtime errors",
+    "SceneBoard, display, GPU, input and actual OP13 DSU boot untested"
+  ],
+  "phone_partitions_written": false,
+  "arb_compatibility_established": false
+}

@@ -1,0 +1,17 @@
+; SPDX-License-Identifier: Apache-2.0
+; Diskless guest observer only. Never include in a phone/DSU policy.
+; Let the init-domain observer execute the donor loader and map hilog without
+; transitioning into the donor's disabled production debug-client domain.
+(allow init system_lib_file (file (execute_no_trans)))
+(allow init hilog_exec (file (read open getattr execute map)))
+(allow init hilog_output_socket (sock_file (write)))
+(allow init hilogd (unix_stream_socket (connectto)))
+; The diskless ext4 loop backing file is RAM, not a QEMU/host drive. Give
+; kernel writeback access to this one dedicated type, never generic rootfs.
+(type vm_data_backing_file)
+(roletype object_r vm_data_backing_file)
+(allow vm_data_backing_file rootfs (filesystem (associate)))
+(allow kernel vm_data_backing_file (file (read write open getattr)))
+; Production init has no reason to query this SA. Grant only the guest
+; observer this lookup; the access-token service's own add/get already exist.
+(allow init sa_accesstoken_manager_service (samgr_class (get)))

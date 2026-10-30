@@ -75,6 +75,11 @@ def prepare():
                     entry = {'source': relative, 'job': job['name'], 'command': command}
                     if entry not in omitted:
                         omitted.append(entry)
+    # RDB creates key lock files here but the donor service domain cannot
+    # create this subdirectory. A fresh private filesystem needs init to
+    # provision it rather than granting that domain new directory rights.
+    directories['/data/service/el1/public/access_token/lock'] = (
+        'mkdir /data/service/el1/public/access_token/lock 0700 access_token access_token')
     # Parent directories are needed on a fresh tmpfs, unlike an installed phone.
     parents = {'/data/service': '0711 root root', '/data/service/el0': '0711 root root',
                '/data/service/el1': '0711 root root', '/data/service/el1/public': '0711 root root',
@@ -86,14 +91,27 @@ def prepare():
             parents.setdefault(str(parent), '0711 root root')
     for dest, mode_owner in parents.items():
         directories.setdefault(dest, f'mkdir {dest} {mode_owner}')
+    # These two prerequisites are present in the donor root init job. Without
+    # RLIMIT_NICE, native init cannot apply accesstoken_service importance -20
+    # after dropping its UID. Preserve the donor values, not a guessed cap.
+    root_init = source_path('system/etc/init.cfg')
+    root_raw = root_init.read_bytes()
+    hashes['system/etc/init.cfg'] = hashlib.sha256(root_raw).hexdigest()
+    donor_commands = {command for job in json.loads(root_raw).get('jobs', [])
+                      for command in job.get('cmds', [])}
+    limits = ['setrlimit RLIMIT_NICE 40 40', 'setrlimit RLIMIT_NOFILE 32768 32768']
+    if not set(limits) <= donor_commands:
+        raise ValueError('Expected donor resource limits are missing')
     config = {'import': [], 'services': services, 'jobs': [
         {'name': 'hmos-framework-data', 'cmds': [directories[p] for p in
          sorted(directories, key=lambda p: (len(PurePosixPath(p).parts), p))]},
-        {'name': 'hmos-framework-token', 'cmds': ['load_access_token_id ']}]}
+        {'name': 'hmos-framework-token', 'cmds': ['load_access_token_id ']},
+        {'name': 'hmos-framework-resources', 'cmds': limits}]}
     report = {
         'scope': 'Offline candidate only; not imported by the current core image',
         'source_sha256': hashes, 'service_changes': edits,
         'omitted_donor_commands': omitted,
+        'additional_data_prerequisites': ['access_token/lock: provision RDB lock directory before service startup'],
         'activation': 'No automatic start job; all services require explicit activation',
         'unresolved': [
             'Native SELinux policy loading and process transitions',
