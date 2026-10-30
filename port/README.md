@@ -13,8 +13,12 @@ Current additional work:
 
 - `port/selinux/`: offline policy compilation/access checks and the composer
   DRM-map supplement. Unchanged donor policy fails strict neverallow checking;
-  successful donor-runtime builds are reported separately. No kernel policy
-  is loaded by these tools, and the core image does not load this candidate.
+  successful donor-runtime builds are reported separately. The diskless guest
+  loads a separate diagnostic policy; the raw core image does not load it.
+- [Native kernel lab](docs/NATIVE-KERNEL-LAB.md): selected Foundation, account,
+  appspawn, software HUKS and on-demand install services now run under the
+  no-LTO kernel in an isolated ARM64 guest. Binder registrations and BMS
+  database schema creation are observed. This is not OP13/DSU emulation.
 - [Porter audit](docs/PORTER-AUDIT.md): all 436 selected upstream text files
   match the pinned commit; native Redmi flash/startup assumptions are mapped
   separately from the OP13 work. Full binary/functionality auditing is not claimed.
@@ -44,18 +48,21 @@ Current additional work:
 
 | File | Purpose |
 | --- | --- |
-| `out/kernel/Image` | Linux 6.6.144 plus access-token/Binder extensions; user reports successful Android boot |
+| `out/kernel/Image` | New no-LTO 6.6.144 build; offline CRC/layout checks and selected guest services pass; Android untested |
+| `out/baseline-android/boot.img` | Preserved user-tested Android boot image with the earlier ThinLTO kernel |
+| `out/boot/op13-hmos-nolto-test.img` | Separate no-LTO candidate using the COS17 boot template; OP13/ARB compatibility unverified |
 | `out/boot/op13-hmos-test.img` | Temporary boot candidate using `/home/palaziks/cos17/boot.img` as template |
 | `out/boot/op13-hmos-test.json` | Source/kernel/output hashes and preserved boot components |
 | `out/dsu/op13-dsu-probe.img.gz` | Small DSU PID-1/kernel/device probe; does not launch HarmonyOS |
 | `out/dsu/op13-hmos-mount-probe.img` | Same probe plus six donor images, mounted read-only then unmounted |
 | `out/dsu/payload-verification.json` | Byte-for-byte comparison of embedded images against the original donor |
 
-The first build keeps ThinLTO. After it finishes, `disable_lto.sh` changes the
-source defconfig and working config for subsequent builds. `out/kernel/config`
-records the configuration actually used for the saved Image;
-`out/kernel/next-build.config` records the configuration with LTO disabled.
-Future builds use the locally downloaded ccache with a 2 GiB limit.
+The Android-tested baseline used ThinLTO. Subsequent builds merge the
+versioned `port/kernel/hmos_dsu.config` with LTO_NONE and retain the stock
+cgroup controller set. `out/kernel/config` records the saved Image's actual
+configuration. The no-LTO build matches all 24,564 comparable captured module
+import CRCs; this is not complete ABI or device validation. The build uses
+the locally downloaded ccache with a 2 GiB limit when available.
 
 The user confirmed the generated kernel boots Android and works. Its saved
 baseline is `out/baseline-android/`. ReSukiSU/SUSFS integration was cancelled;

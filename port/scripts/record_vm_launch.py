@@ -19,7 +19,7 @@ def digest(path, compressed=False):
 
 
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--profile', choices=('core', 'framework'), required=True)
+parser.add_argument('--profile', choices=('core', 'framework', 'foundation'), required=True)
 parser.add_argument('--kernel', type=Path, required=True)
 parser.add_argument('--initrd', type=Path, required=True)
 args = parser.parse_args()

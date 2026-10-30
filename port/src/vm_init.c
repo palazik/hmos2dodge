@@ -8,6 +8,7 @@
 #include <dirent.h>
 #include <sys/ptrace.h>
 #include <sys/uio.h>
+#include <sys/mman.h>
 #define LO_FLAGS_AUTOCLEAR 4 /* Linux loop UAPI */
 static void vm_mount(const char *source, const char *target, const char *type);
 
@@ -83,7 +84,7 @@ static void vm_processes(void)
         if (read_text(path, name, sizeof(name))) continue;
         snprintf(path, sizeof(path), "/proc/%s/cmdline", entry->d_name);
         if (read_text(path, content, sizeof(content))) continue;
-        if (!strstr(content, "samgr") && !strstr(content, "sa_main") && !strstr(content, "accesstoken_service") && !strstr(content, "hilogd") && !strstr(content, "appspawn") && !strstr(content, "accountmgr")) continue;
+        if (!strstr(content, "samgr") && !strstr(content, "sa_main") && !strstr(content, "accesstoken_service") && !strstr(content, "hilogd") && !strstr(content, "appspawn") && !strstr(content, "accountmgr") && !strstr(content, "foundation")) continue;
         const char *files[] = {"status", "attr/current", "wchan"};
         for (size_t i = 0; i < sizeof(files) / sizeof(files[0]); i++) {
             snprintf(path, sizeof(path), "/proc/%s/%s", entry->d_name, files[i]);
@@ -118,7 +119,9 @@ static void vm_capture(void)
     int reader = open("/dev/kmsg", O_RDONLY | O_NONBLOCK | O_CLOEXEC);
     if (reader >= 0) lseek(reader, 0, SEEK_END);
     char profile[64];
-    bool framework = !read_text("/vm/profile", profile, sizeof(profile)) && !strcmp(profile, "framework");
+    bool has_profile = !read_text("/vm/profile", profile, sizeof(profile));
+    bool foundation = has_profile && !strcmp(profile, "foundation");
+    bool framework = foundation || (has_profile && !strcmp(profile, "framework"));
     int output[2];
     if (pipe2(output, O_NONBLOCK | O_CLOEXEC)) _exit(125);
     size_t total = 0;
@@ -144,7 +147,7 @@ static void vm_capture(void)
                 }
             }
         }
-        if (tick == 30 || tick == 90) {
+        if (tick == 30 || tick == 90 || (foundation && tick == 180)) {
             vm_processes();
             const char *commands[][5] = {
                 {"/system/bin/param", "get", "bootevent.samgr.ready", NULL},
@@ -153,9 +156,14 @@ static void vm_capture(void)
                 {"/system/lib/ld-musl-aarch64.so.1", "/system/bin/hilog", "-x", NULL, NULL},
                 {"/system/bin/param", "get", "bootevent.appspawn.started", NULL},
                 {"/system/bin/sa-query", "200", NULL, NULL},
+                {"/system/bin/sa-query", "3299", NULL, NULL},
+                {"/system/bin/sa-query", "401", NULL, NULL},
+                {"/system/bin/sa-query", "3510", NULL, NULL},
+                {"/system/bin/sa-query", "511", NULL, NULL},
             };
             for (size_t i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
                 if (i >= 4 && !framework) continue;
+                if (i >= 6 && !foundation) continue;
                 pid_t client = fork();
                 if (!client) {
                     int flags = fcntl(output[1], F_GETFL);
@@ -199,8 +207,23 @@ static int vm_private_devices(void)
         snprintf(path, sizeof(path), "/dev/%s", names[i]);
         mode_t mode = nodes[i].st_mode;
         if (i < 4) mode = S_IFCHR | 0666; /* donor ueventd: public basic devices */
-        if (mknod(path, mode, nodes[i].st_rdev)) return -1;
+        if (mknod(path, mode, nodes[i].st_rdev) || chmod(path, mode & 07777)) return -1;
     }
+    char misc[64];
+    unsigned int major_number, minor_number;
+    if (read_text("/sys/class/misc/ashmem/dev", misc, sizeof(misc)) ||
+        sscanf(misc, "%u:%u", &major_number, &minor_number) != 2 ||
+        mknod("/dev/ashmem", S_IFCHR | 0666, makedev(major_number, minor_number)) ||
+        chmod("/dev/ashmem", 0666)) return -1;
+    int ashmem = open("/dev/ashmem", O_RDWR | O_CLOEXEC);
+    if (ashmem < 0 || ioctl(ashmem, _IOW(0x77, 3, size_t), (size_t)4096)) return -1;
+    unsigned int *shared = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, ashmem, 0);
+    if (shared == MAP_FAILED) { close(ashmem); return -1; }
+    *shared = 0x484d4f53;
+    if (*shared != 0x484d4f53) return -1;
+    munmap(shared, 4096);
+    close(ashmem);
+    printf("VM ashmem size ioctl and shared mapping passed\n");
     mkdir("/dev/socket", 0755);
     mkdir("/dev/unix", 0755);
     mkdir("/dev/unix/socket", 0755);
@@ -377,7 +400,7 @@ int main(void)
     test_kernel();
     printf("VM KERNEL CHECK %s failures=%d\n", failures ? "FAIL" : "PASS", failures);
     char profile[64] = {0};
-    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && (!strcmp(profile, "core") || !strcmp(profile, "framework"))) {
+    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && (!strcmp(profile, "core") || !strcmp(profile, "framework") || !strcmp(profile, "foundation"))) {
         int gate = open("/sys/module/access_tokenid/parameters/compat", O_WRONLY | O_CLOEXEC);
         if (gate < 0 || write(gate, "1", 1) != 1) return 4;
         close(gate);

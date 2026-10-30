@@ -3,9 +3,21 @@
 set -euo pipefail
 task_root=$(cd "$(dirname "$0")/../.." && pwd)
 task_profile=${1:-core}
-case "$task_profile" in core|framework) ;; *) exit 2 ;; esac
+case "$task_profile" in core|framework|foundation) ;; *) exit 2 ;; esac
 task_stage="$task_root/work/system-vm/runtime-root-$task_profile"
 mkdir -p "$task_root/work/logs"
+if [[ "$task_profile" == foundation ]]; then
+    mkdir -p "$task_root/work/framework-assets"
+    "$task_root/bin/Linux/x86_64/extract.erofs" -i "$task_root/hmos5/system.img" \
+        -X /system/app/SystemResources -s -o "$task_root/work/framework-assets" \
+        > "$task_root/work/logs/vm-framework-resources-extract.log" 2>&1
+    mkdir -p "$task_root/work/huks-inspect"
+    for task_library in libhuks_ca_hdi.z.so libhuks_hdi_service_1.1.z.so libhuks_ext_hdi_service_1.0.z.so; do
+        "$task_root/bin/Linux/x86_64/extract.erofs" -i "$task_root/hmos5/vendor.img" \
+            -X "/lib64/chipsetsdk/$task_library" -s -o "$task_root/work/huks-inspect" \
+            >> "$task_root/work/logs/vm-framework-resources-extract.log" 2>&1
+    done
+fi
 bash "$task_root/port/scripts/build_vm_probe.sh"
 bash "$task_root/port/scripts/build_vm_sa_query.sh"
 python3 "$task_root/port/scripts/prepare_vm_runtime.py" --profile "$task_profile"

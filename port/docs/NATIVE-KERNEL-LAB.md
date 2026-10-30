@@ -167,3 +167,68 @@ checks that a custom initrd contains the staged archive. It records actual
 launch hashes separately. `record_vm_results.py` verifies these records and
 the source hashes before writing a result. Rebuild with the same
 `HMOS_VM_KERNEL` value passed to the runner when selecting another kernel.
+
+# Foundation lab
+
+The `foundation` build/runner profile adds the original Foundation service
+and HUKS service to the expanded guest. The archive includes the two donor
+SystemResources packages and the donor's three HUKS HDI libraries. The donor
+already contains hmos2sweet's software HUKS CA implementation; this lab does
+not provide Huawei TEE behavior or hardware-backed key trust. Its files and
+keys live only in the private RAM ext4 filesystem.
+It also registers the original `installs` service with its on-demand flag,
+credentials, capabilities and permissions retained. BMS requests SA 511
+through SAMGR; init supplies the original on-demand launch arguments. The
+guest does not run an installer against Android or expose any physical disk.
+
+Foundation's original profile references `libwms.z.so` for SA 4606, but that
+library is absent from the checked donor system/vendor/chip_prod/sys_prod
+inventories. The archive builder records this specific unresolved entry and
+leaves the profile unchanged. Other missing dependencies still fail the
+build. Native sa_main logs the failed load and continues; SA 3299 (common
+events) and SA 401 (bundle manager) have been obtained through Binder.
+This does not demonstrate a working window manager or installed applications.
+
+The guest adds the kernel's ashmem misc device using its sysfs-reported device
+number, checks a size ioctl and shared mapping, and applies exact donor
+0666 modes with chmod. Relying only on mknod's mode lets the process umask
+reduce this to 0644: a root-only smoke test then hides non-root access errors.
+No extra service-domain SELinux permission is needed for that DAC fix.
+
+The installed donor library also uses `/data/service/el1/public/bms`, while
+its foundation.cfg creates an older database tree. The lab provisions a
+private BMS directory and lock subdirectory owned by Foundation before
+restoring labels. These experimental directories are recorded separately
+from exact donor mkdir commands. No Android data is imported.
+
+For the current candidate:
+
+```sh
+python3 port/scripts/build_selinux.py --mode donor-runtime --with-op13 --vm-diagnostics
+HMOS_VM_KERNEL="$PWD/out/kernel/Image" bash port/scripts/build_vm_runtime.sh foundation
+HMOS_VM_KERNEL="$PWD/out/kernel/Image" bash port/scripts/run_vm.sh foundation
+python3 port/scripts/record_vm_results.py --profile foundation
+```
+
+`audit_framework_apps.py` separately checks ZIP CRCs and records manifests
+and hashes of the original SceneBoard and SystemResources HAP/HSP packages.
+To extract its inputs without changing the images:
+
+```sh
+mkdir -p work/framework-assets
+bin/Linux/x86_64/extract.erofs -i hmos5/system.img -X /system/app/SceneBoard -s -o work/framework-assets
+bin/Linux/x86_64/extract.erofs -i hmos5/system.img -X /system/app/SystemResources -s -o work/framework-assets
+python3 port/scripts/audit_framework_apps.py
+```
+
+The package report is metadata/CRC inspection, not signature-trust
+verification, installation or successful SceneBoard execution.
+
+One-time publish log lines may be lost in a busy hilog buffer. The result
+recorder tests registration through the native Binder query, and records
+publish-log presence separately. A returned object establishes registration;
+it does not establish every method of that service works. Database schema
+DDL reported by the native BMS/RDB stack is another narrower observation.
+The global account/storage startup graph and application installation still
+need integration; obtaining the account SA alone does not create or activate
+an application user.

@@ -8,7 +8,7 @@ import json
 import os
 from pathlib import Path
 import shutil
-from prepare_framework import ROOT, prepare
+from prepare_framework import ROOT, data_mkdir, prepare
 
 
 def replace_file(source, target):
@@ -40,7 +40,7 @@ def link_tree(source, target, ignore=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--profile', choices=('core', 'framework'), default='core')
+    parser.add_argument('--profile', choices=('core', 'framework', 'foundation'), default='core')
     args = parser.parse_args()
     stage = ROOT / ('work/system-vm/runtime-root-' + args.profile)
     stage.mkdir(parents=True, exist_ok=True)
@@ -55,6 +55,11 @@ def main():
         return []
     link_tree(system, stage / 'system', ignore)
     link_tree(ROOT / 'work/donor-configs/system/system/profile', stage / 'system/profile')
+    if args.profile == 'foundation':
+        link_tree(ROOT / 'work/framework-assets/system/system/app/SystemResources',
+                  stage / 'system/app/SystemResources')
+        link_tree(ROOT / 'work/huks-inspect/vendor/lib64/chipsetsdk',
+                  stage / 'vendor/lib64/chipsetsdk')
     for name in ('dev', 'sys', 'proc', 'data', 'mnt', 'storage', 'metadata',
                  'vendor/etc', 'chip_prod/etc', 'sys_prod/etc', 'cust', 'patch_hw', 'vm'):
         (stage / name).mkdir(parents=True, exist_ok=True)
@@ -81,10 +86,12 @@ def main():
     resource_limits = next(j['cmds'] for j in framework['jobs']
                            if j['name'] == 'hmos-framework-resources')
     names = {'hilogd', 'samgr', 'accesstoken_service'}
-    if args.profile == 'framework':
+    if args.profile != 'core':
         names.update(('accountmgr', 'appspawn'))
+    if args.profile == 'foundation':
+        names.add('foundation')
     services = [copy.deepcopy(s) for s in framework['services'] if s['name'] in names]
-    if args.profile == 'framework':
+    if args.profile != 'core':
         fault_cfg = json.loads((system / 'etc/init/faultloggerd.cfg').read_text())
         fault = copy.deepcopy(next(s for s in fault_cfg['services'] if s['name'] == 'faultloggerd'))
         fault.pop('jobs', None)
@@ -92,14 +99,46 @@ def main():
         fault.update(disabled=1, **{'start-mode': 'condition'})
         services.insert(0, fault)
         names.add('faultloggerd')
+    huks_cfg = None
+    if args.profile == 'foundation':
+        huks_cfg = json.loads((system / 'etc/init/huks_service.cfg').read_text())
+        huks = copy.deepcopy(next(s for s in huks_cfg['services'] if s['name'] == 'huks_service'))
+        huks.pop('jobs', None)
+        huks.pop('writepid', None)
+        huks.update(disabled=1, **{'start-mode': 'condition'})
+        services.append(huks)
+        names.add('huks_service')
+        installs_cfg = json.loads((system / 'etc/init/installs.cfg').read_text())
+        installs = copy.deepcopy(next(s for s in installs_cfg['services'] if s['name'] == 'installs'))
+        installs.update(disabled=1, **{'start-mode': 'condition'})
+        services.append(installs)
+        names.add('installs')
     directories = framework['jobs'][0]['cmds'] + [
         'mkdir /data/log 0755 root root', 'mkdir /data/log/hilog 0750 logd log',
         'mkdir /data/log/dict 0755 logd log']
-    if args.profile == 'framework':
+    if args.profile != 'core':
         directories += ['mkdir /data/log/faultlog 0750 hiview log',
                         'mkdir /data/log/faultlog/temp 0770 system system',
                         'mkdir /data/log/faultlog/hilog 0750 logd log',
                         'mkdir /data/log/faultlog/debug 0770 system system']
+    adapted_directories = []
+    if args.profile == 'foundation':
+        # This donor library uses a newer BMS tree than foundation.cfg creates.
+        # A fresh lab filesystem has no installed-phone directory migration.
+        adapted_directories = [
+            'mkdir /data/service/el1/public/bms 0700 foundation foundation',
+            'mkdir /data/service/el1/public/bms/bundle_manager_service 0700 foundation foundation',
+            'mkdir /data/service/el1/public/bms/bundle_manager_service/lock 0700 foundation foundation']
+        directories += adapted_directories
+        directories += ['mkdir /data/data 0771 system system']
+        directories += [command for job in huks_cfg['jobs'] for command in job['cmds'] if data_mkdir(command)]
+        directories += ['mkdir /data/local 0751 root root']
+        directories += [command for job in installs_cfg['jobs'] for command in job['cmds'] if data_mkdir(command)]
+        original_init = json.loads((system / 'etc/init.cfg').read_text())
+        public_bundle_paths = {'/data/app', '/data/app/el1', '/data/app/el1/bundle',
+                               '/data/app/el1/bundle/public'}
+        directories += [command for job in original_init['jobs'] for command in job['cmds']
+                        if command.startswith('mkdir ') and command.split()[1] in public_bundle_paths]
     config = {'import': [], 'services': services, 'jobs': [
         {'name': 'pre-init', 'cmds': resource_limits + directories + [
             'restorecon /system', 'restorecon /vendor', 'restorecon /data',
@@ -127,7 +166,7 @@ def main():
         _, path, mode, owner, group = command.split()
         provision.append(f'{path} {mode} {users[owner]} {groups[group]}')
     (stage / 'vm/data-directories').write_text('\n'.join(provision) + '\n')
-    if args.profile == 'framework':
+    if args.profile != 'core':
         # Only literal commands from the donor appspawn cfg; all targets are
         # private guest /mnt or /dev. Never import the wider donor boot jobs.
         source_cfg = json.loads((system / 'etc/init/appspawn.cfg').read_text())
@@ -158,6 +197,10 @@ def main():
         config['jobs'][0]['cmds'] += sandbox
         config['jobs'][1]['cmds'].insert(0, 'start faultloggerd')
         config['jobs'][1]['cmds'] += ['start accountmgr', 'start appspawn']
+        if args.profile == 'foundation':
+            start_account = config['jobs'][1]['cmds'].index('start accountmgr')
+            config['jobs'][1]['cmds'].insert(start_account, 'start huks_service')
+            config['jobs'][1]['cmds'] += ['start foundation']
     cfg = stage / 'system/etc/init.cfg'
     if cfg.exists(): cfg.unlink()
     cfg.write_text(json.dumps(config, indent=2) + '\n')
@@ -182,6 +225,11 @@ def main():
               'policy_sha256': hashlib.sha256(policy.read_bytes()).hexdigest(),
               'init_config_sha256': hashlib.sha256(cfg.read_bytes()).hexdigest(),
               'init_plugins': ['libselinuxadp.z.so'],
+              'adapted_data_directories': adapted_directories,
+              'system_resource_sha256': {str(p.relative_to(stage)): hashlib.sha256(p.read_bytes()).hexdigest()
+                                        for p in (stage / 'system/app/SystemResources').glob('*.hap')},
+              'donor_huks_library_sha256': {str(p.relative_to(stage)): hashlib.sha256(p.read_bytes()).hexdigest()
+                                           for p in (stage / 'vendor/lib64/chipsetsdk').glob('*huks*.so')},
               'hardware_emulated': 'QEMU virt only; OP13 hardware is not emulated',
               'native_phone_tested': False}
     output = ROOT / 'out/vm'

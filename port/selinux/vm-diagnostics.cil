@@ -17,6 +17,11 @@
 (allow init sa_accesstoken_manager_service (samgr_class (get)))
 ; Account-manager query in the expanded framework lab, observer only.
 (allow init sa_accountmgr (samgr_class (get)))
+; Selected Foundation queries by the observer only.
+(allow init sa_foundation_bms (samgr_class (get)))
+(allow init sa_foundation_cesfwk_service (samgr_class (get)))
+(allow init sa_huks_service (samgr_class (get)))
+(allow init sa_installd_service (samgr_class (get)))
 ; Capture the first appspawn fault PC in the diskless guest. Do not change
 ; appspawn's own permissions or disable its seccomp/signal handlers.
 (allow init appspawn (process (ptrace getattr)))

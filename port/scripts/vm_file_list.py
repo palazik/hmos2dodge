@@ -32,12 +32,14 @@ def needed(path):
 
 def select(stage):
     selected = {Path('.')}
+    unresolved = []
     source = stage / 'system'
     namespace = (source / 'etc/ld-musl-namespace-aarch64.ini').read_text()
     # This core lab contains system executables using the system namespace.
     paths = re.findall(r'^\s*namespace.default.lib.paths\s*=\s*(.+)$', namespace, re.M)
     directories = [stage / name.lstrip('/') for name in paths[-1].split(':') if name.startswith('/system/')]
     directories += [source / 'lib64/ndk']
+    directories += [stage / 'vendor/lib64/chipsetsdk']
 
     def find_library(name):
         for directory in directories:
@@ -55,6 +57,7 @@ def select(stage):
               find_library('libaccesstoken_manager_service.z.so'),
               find_library('libaccesstoken_config_policy.z.so'),
               find_library('libtokensync_sdk.z.so')]
+    queue += list((stage / 'vendor/lib64/chipsetsdk').glob('*huks*.so'))
     config = json.loads((source / 'etc/init.cfg').read_text())
     for service in config['services']:
         binary, *arguments = service['path']
@@ -62,7 +65,16 @@ def select(stage):
         for argument in arguments:
             if argument.startswith('/system/profile/') and argument.endswith('.json'):
                 sa_profile = json.loads((stage / argument.lstrip('/')).read_text())
-                queue += [find_library(sa['libpath']) for sa in sa_profile['systemability']]
+                for sa in sa_profile['systemability']:
+                    try:
+                        queue.append(find_library(sa['libpath']))
+                    except ValueError:
+                        # This original donor profile names an absent legacy
+                        # library. Keep the entry unchanged and let sa_main
+                        # expose its behavior; do not invent a replacement.
+                        if service['name'] != 'foundation' or (sa['name'], sa['libpath']) != (4606, 'libwms.z.so'):
+                            raise
+                        unresolved.append({'profile': argument, 'id': sa['name'], 'library': sa['libpath']})
     if any(service['name'] == 'appspawn' for service in config['services']):
         # Appspawn registers its own plugin tree through dlopen.
         queue += [source / 'bin/processdump']
@@ -96,15 +108,23 @@ def select(stage):
         selected.add(relative)
     for path in list(selected):
         selected.update(path.parents)
-    return sorted(selected, key=str)
+    return sorted(selected, key=str), unresolved
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--profile', choices=('core', 'framework'), default='core')
+    parser.add_argument('--profile', choices=('core', 'framework', 'foundation'), default='core')
     args = parser.parse_args()
     stage = ROOT / ('work/system-vm/runtime-root-' + args.profile)
-    files = select(stage)
+    files, unresolved = select(stage)
+    record_path = ROOT / f'out/vm/runtime-inputs-{args.profile}.json'
+    record = json.loads(record_path.read_text())
+    record['unresolved_sa_libraries'] = unresolved
+    record_path.write_text(json.dumps(record, indent=2) + '\n')
+    if args.profile == 'core':
+        (ROOT / 'out/vm/runtime-inputs.json').write_text(record_path.read_text())
+    if unresolved:
+        sys.stderr.write('Unresolved original SA profile entries: ' + json.dumps(unresolved) + '\n')
     sys.stderr.write(f'Core VM payload: {len(files)} entries\n')
     for path in files:
         sys.stdout.buffer.write(str(path).encode() + b'\0')
