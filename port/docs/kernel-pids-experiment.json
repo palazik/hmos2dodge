@@ -1,0 +1,17 @@
+{
+  "scope": "Rejected kernel experiment, not a phone test candidate",
+  "kernel_sha256": "70f012e51dbdf01563a312b629a543457fcb22b7cee3d17b36a58c4db2fdb510",
+  "kernel_copy": "out/experiments/kernel-pids/Image",
+  "boot_image": "out/experiments/kernel-pids/abi-failed-pids-nolto.img",
+  "lto": "none",
+  "cgroup_pids": true,
+  "captured_modules": 464,
+  "modules_with_crc_mismatches": 425,
+  "matching_import_crcs": 19135,
+  "mismatching_import_crcs": 5429,
+  "cause_under_test": "Pids changes CGROUP_SUBSYS_COUNT, used in cgroup/css_set array sizes; rebuilding with stock controller set to compare",
+  "crc_or_modversion_checks_bypassed": false,
+  "excluded_from_phone_config": true,
+  "android_tested": false,
+  "control_result": "Rebuild with stock controller set and no LTO: 24564 matching imports, zero mismatches across 464 modules"
+}

@@ -1,0 +1,48 @@
+{
+  "scope": "Offline no-LTO kernel build; not Android-tested on OP13",
+  "kernel": "out/kernel/Image",
+  "kernel_sha256": "167e30e173cd73e9f33eb4828d1df25b8428d93ebad23260e66950be34b4c65a",
+  "boot_template": "/home/palaziks/cos17/boot.img",
+  "boot_image": "out/boot/op13-hmos-nolto-test.img",
+  "boot_sha256": "7c65b632686ebaf6450d3a99f6138c91027e701f2b500aee8b064c20857256a4",
+  "lto": "none",
+  "cgroup_pids": false,
+  "module_count": 464,
+  "modules_with_crc_mismatches": 0,
+  "matching_import_crcs": 24564,
+  "module_audit_sha256": "d7d500b7e34961b15927071f2394da16c2e57ac29a8f4ea20aa5870b2a330f6d",
+  "symvers_sha256": "a5773147a0ecbf9a9f59204a5876262fbc4f44788bb36ec1513ed6be0129553e",
+  "task_layout": {
+    "task_struct": {
+      "baseline": {
+        "sizeof": 4800,
+        "pid": 1560,
+        "tgid": 1564,
+        "real_parent": 1576,
+        "cred": 2080,
+        "comm": 2096,
+        "android_vendor_data1": 3008,
+        "android_oem_data1": 3520,
+        "thread": 3648
+      },
+      "patched": {
+        "sizeof": 4800,
+        "pid": 1560,
+        "tgid": 1564,
+        "real_parent": 1576,
+        "cred": 2080,
+        "comm": 2096,
+        "android_vendor_data1": 3008,
+        "android_oem_data1": 3520,
+        "thread": 3648
+      }
+    },
+    "equal": true,
+    "scope": "task_struct size and listed offsets only; full module ABI still requires validation"
+  },
+  "crc_or_modversion_checks_bypassed": false,
+  "android_baseline_preserved": true,
+  "android_tested": false,
+  "arb_compatibility_established": false,
+  "native_guest_result": "port/docs/framework-nolto-result.json"
+}

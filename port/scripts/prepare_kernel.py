@@ -185,12 +185,7 @@ edit('drivers/android/binder.c', '\tcase BINDER_GET_NODE_INFO_FOR_REF: {', '''#i
 #endif
 \tcase BINDER_GET_NODE_INFO_FOR_REF: {''')
 
-write('arch/arm64/configs/hmos_dsu.config', '''# Additive stage-1 support; keep all Android GKI/vendor options.
-CONFIG_ACCESS_TOKENID=y
-CONFIG_DEVTMPFS=y
-CONFIG_BLK_DEV_LOOP=y
-CONFIG_EROFS_FS=y
-''')
+write('arch/arm64/configs/hmos_dsu.config', (ROOT / 'port/kernel/hmos_dsu.config').read_text())
 
 out = []
 for name in sorted(set(changed)):

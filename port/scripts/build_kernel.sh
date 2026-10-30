@@ -24,7 +24,7 @@ build_args=(-j"$(nproc --all)" LLVM=1 LLVM_IAS=1 ARCH=arm64
     HOSTLD="$kernel_dir/ld-wrapper" O="$kernel_dir/kout")
 base_flags='-O2 -pipe -Wno-error -Wno-implicit-function-declaration -Wno-implicit-int -Wno-default-const-init-var-unsafe -Wno-format -Wno-unknown-warning-option'
 make "${build_args[@]}" KCFLAGS="$base_flags" gki_defconfig 2>&1 | tee "$task_root/work/logs/kernel-config.log"
-scripts/kconfig/merge_config.sh -m -O "$kernel_dir/kout" "$kernel_dir/kout/.config" arch/arm64/configs/hmos_dsu.config
+scripts/kconfig/merge_config.sh -m -O "$kernel_dir/kout" "$kernel_dir/kout/.config" "$task_root/port/kernel/hmos_dsu.config"
 make "${build_args[@]}" KCFLAGS="$base_flags" olddefconfig 2>&1 | tee -a "$task_root/work/logs/kernel-config.log"
 make "${build_args[@]}" KCFLAGS="$base_flags -mcpu=oryon-1" Image 2>&1 | tee "$task_root/work/logs/kernel-build.log"
 cp kout/arch/arm64/boot/Image "$task_root/out/kernel/Image"
