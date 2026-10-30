@@ -46,5 +46,8 @@
   "latest_kernel_build": "No-LTO stock controller set; 24564 comparable module CRCs match, zero mismatches; separate COS17 boot candidate; not Android tested",
   "latest_kernel_candidate": "out/boot/op13-hmos-nolto-test.img",
   "native_framework_lab": "Selected core/account/appspawn services pass in QEMU virt under both Android-tested ThinLTO and rebuilt no-LTO kernels; real appspawn started event and Binder SA200/3503 observed; final SELinux enforcing; application launch and OP13 DSU untested",
-  "rejected_kernel_experiment": "PIDS controller altered module CRCs; quarantined, excluded from phone kernel; no CRC bypass"
+  "rejected_kernel_experiment": "PIDS controller altered module CRCs; quarantined, excluded from phone kernel; no CRC bypass",
+  "native_foundation_lab": "No-LTO kernel in diskless QEMU virt: Foundation donor domain; Binder SA200/3503/3299/401/3510/511; appspawn startup event; native BMS database DDL; ashmem shared-block errors absent; final SELinux enforcing. Full account activation, app installation and SceneBoard unresolved.",
+  "framework_packages": "13 original SceneBoard/SystemResources HAP/HSP archives checked for ZIP CRC, manifests and hashes; no signature-trust or execution claim",
+  "early_module_candidates": "Older vendor_boot modules rejected: 4 KGSL/OSvelte cross-module CRC mismatches in 109-module graphics closure. All 35 missing-file providers were loaded in Android capture; DSU residency unverified."
 }

@@ -52,6 +52,38 @@ established for the DSU handoff. The dependency order in the JSON is incomplete
 and must not be executed as a load script. No modules have been loaded or
 added to the experimental startup by this audit.
 
+All 35 names are present as loaded modules in the supplied Android capture.
+That is evidence of their Android state, not the DSU handoff state.
+The older `/home/palaziks/stockfiles/vendor_boot.img` contains their files.
+Its complete display/GPU dependency closure, combined with the captured
+modules, contains 109 modules and 7,323 matching import CRCs, but four imports
+from `msm_kgsl` disagree with the older `oplus_bsp_mm_osvelte` exports.
+Its modules identify as 6.6.89, whereas the capture identifies as 6.6.118.
+They are excluded from the port; no CRC checks are bypassed. The alternate
+`vendor_boot_P.img` fails this extractor's LZ4 decompression with a truncated
+file error and is not accepted as a fallback.
+The COS17 extracted vendor_boot and system_dlkm paths found locally are
+zero-length placeholders. See `early-module-candidates.json` for source hashes
+and the four concrete mismatches.
+
+Reproduce this rejected-candidate audit with regular local image files:
+
+```sh
+python3 port/scripts/extract_vendor_boot_modules.py /home/palaziks/stockfiles/vendor_boot.img
+python3 port/scripts/audit_module_candidates.py \
+  --captured work/device-hardware/20261029-163450/vendor_lib_modules \
+  --candidates work/module-sources/78ade331516f5db0 \
+  --candidate-image /home/palaziks/stockfiles/vendor_boot.img \
+  --output out/kernel/early-module-candidates.json
+```
+
+The extractor prints its image-hash-specific output directory. It writes only
+regular `.ko` entries into workspace work/, skips recovery-only fragments,
+and records the extraction hashes. The audit verifies those hashes and exits
+nonzero for CRC mismatches or unresolved imports. A future startup must verify
+the required providers are already resident, or obtain matching provider
+files. The older rejected files must not become a load-order script.
+
 Only firmware filenames were captured, including `gen80000_*` GPU files.
 Do not substitute the Redmi firmware or treat the filename list as firmware
 contents. The collector now also attempts read-only pulls of
