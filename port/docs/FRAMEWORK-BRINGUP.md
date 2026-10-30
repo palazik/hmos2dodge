@@ -37,8 +37,9 @@ not copied into it. In particular:
   policy. Native service transitions and the token initialization job must be wired
   before testing this configuration with its preserved security identities.
 - The core's curated system/etc lacks broader framework configuration.
-  Vendor HDF configuration also needs selective staging instead of exposing
-  the entire donor hardware startup graph.
+  An adapted HDF display configuration is now staged separately; see
+  [HDF-DISPLAY.md](HDF-DISPLAY.md). It still needs selective mounting instead
+  of exposing the entire donor hardware startup graph.
 - Appspawn requires private writable sandbox mountpoints and adapted cgroups.
 - Account/application storage needs an isolated implementation; the physical
   Android userdata and metadata partitions remain outside the startup path.
