@@ -85,3 +85,9 @@ the development key; it establishes neither OEM trust nor ARB compatibility.
 A separate [native-kernel guest lab](NATIVE-KERNEL-LAB.md) now exercises
 service startup under the Android-tested kernel. Its policy and observer
 preparation are distinct from the current raw core image.
+The expanded guest now observes account-manager SA 200 and appspawn's real
+startup event under both the Android-tested kernel and the rebuilt no-LTO
+kernel. It includes the original appspawn seccomp filters and Ark generated
+stub file. Application launch, full sandbox behavior, Foundation and
+SceneBoard readiness remain unverified; the raw phone image still has the
+restricted core profile.

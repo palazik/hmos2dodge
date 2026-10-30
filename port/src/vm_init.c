@@ -6,8 +6,70 @@
 #include <signal.h>
 #include <sys/xattr.h>
 #include <dirent.h>
+#include <sys/ptrace.h>
+#include <sys/uio.h>
 #define LO_FLAGS_AUTOCLEAR 4 /* Linux loop UAPI */
 static void vm_mount(const char *source, const char *target, const char *type);
+
+static pid_t vm_traced[64];
+static size_t vm_trace_count;
+
+static void vm_trace_faults(void)
+{
+    DIR *proc = opendir("/proc");
+    if (proc) {
+        struct dirent *entry;
+        while ((entry = readdir(proc)) && vm_trace_count < 64) {
+            if (entry->d_name[0] < '0' || entry->d_name[0] > '9') continue;
+            pid_t pid = (pid_t)strtol(entry->d_name, NULL, 10);
+            bool known = false;
+            for (size_t i = 0; i < vm_trace_count; i++) if (vm_traced[i] == pid) known = true;
+            if (known) continue;
+            char path[512], name[128];
+            snprintf(path, sizeof(path), "/proc/%s/comm", entry->d_name);
+            if (read_text(path, name, sizeof(name)) || strcmp(name, "appspawn")) continue;
+            if (ptrace(PTRACE_SEIZE, pid, NULL, NULL) == 0) {
+                vm_traced[vm_trace_count++] = pid;
+                printf("VM-TRACE attached appspawn pid=%d\n", pid);
+            }
+        }
+        closedir(proc);
+    }
+    for (size_t i = 0; i < vm_trace_count; i++) {
+        pid_t pid = vm_traced[i];
+        int status;
+        if (pid <= 0 || waitpid(pid, &status, WNOHANG | 0x40000000) <= 0) continue;
+        if (!WIFSTOPPED(status)) { vm_traced[i] = -1; continue; }
+        int signal = WSTOPSIG(status);
+        if (signal == SIGSEGV || signal == SIGABRT || signal == SIGSYS) {
+            struct { uint64_t x[31], sp, pc, pstate; } registers = {0};
+            struct iovec vector = {&registers, sizeof(registers)};
+            if (!ptrace(PTRACE_GETREGSET, pid, (void *)1, &vector)) {
+                printf("VM-TRACE fault pid=%d signal=%d pc=0x%llx sp=0x%llx lr=0x%llx x0=0x%llx x1=0x%llx\n",
+                       pid, signal, (unsigned long long)registers.pc,
+                       (unsigned long long)registers.sp, (unsigned long long)registers.x[30],
+                       (unsigned long long)registers.x[0], (unsigned long long)registers.x[1]);
+            }
+            char path[128], line[1024];
+            snprintf(path, sizeof(path), "/proc/%d/maps", pid);
+            FILE *maps = fopen(path, "r");
+            if (maps) {
+                while (fgets(line, sizeof(line), maps)) {
+                    unsigned long long start, end;
+                    if (sscanf(line, "%llx-%llx", &start, &end) == 2 &&
+                        ((registers.pc >= start && registers.pc < end) ||
+                         (registers.x[30] >= start && registers.x[30] < end)))
+                        printf("VM-TRACE map pid=%d %s", pid, line);
+                }
+                fclose(maps);
+            }
+            ptrace(PTRACE_DETACH, pid, NULL, (void *)(long)signal);
+            vm_traced[i] = -1;
+        } else {
+            ptrace(PTRACE_CONT, pid, NULL, (void *)(long)signal);
+        }
+    }
+}
 
 static void vm_processes(void)
 {
@@ -21,7 +83,7 @@ static void vm_processes(void)
         if (read_text(path, name, sizeof(name))) continue;
         snprintf(path, sizeof(path), "/proc/%s/cmdline", entry->d_name);
         if (read_text(path, content, sizeof(content))) continue;
-        if (!strstr(content, "samgr") && !strstr(content, "sa_main") && !strstr(content, "accesstoken_service") && !strstr(content, "hilogd")) continue;
+        if (!strstr(content, "samgr") && !strstr(content, "sa_main") && !strstr(content, "accesstoken_service") && !strstr(content, "hilogd") && !strstr(content, "appspawn") && !strstr(content, "accountmgr")) continue;
         const char *files[] = {"status", "attr/current", "wchan"};
         for (size_t i = 0; i < sizeof(files) / sizeof(files[0]); i++) {
             snprintf(path, sizeof(path), "/proc/%s/%s", entry->d_name, files[i]);
@@ -32,6 +94,22 @@ static void vm_processes(void)
     closedir(proc);
 }
 
+static void vm_fault_files(void)
+{
+    const char *folder = "/data/log/faultlog/temp";
+    DIR *directory = opendir(folder);
+    if (!directory) { perror("VM fault directory"); return; }
+    struct dirent *entry;
+    while ((entry = readdir(directory))) {
+        if (entry->d_name[0] == '.') continue;
+        char path[512], buffer[32768];
+        snprintf(path, sizeof(path), "%s/%s", folder, entry->d_name);
+        if (!read_text(path, buffer, sizeof(buffer)))
+            printf("VM-FAULT %s\n%s\n", entry->d_name, buffer);
+    }
+    closedir(directory);
+}
+
 static void vm_capture(void)
 {
     pid_t child = fork();
@@ -39,11 +117,14 @@ static void vm_capture(void)
     if (child) return;
     int reader = open("/dev/kmsg", O_RDONLY | O_NONBLOCK | O_CLOEXEC);
     if (reader >= 0) lseek(reader, 0, SEEK_END);
+    char profile[64];
+    bool framework = !read_text("/vm/profile", profile, sizeof(profile)) && !strcmp(profile, "framework");
     int output[2];
     if (pipe2(output, O_NONBLOCK | O_CLOEXEC)) _exit(125);
     size_t total = 0;
-    for (int tick = 0; tick < 120; tick++) {
+    for (int tick = 0; tick < (framework ? 240 : 120); tick++) {
         usleep(500000);
+        if (framework) vm_trace_faults();
         char diagnostic[4096];
         ssize_t bytes;
         while ((bytes = read(output[0], diagnostic, sizeof(diagnostic) - 1)) > 0) {
@@ -70,8 +151,11 @@ static void vm_capture(void)
                 {"/system/bin/param", "get", "accesstoken.permission.init", NULL},
                 {"/system/bin/sa-query", NULL, NULL, NULL},
                 {"/system/lib/ld-musl-aarch64.so.1", "/system/bin/hilog", "-x", NULL, NULL},
+                {"/system/bin/param", "get", "bootevent.appspawn.started", NULL},
+                {"/system/bin/sa-query", "200", NULL, NULL},
             };
             for (size_t i = 0; i < sizeof(commands) / sizeof(commands[0]); i++) {
+                if (i >= 4 && !framework) continue;
                 pid_t client = fork();
                 if (!client) {
                     int flags = fcntl(output[1], F_GETFL);
@@ -88,6 +172,7 @@ static void vm_capture(void)
             }
         }
     }
+    if (framework) vm_fault_files();
     char enforce[16];
     if (!read_text("/sys/fs/selinux/enforce", enforce, sizeof(enforce)))
         printf("VM final SELinux enforce=%s\n", enforce);
@@ -137,7 +222,10 @@ static int vm_token_storage(void)
     char path[512];
     unsigned int mode, uid, gid;
     while (fscanf(directories, "%511s %o %u %u", path, &mode, &uid, &gid) == 4) {
-        if (strncmp(path, "/data/", 6) || strstr(path, "..") || mode > 07777 ||
+        bool private_path = !strncmp(path, "/data/", 6) ||
+                            !strcmp(path, "/mnt/sandbox") || !strncmp(path, "/mnt/sandbox/", 13) ||
+                            !strcmp(path, "/mnt/startup") || !strncmp(path, "/mnt/startup/", 13);
+        if (!private_path || strstr(path, "..") || mode > 07777 ||
             (mkdir(path, (mode_t)mode) && errno != EEXIST) ||
             chown(path, (uid_t)uid, (gid_t)gid) || chmod(path, (mode_t)mode)) {
             fclose(directories);
@@ -289,7 +377,7 @@ int main(void)
     test_kernel();
     printf("VM KERNEL CHECK %s failures=%d\n", failures ? "FAIL" : "PASS", failures);
     char profile[64] = {0};
-    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && !strcmp(profile, "core")) {
+    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && (!strcmp(profile, "core") || !strcmp(profile, "framework"))) {
         int gate = open("/sys/module/access_tokenid/parameters/compat", O_WRONLY | O_CLOEXEC);
         if (gate < 0 || write(gate, "1", 1) != 1) return 4;
         close(gate);

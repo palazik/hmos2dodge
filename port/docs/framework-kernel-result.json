@@ -1,0 +1,65 @@
+{
+  "scope": "Diskless QEMU ARM64 virt; kernel identity recorded in inputs; no DSU or OP13 hardware emulation",
+  "inputs": {
+    "profile": "framework",
+    "services": [
+      "accesstoken_service",
+      "accountmgr",
+      "appspawn",
+      "faultloggerd",
+      "hilogd",
+      "samgr"
+    ],
+    "donor_identities_preserved": true,
+    "kernel": "out/baseline-android/Image",
+    "kernel_sha256": "d143c09bfc88d555e5144dbcd7015475d2f795f27ee78d99154a0ff8852b65b2",
+    "source_sha256": {
+      "port/src/vm_init.c": "7abdef618acdc4b6b027db1386d8b438aec765c3a361b36d3496f99cae3c386b",
+      "port/src/dsu_stage2.c": "3545385417ee352792f930e94a23ff5a4a42bc4bb6c0c41e786db08c03593d4d",
+      "port/src/dsu_probe.c": "031db9b9adcee1b3941a1e81470676dda254895cbb8b5f99a412cdb79d4e8505",
+      "port/src/vm_sa_query.cpp": "5d959c5c8212b0231ab7642a3c3e7b9d49a04a1545c0ea63d8ee4238d813495f",
+      "port/scripts/prepare_framework.py": "b5f56942d91dce58cfeab6011fc82ad56d75fa17333ed2151aad19d014b4ae8b",
+      "port/selinux/vm-diagnostics.cil": "699834202eb6815223e54eb4651549254ca793677301b4744744ce3833943156",
+      "port/scripts/prepare_vm_runtime.py": "2f7627b4e0c00744bc809fba3d1f6cd08f54deecb048c9d02f8c9ea293d3b6a8",
+      "port/scripts/vm_file_list.py": "34cb177e7758f8204857f5bfbfd94a34b849797d04b86a024f28c9bd1714ba4d"
+    },
+    "disks": [],
+    "network": false,
+    "private_data": "128 MiB ext4 file inside cpio, loop-mounted from guest RAM only",
+    "observer_policy": "port/selinux/vm-diagnostics.cil; guest only, never a phone policy",
+    "policy_sha256": "aa189709db7cea3b6f57cb2ff2663dbc5f434ba919330497b497f44a4ab2942a",
+    "init_config_sha256": "7812f1bad82aa417ce026fe89bba93972f926151217fc38d44f01ba21fad2fe7",
+    "init_plugins": [
+      "libselinuxadp.z.so"
+    ],
+    "hardware_emulated": "QEMU virt only; OP13 hardware is not emulated",
+    "native_phone_tested": false
+  },
+  "log": "work/logs/vm-framework-baseline.log",
+  "log_sha256": "adbc01383e7e274624b2fc209adeac957d241723778f5d875d016ecafca8afb0",
+  "archive_sha256": "1ce8ce5339cb583ae58d66264d15b27dd7f7c78c415b4f4035bc4150c6dcab57",
+  "checks": {
+    "kernel_probe_passed": true,
+    "samgr_donor_domain_observed": true,
+    "samgr_ready_parameter_set": true,
+    "access_token_service_published_sa3503": true,
+    "observer_obtained_sa3503": true,
+    "final_selinux_enforcing": true,
+    "ext4_io_errors_absent": true,
+    "account_manager_published_sa200": true,
+    "observer_obtained_sa200": true,
+    "appspawn_no_segv_observed": true,
+    "appspawn_ready_observed": true
+  },
+  "early_label_preparation_permissive": true,
+  "observer_policy_is_guest_only": true,
+  "known_limitations": [
+    "Original init policy reload logs a failure after the lab preloads policy",
+    "Selected services only; no application launch or full framework readiness",
+    "Missing system services/configuration still produce runtime errors",
+    "SceneBoard, display, GPU, input and actual OP13 DSU boot untested"
+  ],
+  "phone_partitions_written": false,
+  "arb_compatibility_established": false,
+  "archive": "out/vm/framework-baseline-compact.cpio.gz"
+}

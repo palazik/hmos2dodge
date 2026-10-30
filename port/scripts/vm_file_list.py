@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """List a core guest payload and its ELF dependencies for cpio, NUL separated."""
+import argparse
+import json
 from pathlib import Path
 import re
 import struct
@@ -53,6 +55,24 @@ def select(stage):
               find_library('libaccesstoken_manager_service.z.so'),
               find_library('libaccesstoken_config_policy.z.so'),
               find_library('libtokensync_sdk.z.so')]
+    config = json.loads((source / 'etc/init.cfg').read_text())
+    for service in config['services']:
+        binary, *arguments = service['path']
+        queue.append(stage / binary.lstrip('/'))
+        for argument in arguments:
+            if argument.startswith('/system/profile/') and argument.endswith('.json'):
+                sa_profile = json.loads((stage / argument.lstrip('/')).read_text())
+                queue += [find_library(sa['libpath']) for sa in sa_profile['systemability']]
+    if any(service['name'] == 'appspawn' for service in config['services']):
+        # Appspawn registers its own plugin tree through dlopen.
+        queue += [source / 'bin/processdump']
+        queue += list((source / 'lib64/appspawn').rglob('*.so'))
+        queue += list((source / 'lib64/seccomp').rglob('*.so'))
+        # Ark's generated code is opened as data, not an ELF DT_NEEDED entry.
+        # Missing stub.an leaves interpreter entry slots empty during preload.
+        queue += list((source / 'lib64/module/arkcompiler').iterdir())
+        queue += [find_library(name) for name in
+                  ('libace_compatible.z.so', 'libimageformatagent.z.so', 'libactivation_lock_sdk.z.so')]
     while queue:
         path = queue.pop()
         relative = path.relative_to(stage)
@@ -80,7 +100,10 @@ def select(stage):
 
 
 if __name__ == '__main__':
-    stage = ROOT / 'work/system-vm/runtime-root'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--profile', choices=('core', 'framework'), default='core')
+    args = parser.parse_args()
+    stage = ROOT / ('work/system-vm/runtime-root-' + args.profile)
     files = select(stage)
     sys.stderr.write(f'Core VM payload: {len(files)} entries\n')
     for path in files:

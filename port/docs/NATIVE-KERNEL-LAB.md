@@ -1,7 +1,9 @@
 # Diskless ARM64 kernel lab
 
-This lab runs the Android-tested OP13 kernel on QEMU's generic ARM64 `virt`
-machine. It exercises real kernel Binder, access-token ioctls, process IDs,
+This lab defaults to the Android-tested OP13 kernel on QEMU's generic ARM64
+`virt` machine. `HMOS_VM_KERNEL` selects another experimental kernel; its
+hash is recorded when staging the archive. It exercises real kernel Binder,
+access-token ioctls, process IDs,
 service credentials and SELinux. It does not emulate DSU, the OP13, Qualcomm
 hardware, an Android bootloader, AVB acceptance or ARB state.
 
@@ -27,7 +29,8 @@ bash port/scripts/run_vm.sh core
 ```
 
 Logs are local `work/logs/vm-{probe,core}.log`; generated input records are
-`out/vm/runtime-inputs.json`. The compact archive explicitly adds dynamic
+`out/vm/runtime-inputs-core.json` (also mirrored to `runtime-inputs.json`).
+The compact archive explicitly adds dynamic
 plugins as well as recursively resolving ELF `DT_NEEDED` dependencies.
 It selects hilogd, samgr and accesstoken_service with the donor definitions,
 including UID/GID, SELinux context, token permissions and sockets. Donor
@@ -113,3 +116,54 @@ parent directory permissions intentionally restrict runtime init.
 These are core-startup observations. Original init's policy-reload error and
 missing dependent service/configuration errors remain. No SceneBoard launch
 or native DSU test is implied.
+
+# Expanded service lab
+
+`bash port/scripts/build_vm_runtime.sh framework` stages an independent
+archive with accountmgr, appspawn and faultloggerd in addition to the three
+core services. `bash port/scripts/run_vm.sh framework` observes it for
+120 guest seconds. Its input record is `out/vm/runtime-inputs-framework.json`.
+Both profiles have independent staging directories; a runner lock prevents
+two guests from overwriting a log concurrently. `HMOS_VM_TIMEOUT` controls
+the host timeout, and `HMOS_VM_INITRD` can select a decompressed cpio in
+host RAM to avoid TCG gzip overhead. No guest disk is added.
+
+The expanded observer can query account-manager SA 200 and trace appspawn's
+fault registers with ptrace. Those permissions exist only in the separate
+VM policy. Appspawn retains its own domain and seccomp filters. Faultloggerd
+alone has not produced usable crash reports in this setup; the register
+observer is a separate diagnostic path. It does not suppress the original
+fatal signal or establish service readiness.
+
+The dependency list must include files opened dynamically: appspawn plugins,
+seccomp filters and Ark's `module/arkcompiler/stub.an` and metadata. ELF
+`DT_NEEDED` resolution alone misses them. An earlier compact archive omitted
+`stub.an`; the runtime logged its absence and appspawn faulted at a null
+indirect call in `libark_jsruntime.so` (ELF VA 0x3a6c10). This was a lab
+payload omission, not absence from the original donor image.
+OpenHarmony's [runtime build configuration](https://github.com/openharmony/arkcompiler_ets_runtime/blob/master/js_runtime_config.gni)
+also defines the standard-system `STUB_AN_FILE` path. The donor's own missing
+file log and fault registers are the evidence for this particular failure.
+
+The donor's pids cgroup mount cannot succeed with the stock controller set.
+Enabling CONFIG_CGROUP_PIDS changed imported module CRCs in an experimental
+build, so it is excluded from the phone kernel configuration. See
+`kernel-pids-experiment.json`. Do not bypass module CRC checks to work around
+this. The remaining appspawn sandbox/cgroup behavior requires adaptation.
+
+The recorded expanded runs (`framework-kernel-result.json` and
+`framework-nolto-result.json`) observe account-manager SA 200 and access-token
+SA 3503 through Binder, appspawn setting its real startup event, no observed
+appspawn SIGSEGV, and final enforcement. The second run also provisions
+private `/mnt/sandbox` and `/mnt/startup` directories before label restoration,
+eliminating their init mkdir errors. It uses the rebuilt no-LTO kernel, which
+has not been tested on Android. These checks establish selected service
+initialization, not the ability to launch applications or enforce a complete
+application sandbox. Missing pids control, dependent services and device
+security components remain unresolved.
+
+The runner checks the selected kernel against its staged input record and
+checks that a custom initrd contains the staged archive. It records actual
+launch hashes separately. `record_vm_results.py` verifies these records and
+the source hashes before writing a result. Rebuild with the same
+`HMOS_VM_KERNEL` value passed to the runner when selecting another kernel.
