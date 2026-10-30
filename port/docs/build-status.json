@@ -31,11 +31,12 @@
   "hardware_capture": "20261029-163450.zip inspected; 464 vendor modules, connected DSI panel and KGSL; see OP13-HARDWARE.md",
   "module_crc_audit": "24564 comparable imported CRCs match, zero mismatches; 35 display/GPU dependency providers uncaptured; not load-tested",
   "dsu_metadata_discrepancy": "July development AVB metadata predates October captured host SPL; acceptance unresolved; dates and rollback indices unchanged",
-  "ui_configuration": "OP13 native density/cutout and discrete 60/90/120 policies generated, conversion tests pass, bind overrides carried in raw core image; UI not started",
+  "ui_configuration": "OP13 XML visibility bug fixed: curated etc bound read-only after masks; actual C mount-helper namespace regression passes; raw core image rebuilt; native UI untested",
   "porter_review": "436 selected upstream text files verified against pinned Git blobs; applicability review in PORTER-AUDIT.md; not all binary paths audited/tested",
   "framework_inventory": "257 configs, 268 unique services, 265 SA IDs; 106 startup commands flagged for adaptation; no parse errors",
   "delivery": "raw .img files per user request; no ZIP package",
   "repository": "https://github.com/palazik/hmos2dodge; proper hmos2sweet fork preserving all six upstream commits",
   "initial_repository_snapshot": "https://github.com/palazik/hmos2dodge-initial-snapshot",
-  "selinux_offline": "Donor-runtime policy v31 compiles; strict original and supplemented policies each report 390 neverallow failures at unchanged locations; selected policy query confirms only composer DRM-map addition; no policy loaded"
+  "selinux_offline": "Donor-runtime policy v31 compiles; strict original and supplemented policies each report 390 neverallow failures at unchanged locations; selected policy query confirms only composer DRM-map addition; no policy loaded",
+  "framework_candidate": "10 canonical services and 46 private-data directories staged offline; identities/socket owners validated; no automatic startup; not integrated into core image"
 }

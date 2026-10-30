@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+# SPDX-License-Identifier: Apache-2.0
+"""Record actual raw-image build inputs without carrying stale manual hashes."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def sha(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--profile', choices=('minimal', 'logging', 'core'), required=True)
+    args = parser.parse_args()
+    stage = ROOT / 'work/stage2-root'
+    image = ROOT / 'out/experiments/stage2/system.img'
+    inputs = [stage / 'system/bin/init', stage / 'hmos/bootstrap/etc/init.cfg',
+              ROOT / 'port/src/dsu_stage2.c', ROOT / 'port/src/dsu_probe.c']
+    inputs += sorted((stage / 'hmos/overrides').rglob('*'))
+    hashes = {str(p.relative_to(ROOT)): sha(p) for p in inputs if p.is_file()}
+    report = {'image': str(image.relative_to(ROOT)), 'sha256': sha(image),
+              'bytes': image.stat().st_size, 'profile': args.profile,
+              'input_sha256': hashes, 'framework_candidate_integrated': False,
+              'native_dsu_tested': False, 'sceneboard_started': False,
+              'arb_compatibility_established': False,
+              'signing': 'offline development key; OEM trust unverified',
+              'ui_mount_order': 'curated sys_prod etc bound read-only after donor masks'}
+    (image.parent / 'build-manifest.json').write_text(json.dumps(report, indent=2) + '\n')
+    # Keep the older descriptive manifest's generated hashes consistent too.
+    old = image.parent / 'manifest.json'
+    if old.exists():
+        content = json.loads(old.read_text())
+        content.update(config_sha256=sha(stage / 'hmos/bootstrap/etc/init.cfg'),
+                       wrapper_sha256=sha(stage / 'system/bin/init'))
+        old.write_text(json.dumps(content, indent=2) + '\n')
+    print('Recorded raw image:', report['sha256'])
+
+
+if __name__ == '__main__':
+    main()

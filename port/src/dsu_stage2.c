@@ -127,6 +127,12 @@ static int display_overrides(void)
 
 static int ui_overrides(void)
 {
+    /* Install the curated etc tree AFTER masking donor configuration. Binding
+       individual files before the mask hid them again. This tree contains no
+       init directory, imports, or donor hardware startup configuration. */
+    if (root_mount("/hmos/overrides/sys_prod/etc", "/sys_prod/etc", NULL, MS_BIND, NULL) ||
+        root_mount(NULL, "/sys_prod/etc", NULL,
+                   MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOSUID | MS_NODEV, NULL)) return -1;
     const char *paths[] = {
         "/sys_prod/etc/window/resources/display_manager_config.xml",
         "/sys_prod/etc/graphic/hgm_policy_config.xml"
@@ -138,15 +144,14 @@ static int ui_overrides(void)
         struct stat source_stat, target_stat;
         if (stat(source, &source_stat) || stat(target, &target_stat) ||
             !S_ISREG(source_stat.st_mode) || !S_ISREG(target_stat.st_mode)) return -1;
-        if (mount(source, target, NULL, MS_BIND, NULL) ||
-            mount(NULL, target, NULL, MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOSUID | MS_NODEV, NULL))
-            return -1;
+        if (source_stat.st_dev != target_stat.st_dev || source_stat.st_ino != target_stat.st_ino)
+            { errno = EINVAL; return -1; }
         logmsg("read-only OP13 UI override: %s", paths[i]);
     }
     return 0;
 }
 
-static void stop_boot(const char *reason)
+static _Noreturn void stop_boot(const char *reason)
 {
     logmsg("STOP stage2: %s (%s); requesting reboot in 30 seconds", reason, strerror(errno));
     sleep(30);
@@ -211,7 +216,10 @@ static void start_capture(void)
     _exit(1);
 }
 
-int main(int argc, char **argv)
+#ifndef STAGE2_ENTRY
+#define STAGE2_ENTRY main
+#endif
+int STAGE2_ENTRY(int argc, char **argv)
 {
     if (argc == 2 && !strcmp(argv[1], "--selftest")) return selftest();
     if (getpid() != 1) { fputs("stage2 requires PID 1\n", stderr); return 2; }
@@ -240,7 +248,6 @@ int main(int argc, char **argv)
         if (loop_mount(parts[i].part, target)) stop_boot("donor partition mount");
     }
     if (display_overrides()) stop_boot("display library overrides");
-    if (ui_overrides()) stop_boot("OP13 UI configuration overrides");
     if (root_mount("/hmos/bootstrap/etc", "/system/etc", NULL, MS_BIND, NULL)) stop_boot("minimal init config");
     /* Minimal init profile: no external init modules, policy-loader module,
        hardware autorun/reboot plugins, or non-system config layers. */
@@ -248,6 +255,7 @@ int main(int argc, char **argv)
                           "/vendor/etc", "/chip_prod/etc", "/sys_prod/etc", "/cust/etc", "/patch_hw/etc"};
     for (size_t i = 0; i < sizeof(masks) / sizeof(masks[0]); i++)
         if (mask_dir(masks[i])) stop_boot("config/plugin mask");
+    if (ui_overrides()) stop_boot("OP13 UI configuration overrides");
     if (root_mount("/dev", "/dev", NULL, MS_BIND | MS_REC, NULL)) stop_boot("device bind");
     if (mask_dir("/dev/block")) stop_boot("physical block-device mask");
     if (root_mount("proc", "/proc", "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC, NULL)) stop_boot("proc");
