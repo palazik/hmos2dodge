@@ -22,6 +22,9 @@
   DSU, SceneBoard and hardware functionality.
 - Use this project's supplied ROM inputs, OP13 capture and new vendor_boot.img.
   Do not substitute images from other porting projects.
+- The native framework port uses OP13 stock vendor/odm as the hardware base.
+  Keep required OHOS-native runtime/HDI libraries and policy as explicit
+  layers; Android HAL libraries are not direct replacements for OHOS HDI.
 - The user allows extraction of OP13 stock vendor/odm and needed ancillary
   images from /home/palaziks/claudefix/stock/payload.bin. They still exclude
   boot, vendor_boot, system, product, system_ext and every my_* partition.

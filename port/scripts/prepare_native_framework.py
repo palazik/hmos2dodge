@@ -152,7 +152,7 @@ def main():
             raw_image_integration=False,
             unresolved=['Load matching modules with required firmware before native hardware startup',
                         'Expose only DRM/KGSL/input devices in the private device namespace',
-                        'Bind the OP13 HDF and firmware overrides read-only in stage2',
+                        'Bind the adapted HDF configuration read-only over the framework hardware base',
                         'Validate native-window/dma-buf interoperability and service readiness',
                         'Activate an isolated account and install/launch SceneBoard'])
     (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')

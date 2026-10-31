@@ -165,6 +165,7 @@ static int ui_overrides(void)
 }
 
 #include "native_framework.h"
+#include "vendor_layout.h"
 
 static _Noreturn void stop_boot(const char *reason)
 {
@@ -258,7 +259,10 @@ int STAGE2_ENTRY(int argc, char **argv)
     mkdir("/mnt", 0755);
     if (mount("tmpfs", "/mnt", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=16M")) stop_boot("scratch mount");
     mkdir(newroot, 0755);
-    if (loop_mount("system", newroot)) stop_boot("system image mount");
+    if (framework) {
+        if (mkdir("/mnt/hmos-system", 0755) || loop_mount("system", "/mnt/hmos-system") ||
+            system_root_view("/mnt/hmos-system")) stop_boot("HarmonyOS system root view");
+    } else if (loop_mount("system", newroot)) stop_boot("system image mount");
     static const struct { const char *part, *target; } parts[] = {
         {"vendor", "/vendor"}, {"chip_prod", "/chip_prod"},
         {"sys_prod", "/sys_prod"}, {"cust", "/cust"}, {"patch", "/patch_hw"},
@@ -266,7 +270,16 @@ int STAGE2_ENTRY(int argc, char **argv)
     for (size_t i = 0; i < sizeof(parts) / sizeof(parts[0]); i++) {
         char target[512];
         snprintf(target, sizeof(target), "%s%s", newroot, parts[i].target);
-        if (loop_mount(parts[i].part, target)) stop_boot("donor partition mount");
+        const char *part = framework && !strcmp(parts[i].part, "vendor") ? "op13_vendor" : parts[i].part;
+        if (loop_mount(part, target)) stop_boot("read-only partition mount");
+    }
+    if (framework) {
+        char odm[512];
+        snprintf(odm, sizeof(odm), "%s/odm", newroot);
+        if (loop_mount("op13_odm", odm) || mkdir("/mnt/hmos-vendor-runtime", 0755) ||
+            loop_mount("vendor", "/mnt/hmos-vendor-runtime") ||
+            ohos_vendor_runtime("/mnt/hmos-vendor-runtime")) stop_boot("OP13 vendor/odm and OHOS runtime layout");
+        logmsg("OP13 vendor/odm base; separate OHOS bin/lib64 runtime; no Android HAL startup");
     }
     if (display_overrides()) stop_boot("display library overrides");
     if (root_mount("/hmos/bootstrap/etc", "/system/etc", NULL, MS_BIND, NULL)) stop_boot("minimal init config");

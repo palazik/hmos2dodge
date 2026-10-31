@@ -7,6 +7,31 @@
 int main(void)
 {
     newroot = "/donor";
+    if (system_root_view("/source") ||
+        readonly_bind("/stock/vendor", "/donor/vendor") ||
+        readonly_bind("/stock/odm", "/donor/odm") ||
+        ohos_vendor_runtime("/ohos-runtime")) {
+        perror("OP13 vendor/ODM layout"); return 10;
+    }
+    const char *hardware_paths[] = {"/donor/vendor/firmware/op13.bin", "/donor/odm/op13.cfg"};
+    for (size_t i = 0; i < sizeof(hardware_paths) / sizeof(hardware_paths[0]); i++) {
+        char text[64];
+        if (read_text(hardware_paths[i], text, sizeof(text)) || strcmp(text, "op13-stock")) return 11;
+        int fd = open(hardware_paths[i], O_WRONLY);
+        if (fd >= 0) { close(fd); return 12; }
+        if (errno != EROFS) return 13;
+    }
+    char runtime[64];
+    if (read_text("/donor/vendor/lib64/libhdi-test.so", runtime, sizeof(runtime)) ||
+        strcmp(runtime, "ohos-runtime") ||
+        access("/donor/vendor/lib64/libandroid-test.so", F_OK) == 0 ||
+        access("/source/vendor/firmware/op13.bin", F_OK) == 0 ||
+        access("/source/odm", F_OK) == 0) return 14;
+    if (mask_dir("/vendor/etc") || access("/donor/vendor/etc/init/stock.rc", F_OK) == 0) return 15;
+    int native_fd = open("/donor/vendor/lib64/libhdi-test.so", O_WRONLY);
+    if (native_fd >= 0) { close(native_fd); return 16; }
+    if (errno != EROFS) return 17;
+    puts("PASS: OP13 firmware/ODM retained read-only; OHOS runtime isolated from Android libraries; source root unchanged");
     /* Reproduce the donor configuration mask, then exercise the actual helper. */
     if (mask_dir("/sys_prod/etc") || ui_overrides()) {
         perror("stage2 configuration mounts"); return 1;

@@ -5,6 +5,11 @@ task_sysroot="$task_root/work/musl-cross"
 task_stage="$task_root/work/stage2-root"
 task_output="$task_root/out/experiments/stage2"
 task_profile=${1:-minimal}
+task_build_mode=${2:-}
+if [[ -n "$task_build_mode" && "$task_build_mode" != --prepare-only ]]; then
+    echo 'Second argument must be --prepare-only or omitted' >&2
+    exit 2
+fi
 if [[ "$task_profile" == framework ]]; then
     task_stage="$task_root/work/stage2-framework-root"
     task_output="$task_root/out/experiments/stage2-framework"
@@ -14,12 +19,14 @@ else
     task_config=$(python3 "$task_root/port/scripts/prepare_init_lab.py" --profile "$task_profile")
 fi
 task_cleanup_payload_links() {
-    python3 - "$task_stage/hmos/images" "$task_root/hmos5" <<'PY'
+    python3 - "$task_stage/hmos/images" "$task_root" "$task_profile" <<'PY'
 from pathlib import Path
 import sys
-stage, original = map(Path, sys.argv[1:])
-for name in ('system', 'vendor', 'chip_prod', 'sys_prod', 'cust', 'patch'):
-    path, source = stage / (name + '.img'), original / (name + '.img')
+stage, root = map(Path, sys.argv[1:3])
+sys.path.insert(0, str(root / 'port/scripts'))
+from stage2_sources import payload_sources
+for name, source in payload_sources(sys.argv[3]).items():
+    path = stage / name
     if path.exists() and source.exists() and path.samefile(source):
         path.unlink()
 PY
@@ -68,9 +75,21 @@ EOF
 if [[ "$task_profile" == framework ]]; then
     cp "$task_native/file-contexts" "$task_root/work/stage2-file-contexts"
 fi
-for task_part in system vendor chip_prod sys_prod cust patch; do
-    ln -f "$task_root/hmos5/$task_part.img" "$task_stage/hmos/images/$task_part.img"
-done
+python3 - "$task_stage/hmos/images" "$task_root" "$task_profile" <<'PY'
+from pathlib import Path
+import sys
+stage, root = map(Path, sys.argv[1:3])
+sys.path.insert(0, str(root / 'port/scripts'))
+from stage2_sources import payload_sources, verify_sources
+verify_sources(sys.argv[3])
+for name, source in payload_sources(sys.argv[3]).items():
+    target = stage / name
+    if target.exists():
+        if not target.samefile(source):
+            raise SystemExit('Refusing unexpected staging image: ' + str(target))
+        target.unlink()
+    target.hardlink_to(source)
+PY
 gcc -Wall -Wextra -Werror -O2 "$task_root/port/src/dsu_stage2.c" -o "$task_root/work/dsu-stage2-host"
 "$task_root/work/dsu-stage2-host" --selftest
 clang --target=aarch64-linux-musl -fuse-ld=lld -static -nostdinc -nostdlib \
@@ -81,6 +100,10 @@ clang --target=aarch64-linux-musl -fuse-ld=lld -static -nostdinc -nostdlib \
     -Wl,--end-group "$task_sysroot/lib/crtn.o" -o "$task_stage/system/bin/init"
 llvm-strip "$task_stage/system/bin/init"
 "$task_root/work/host-tools/usr/bin/qemu-aarch64-static" "$task_stage/system/bin/init" --selftest
+if [[ "$task_build_mode" == --prepare-only ]]; then
+    echo 'Stage2 prepared and compiled; no full image packed. Source hardlinks removed on exit.'
+    exit 0
+fi
 "$task_root/bin/Linux/x86_64/mkfs.erofs" -T 0 --all-root \
     --file-contexts "$task_root/work/stage2-file-contexts" "$task_output/system.img" "$task_stage"
 python3 "$task_root/port/scripts/sign_probe.py" --image "$task_output/system.img"

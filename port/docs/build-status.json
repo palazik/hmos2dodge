@@ -60,5 +60,6 @@
   "gpu_firmware": "All four gen80000 files recovered from approved OP13 vendor; hardware integration pending; no firmware partition write/flash",
   "graphics_components": "12-service configuration and OP13 HDF override staged separately; four GPU blobs extracted from approved stock vendor. Stage2 device exposure/module loading and native graphics startup remain incomplete.",
   "mesa_software_rendering": "Supplied HMOS Mesa: QEMU user-mode EGL 1.5 context, clear/readback and compiled/linked GLES shader triangle pass with softpipe. No host GPU exposed; no native-window/dma-buf, OP13 scanout, KGSL or SceneBoard proof.",
-  "early_graphics_loading": "54 of the 109 selected dependency modules absent from supplied vendor_boot modules.load; early list does not prove actual residency. Explicit hardware startup still required."
+  "early_graphics_loading": "54 of the 109 selected dependency modules absent from supplied vendor_boot modules.load; early list does not prove actual residency. Explicit hardware startup still required.",
+  "native_vendor_layout": "Framework startup now mounts stock OP13 vendor/odm read-only; OHOS bin/lib64 runtime and curated etc/policy layered separately. RAM root skeleton supplies missing /odm. Host namespace mount regression and ARM64 compile/selftest pass; no new raw image or device test."
 }

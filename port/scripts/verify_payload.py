@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import stat
 import struct
+from stage2_sources import expected_hashes
 
 ROOT = Path(__file__).resolve().parents[2]
 IMAGE = ROOT / 'out/dsu/op13-hmos-mount-probe.img'
@@ -95,14 +96,10 @@ class FlatErofs:
 
 
 def verify(image, report_path, check_bootstrap=False, profile='minimal', check_display=False):
-    expected = {}
-    for line in (ROOT / 'port/docs/input-images.sha256').read_text().splitlines():
-        sha, name = line.split(maxsplit=1)
-        expected[Path(name).name] = sha
+    expected = expected_hashes(profile)
     fs = FlatErofs(image)
     report = {}
-    for part in ('system', 'vendor', 'chip_prod', 'sys_prod', 'cust', 'patch'):
-        name = part + '.img'
+    for name in expected:
         nid = fs.lookup('hmos/images/' + name)
         h = hashlib.sha256()
         for block in fs.chunks(nid):

@@ -104,8 +104,9 @@
   "remaining": [
     "Load matching modules with required firmware before native hardware startup",
     "Expose only DRM/KGSL/input devices in the private device namespace",
-    "Bind the OP13 HDF and firmware overrides read-only in stage2",
+    "Bind the adapted HDF configuration read-only over the framework hardware base",
     "Validate native-window/dma-buf interoperability and service readiness",
     "Activate an isolated account and install/launch SceneBoard"
-  ]
+  ],
+  "hardware_base_layout": "Framework code uses OP13 vendor/odm with separate OHOS bin/lib64 runtime; see vendor-layout-result.json. Not device tested."
 }

@@ -1,0 +1,29 @@
+{
+  "scope": "Offline startup-code and namespace verification only; no new raw image/device result",
+  "profile": "framework",
+  "hardware_vendor": "op13_stock/vendor.img",
+  "hardware_odm": "op13_stock/odm.img",
+  "ohos_vendor_role": "Native bin/lib64 runtime source only; not the hardware base",
+  "source_image_sha256": {
+    "system.img": "dcbd4a349c2509d5a7362e529b8e52f159d00f9e2a92fb1be0e7839380a3373c",
+    "vendor.img": "e7f955a76543d52b172824b3c6fa0ccbae78a02357f51ce2cf19f5dcc1c6590a",
+    "chip_prod.img": "c0a48940efbd17c7c8f35be666e3a2fdaf62dc728fb21c6cd93e473945204b18",
+    "sys_prod.img": "1abbbce57261fc9741ebb57a22bc4a24ba810e5f4a1be1b29e53441211f90e22",
+    "cust.img": "cba348a71807f1721c594024c1ac901b3d401672448291eae805a313593e0920",
+    "patch.img": "a5d921e6ad938db069a217b449e0120da2390a777d91b558cb69dfc2bee979b9",
+    "op13_vendor.img": "493bd0bfc576ae2c007ef7486417a2498d07cf806f09ca82cd2b7708e34c86ab",
+    "op13_odm.img": "ce55a9618a4d209bee296508034e014ba54ed157d44d967e7aa804f9afdb87f8"
+  },
+  "root_skeleton": "RAM tmpfs with read-only system directory/file binds; /odm added in RAM",
+  "host_mount_regression_passed": true,
+  "arm64_startup_compile_and_selftest_passed": true,
+  "startup_binary_sha256": "328779dd2afa2ef7b671a616deb91443017042260f8d1cea83d8bc5cf3e7888f",
+  "full_image_generated": false,
+  "staging_image_hardlinks_retained": false,
+  "device_tested": false,
+  "android_hal_services_started": false,
+  "ohos_graphics_services_started": false,
+  "selinux_with_stock_vendor_odm_verified": false,
+  "native_hardware_compatibility_verified": false,
+  "arb_compatibility_established": false
+}
