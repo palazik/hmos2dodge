@@ -6,6 +6,8 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import subprocess
+import tempfile
 from audit_op13_modules import module
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,6 +15,7 @@ parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--audit', type=Path, default=ROOT / 'out/kernel/current-early-module-candidates.json')
 parser.add_argument('--early-modules', type=Path, required=True)
 parser.add_argument('--capture', type=Path, default=ROOT / 'work/device-hardware/20261029-163450')
+parser.add_argument('--stock-vendor', type=Path, default=ROOT / 'op13_stock/vendor.img')
 args = parser.parse_args()
 audit = json.loads(args.audit.read_text())
 for key in ('mismatches', 'absent_imports', 'conflicting_exports', 'missing_dependency_modules'):
@@ -77,7 +80,44 @@ gpu_binary = selected['msm_kgsl'][0].read_bytes()
 if not all('/vendor/firmware/' + name in capture_firmware and name.encode() + b'\0' in gpu_binary for name in gpu_names):
     raise SystemExit('Expected OP13 GPU firmware names are not supported by capture/driver evidence')
 report['gpu_firmware_names_from_capture_and_driver'] = list(gpu_names)
-report['gpu_firmware_bytes_available'] = False
+vendor_record = json.loads(args.stock_vendor.with_suffix('.json').read_text())
+with args.stock_vendor.open('rb') as stream:
+    vendor_hash = hashlib.file_digest(stream, 'sha256').hexdigest()
+if (vendor_record['partition'] != 'vendor' or not vendor_record['partition_hash_verified'] or
+        vendor_record['sha256'] != vendor_hash):
+    raise SystemExit('Stock vendor bytes do not match verified extraction record')
+# Only the four OP13 GPU files enter the port payload. Keep Android's EGL,
+# HALs and unrelated firmware out of the HarmonyOS library namespace.
+firmware_output = output / 'firmware'
+firmware_output.mkdir(exist_ok=True)
+firmware_entries = []
+with tempfile.TemporaryDirectory(prefix='op13-gpu-', dir=ROOT / 'work') as folder:
+    for name in gpu_names:
+        result = subprocess.run([str(ROOT / 'bin/Linux/x86_64/extract.erofs'), '-s',
+            '-i', str(args.stock_vendor), '-X', '/firmware/' + name, '-o', folder],
+            capture_output=True, text=True)
+        source = Path(folder) / args.stock_vendor.stem / 'firmware' / name
+        if result.returncode or source.is_symlink() or not source.is_file() or not source.stat().st_size:
+            raise SystemExit('Cannot extract stock GPU firmware: ' + name)
+        blob = source.read_bytes()
+        target = firmware_output / name
+        if not target.exists() or target.read_bytes() != blob:
+            target.write_bytes(blob)
+        firmware_entries.append({'name': name, 'bytes': len(blob),
+                                 'sha256': hashlib.sha256(blob).hexdigest()})
+report['gpu_firmware_bytes_available'] = True
+report['firmware_bytes_supplied'] = True
+report['gpu_firmware'] = firmware_entries
+report['gpu_firmware_vendor_sha256'] = vendor_hash
+report['gpu_firmware_loaded_on_device'] = False
+report['other_module_firmware_availability_verified'] = False
+early_load = args.early_modules / 'modules.load'
+if early_load.is_file():
+    normalized = {Path(line.strip()).stem.replace('-', '_')
+                  for line in early_load.read_text().splitlines() if line.strip() and not line.startswith('#')}
+    report['early_boot_modules_load_sha256'] = hashlib.sha256(early_load.read_bytes()).hexdigest()
+    report['selected_not_in_early_boot_load_list'] = [m['name'] for m in entries if m['name'] not in normalized]
+    report['early_load_list_proves_module_residency'] = False
 (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
 (output / 'load-order.txt').write_text('\n'.join(m['file'] for m in entries) + '\n')
 print(json.dumps({'output': str(output), 'modules': len(entries),

@@ -1,0 +1,28 @@
+{
+  "test": "Supplied HMOS Mesa surfaceless EGL/GLES pbuffer rendering under QEMU user mode",
+  "result": "pass",
+  "renderer": "softpipe",
+  "clear_rgba": [
+    255,
+    0,
+    0,
+    255
+  ],
+  "compiled_linked_shader_triangle_rgba": [
+    0,
+    255,
+    0,
+    255
+  ],
+  "libraries_sha256": {
+    "libEGL_impl.so": "7e0c5c946f4720e65f31605afa008eb7a6dba92a63327ae7b35d7f743419b714",
+    "libGLESv2_impl.so": "0619b968480ac0b08491b868295523525e146a3d8d3ee1dfc06c13b1f6ca0056",
+    "libgallium-26.1.0-devel.so": "f840cd6cbe5ecf391adc01c4df624123fa7e76fa3792d3ec65730e4b7bae153e"
+  },
+  "host_graphics_exposed": false,
+  "physical_device_accessed": false,
+  "op13_display_tested": false,
+  "kgsl_acceleration_tested": false,
+  "ohos_native_window_and_dma_buf_tested": false,
+  "sceneboard_tested": false
+}

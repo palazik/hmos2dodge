@@ -99,8 +99,13 @@ hashes and the current audit are recorded in `current-early-modules.json`.
 The supplied vendor_boot image is preserved and is not a flashing target.
 
 Only firmware filenames were captured, including `gen80000_*` GPU files.
-Do not substitute the Redmi firmware or treat the filename list as firmware
-contents. The collector now also attempts read-only pulls of
+The four GPU files have since been extracted from the approved OP13 stock
+vendor image and staged alongside the audited modules; source/file hashes
+are recorded in [graphics-components.json](graphics-components.json).
+No Redmi firmware substitution or device firmware loading is performed.
+See [graphics bring-up](GRAPHICS-BRINGUP.md) for the userspace rendering test
+and remaining native integration work.
+The collector now also attempts read-only pulls of
 `/system_dlkm/lib/modules` and `/lib/modules`, and records `uname -a` for a
 future capture; access failures remain nonfatal and root is not required.
 

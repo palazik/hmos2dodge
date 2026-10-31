@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: Apache-2.0
 """Stage an opt-in native framework bootstrap, without guest observer policy."""
+import argparse
+import copy
 import hashlib
 import json
 from pathlib import Path
 import shutil
 from framework_profile import ROOT, build_profile
+from prepare_framework import prepare
 
 
 def digest(path):
@@ -20,11 +23,24 @@ def copy_fresh(source, target):
 
 
 def main():
-    output = ROOT / 'out/framework/native'
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--graphics', action='store_true',
+                        help='Stage graphics components separately; does not enable them in stage2')
+    args = parser.parse_args()
+    output = ROOT / ('out/framework/graphics' if args.graphics else 'out/framework/native')
     system = ROOT / 'work/ohos-runtime/system/system'
     vendor = ROOT / 'work/donor-configs/vendor/etc/selinux'
     config, provision, names, adaptations = build_profile('foundation')
     config['services'] = [s for s in config['services'] if s['name'] != 'faultloggerd']
+    graphics_names = {'render_service', 'multimodalinput', 'composer_host', 'allocator_host'}
+    if args.graphics:
+        canonical, _ = prepare()
+        config['services'] += [copy.deepcopy(s) for s in canonical['services'] if s['name'] in graphics_names]
+        startup = next(job for job in config['jobs'] if job['name'] == 'init')
+        # Only these four hosts/services; never import hdf_devmgr, which
+        # would enable the donor's unrelated hardware and storage graph.
+        startup['cmds'] += ['start allocator_host', 'start composer_host',
+                            'start render_service', 'start multimodalinput']
     omitted = []
     for job in config['jobs']:
         kept = []
@@ -76,7 +92,7 @@ def main():
     for name in ('autorun', 'reboot'):
         (plugins / name).mkdir(exist_ok=True)
     (output / 'data-directories').write_text('\n'.join(provision) + '\n')
-    (output / 'profile').write_text('framework\n')
+    (output / 'profile').write_text('graphics\n' if args.graphics else 'framework\n')
     contexts = ['/.* u:object_r:rootfs:s0',
                 '/system/bin/init u:object_r:init_exec:s0',
                 '/hmos/bootstrap/etc(/.*)? u:object_r:system_etc_file:s0',
@@ -93,7 +109,8 @@ def main():
                     contexts.append(target + line[len(source):])
     (output / 'file-contexts').write_text('\n'.join(dict.fromkeys(contexts)) + '\n')
     report = {
-        'scope': 'Native framework bootstrap component; raw stage2 integration pending',
+        'scope': ('Graphics component staging only; stage2 hardware integration pending' if args.graphics else
+                  'Native framework bootstrap component'),
         'services': sorted(s['name'] for s in config['services']),
         'donor_credentials_and_permissions_retained': True,
         'observer_policy_included': False, 'policy_sha256': digest(policy),
@@ -104,6 +121,40 @@ def main():
         'physical_userdata_mounted': False, 'native_phone_tested': False,
         'sceneboard_started': False,
     }
+    if args.graphics:
+        hdf = ROOT / 'out/hdf/op13.hcb'
+        hdf_record = json.loads((hdf.parent / 'adaptation.json').read_text())
+        if (digest(hdf) != hdf_record['candidate_sha256'] or
+                not hdf_record['host_names_and_order_preserved'] or
+                not hdf_record['donor_roundtrip_byte_identical']):
+            raise SystemExit('Rebuild and verify OP13 HDF configuration before staging graphics')
+        target = output / 'overrides/chip_prod/etc/hdfconfig/hdf_default.hcb'
+        target.parent.mkdir(parents=True, exist_ok=True)
+        copy_fresh(hdf, target)
+        modules = ROOT / 'out/modules/op13-current'
+        module_report = json.loads((modules / 'manifest.json').read_text())
+        if not module_report['gpu_firmware_bytes_available']:
+            raise SystemExit('Stage the approved OP13 GPU firmware before graphics')
+        for entry in module_report['gpu_firmware']:
+            source = modules / 'firmware' / entry['name']
+            if digest(source) != entry['sha256']:
+                raise SystemExit('GPU firmware changed since module staging: ' + entry['name'])
+        # Refer to the one audited module/firmware payload, rather than
+        # creating a second module tree under each service profile.
+        report.update(
+            graphics_payload='out/modules/op13-current',
+            graphics_payload_manifest_sha256=digest(modules / 'manifest.json'),
+            hdf_override_sha256=digest(target),
+            hdf_devmgr_enabled=False,
+            module_loading_implemented=False,
+            graphics_devices_exposed=False,
+            firmware_directory_bound=False,
+            raw_image_integration=False,
+            unresolved=['Load matching modules with required firmware before native hardware startup',
+                        'Expose only DRM/KGSL/input devices in the private device namespace',
+                        'Bind the OP13 HDF and firmware overrides read-only in stage2',
+                        'Validate native-window/dma-buf interoperability and service readiness',
+                        'Activate an isolated account and install/launch SceneBoard'])
     (output / 'manifest.json').write_text(json.dumps(report, indent=2) + '\n')
     print(output)
 

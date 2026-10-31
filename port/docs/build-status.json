@@ -29,7 +29,7 @@
   "display_unload": "QEMU explicit-unload failure also reproduced with original donor libraries; native behavior unknown",
   "native_kernel_for_dsu": "Must account for transient fastboot-boot kernel across DSU reboot; exact sequence untested",
   "hardware_capture": "20261029-163450.zip inspected; 464 vendor modules, connected DSI panel and KGSL; see OP13-HARDWARE.md",
-  "module_crc_audit": "24564 comparable imported CRCs match, zero mismatches; 35 display/GPU dependency providers uncaptured; not load-tested",
+  "module_crc_audit": "Latest audited 109-module display/GPU closure: 7342 matching import CRCs, zero mismatches or unresolved imports; no device module-load test",
   "dsu_metadata_discrepancy": "July development AVB metadata predates October captured host SPL; acceptance unresolved; dates and rollback indices unchanged",
   "ui_configuration": "OP13 XML visibility bug fixed: curated etc bound read-only after masks; actual C mount-helper namespace regression passes; raw core image rebuilt; native UI untested",
   "porter_review": "436 selected upstream text files verified against pinned Git blobs; applicability review in PORTER-AUDIT.md; not all binary paths audited/tested",
@@ -57,5 +57,8 @@
   "ram_data_policy": "Dedicated hmos_ram_data_file permits kernel writeback; Foundation read/write and generic kernel rootfs write remain denied; strict donor failures unchanged at 390.",
   "large_intermediate_images": "Cleaned: 14.1 GiB disk and 8.5 GiB temporary storage freed; original inputs and Android-tested baseline preserved",
   "stock_vendor_odm_inputs": "User-approved extraction from /home/palaziks/claudefix/stock/payload.bin to op13_stock/vendor.img and odm.img; source partitions verified against payload hashes",
-  "gpu_firmware": "All four gen80000 files recovered from approved OP13 vendor; hardware integration pending; no firmware partition write/flash"
+  "gpu_firmware": "All four gen80000 files recovered from approved OP13 vendor; hardware integration pending; no firmware partition write/flash",
+  "graphics_components": "12-service configuration and OP13 HDF override staged separately; four GPU blobs extracted from approved stock vendor. Stage2 device exposure/module loading and native graphics startup remain incomplete.",
+  "mesa_software_rendering": "Supplied HMOS Mesa: QEMU user-mode EGL 1.5 context, clear/readback and compiled/linked GLES shader triangle pass with softpipe. No host GPU exposed; no native-window/dma-buf, OP13 scanout, KGSL or SceneBoard proof.",
+  "early_graphics_loading": "54 of the 109 selected dependency modules absent from supplied vendor_boot modules.load; early list does not prove actual residency. Explicit hardware startup still required."
 }

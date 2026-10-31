@@ -176,14 +176,16 @@ does not supply any of those steps.
 
 1. Prove the modified kernel still boots Android and the DSU handoff works on
    this phone; obtain the resulting module/display/device logs.
-2. Supply the **matching** OP13 vendor/vendor_dlkm/odm firmware and modules.
-   `op13_stock` currently contains system/product/OPlus customization trees,
-   not those hardware partitions. A separate older vendor_boot was inspected
-   for evidence but is not substituted into the preferred COS17 boot image.
+2. Integrate the audited OP13 module set and stock GPU firmware into startup.
+   The new supplied vendor_boot resolves the missing providers: all 7,342
+   comparable graphics dependency CRCs match. Approved stock vendor/odm
+   images are available, and the four gen80000 GPU blobs are staged. None
+   of these modules or firmware files has been loaded by the port yet.
 3. Replace sweet fstab and startup actions. The current donor directly mounts
    physical `userdata`, `cache`, `dsp`, modem and Bluetooth partitions and
-   mounts `persist` writable. Preserve DSU data isolation and remove those
-   assumptions before launching its init.
+   mounts `persist` writable. The selected native framework graph excludes
+   these actions and uses RAM-backed ext4 storage; extending it must retain
+   that isolation.
 4. Adapt the sweet DRM/KMS buffer/composer and Mesa GPU layer to the OP13
    graphics drivers. The donor uses Adreno 618 firmware/configuration; OP13's
    hardware is different. Its Android bionic HALs cannot simply replace OHOS
@@ -196,9 +198,11 @@ does not supply any of those steps.
 
 The donor Mesa library contains an `FD830` identifier. This supports examining
 reuse of the existing Mesa build rather than assuming it only contains Adreno
-618 code. It does not prove the KGSL driver, firmware, buffer formats or
-graphics services work on OP13. The existing sweet GPU firmware remains
-inappropriate for this target until replaced with matching OP13 assets.
+618 code. The supplied native Mesa build passes an isolated EGL/GLES shader
+render/readback test using softpipe. This does not prove KGSL acceleration,
+buffer sharing or graphics services work on OP13. The separately staged
+graphics component uses stock OP13 GPU assets; runtime integration is still
+pending. See [graphics bring-up](docs/GRAPHICS-BRINGUP.md).
 
 SceneBoard is already present in the donor. Copying it again will not resolve
 the device-service, graphics or startup differences.
