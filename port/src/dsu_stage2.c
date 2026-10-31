@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT
- * Experimental DSU -> HarmonyOS init handoff, using RAM-only writable state.
+ * DSU -> HarmonyOS init handoff, using isolated persistent DSU data.
  * No donor service graph, physical userdata mount, formatter, or misc writer.
  */
 #define main probe_main
@@ -9,6 +9,7 @@
 
 static const char *newroot = "/mnt/hmos-root";
 static int capture_ticks = 20;
+static bool diagnostic_reboot = true;
 
 static int prepare_ipc(void)
 {
@@ -226,7 +227,11 @@ static void start_capture(void)
             }
         }
     }
-    logmsg("stage2 RAM-only smoke-test interval ended; requesting ordinary reboot");
+    if (!diagnostic_reboot) {
+        logmsg("startup log capture ended; HarmonyOS continues running");
+        _exit(0);
+    }
+    logmsg("diagnostic smoke-test interval ended; requesting ordinary reboot");
     sync();
     reboot(RB_AUTOBOOT);
     _exit(1);
@@ -245,10 +250,12 @@ int STAGE2_ENTRY(int argc, char **argv)
     if (read_text("/hmos/bootstrap/profile", profile, sizeof(profile))) stop_boot("bootstrap profile missing");
     bool framework = !strcmp(profile, "framework");
     if (!framework && strcmp(profile, "minimal") && strcmp(profile, "logging") && strcmp(profile, "core")) stop_boot("unsupported bootstrap profile");
-    if (framework) capture_ticks = 60;
-    logmsg("BEGIN HarmonyOS DSU stage2: profile=%s; RAM-only data; no hardware services", profile);
-    char unused_data[256] = {0};
-    if (!find_dsu(unused_data, sizeof(unused_data))) stop_boot("exact system_gsi mapping missing");
+    if (framework) { capture_ticks = 60; diagnostic_reboot = false; }
+    logmsg("BEGIN HarmonyOS DSU stage2: profile=%s; data=%s", profile,
+           framework ? "persistent userdata_gsi" : "diagnostic RAM");
+    char dsu_data[256] = {0};
+    if (!find_dsu(dsu_data, sizeof(dsu_data))) stop_boot("exact system_gsi mapping missing");
+    if (framework && !dsu_data[0]) stop_boot("exact userdata_gsi mapping missing");
     if (framework && !access("/sys/fs/selinux/class/process/index", F_OK)) stop_boot("an existing policy is already loaded");
     /* No data mount, filesystem check/repair, or formatting here. */
     int gate = open("/sys/module/access_tokenid/parameters/compat", O_WRONLY | O_CLOEXEC);
@@ -308,8 +315,12 @@ int STAGE2_ENTRY(int argc, char **argv)
     if (root_mount("/sys", "/sys", NULL, MS_BIND, NULL) ||
         root_mount(NULL, "/sys", NULL, MS_REMOUNT | MS_BIND | MS_RDONLY, NULL)) stop_boot("read-only sysfs");
     if (framework) {
+        char data_target[512];
+        snprintf(data_target, sizeof(data_target), "%s/data", newroot);
         if (root_mount("tmpfs", "/storage", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=16M") ||
-            native_ram_data()) stop_boot("framework RAM-only storage");
+            root_mount("tmpfs", "/mnt", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=16M") ||
+            mount_dsu_data(dsu_data, data_target)) stop_boot("persistent DSU data mount (ext4 required; never formatted here)");
+        native_persistent_data = true;
     } else if (root_mount("tmpfs", "/data", "tmpfs", MS_NOSUID | MS_NODEV,
                           "mode=0771,size=256M")) stop_boot("RAM-only data");
     /* The system EROFS /metadata path is deliberately never connected to
@@ -325,7 +336,8 @@ int STAGE2_ENTRY(int argc, char **argv)
     if (chroot(newroot) || chdir("/")) stop_boot("chroot");
     clearenv();
     setenv("PATH", "/system/bin:/vendor/bin", 1);
-    logmsg("exec real HarmonyOS init --second-stage; data is temporary RAM");
+    logmsg("exec real HarmonyOS init --second-stage; data=%s",
+           framework ? "persistent DSU filesystem" : "temporary diagnostic RAM");
     char *const init_args[] = {"/system/bin/init", "--second-stage", "0", NULL};
     execv(init_args[0], init_args);
     stop_boot("exec HarmonyOS init");

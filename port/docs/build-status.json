@@ -52,7 +52,7 @@
   "early_module_candidates": "New supplied vendor_boot matches 367 captured module files byte-for-byte; 109-module graphics closure has 7342 matching CRCs, zero mismatches/unresolved imports. Staged separately; no automatic loading.",
   "native_framework_image": "out/experiments/stage2-framework/system.img",
   "native_framework_image_sha256": "6b7e37415ac2e1a84e6390dd901e023e5d6ff8895a56b8e4c6ecabaadf18072b",
-  "native_framework_image_scope": "Recorded eight-service build verified, then redundant full container removed at user request. Source integration and small outputs retained; no native OP13 DSU/UI proof.",
+  "native_framework_image_scope": "Historical RAM-only eight-service intermediate removed. Superseded by persistent DSU startup code; no new full image packed.",
   "latest_module_audit": "port/docs/current-early-modules.json",
   "ram_data_policy": "Dedicated hmos_ram_data_file permits kernel writeback; Foundation read/write and generic kernel rootfs write remain denied; strict donor failures unchanged at 390.",
   "large_intermediate_images": "Cleaned: 14.1 GiB disk and 8.5 GiB temporary storage freed; original inputs and Android-tested baseline preserved",
@@ -61,5 +61,7 @@
   "graphics_components": "12-service configuration and OP13 HDF override staged separately; four GPU blobs extracted from approved stock vendor. Stage2 device exposure/module loading and native graphics startup remain incomplete.",
   "mesa_software_rendering": "Supplied HMOS Mesa: QEMU user-mode EGL 1.5 context, clear/readback and compiled/linked GLES shader triangle pass with softpipe. No host GPU exposed; no native-window/dma-buf, OP13 scanout, KGSL or SceneBoard proof.",
   "early_graphics_loading": "54 of the 109 selected dependency modules absent from supplied vendor_boot modules.load; early list does not prove actual residency. Explicit hardware startup still required.",
-  "native_vendor_layout": "Framework startup now mounts stock OP13 vendor/odm read-only; OHOS bin/lib64 runtime and curated etc/policy layered separately. RAM root skeleton supplies missing /odm. Host namespace mount regression and ARM64 compile/selftest pass; no new raw image or device test."
+  "native_vendor_layout": "Framework startup now mounts stock OP13 vendor/odm read-only; OHOS bin/lib64 runtime and curated etc/policy layered separately. RAM root skeleton supplies missing /odm. Host namespace mount regression and ARM64 compile/selftest pass; no new raw image or device test.",
+  "commit_review": "port/docs/COMMIT-REVIEW.md; 14 OP13 commits reviewed; full porter/graphics/session integration remains incomplete",
+  "native_data_storage": "Persistent ext4 on exact userdata_gsi mapper; device identity rechecked; no runtime formatting, physical Android userdata fallback or timed framework reboot. Compiled only; device persistence untested."
 }

@@ -1,12 +1,15 @@
 /* SPDX-License-Identifier: MIT
  * Opt-in native framework setup. No physical userdata/block devices enter
- * the new /dev; /data is a regular-file-backed RAM ext4 filesystem.
+ * the new /dev. Phone /data uses the exact persistent userdata_gsi mapping;
+ * the RAM helper is retained only for the diskless test fixture.
  */
 #ifndef HMOS_NATIVE_FRAMEWORK_H
 #define HMOS_NATIVE_FRAMEWORK_H
 #include <sys/xattr.h>
 #include <sys/mman.h>
 #include "native_storage.h"
+#include "dsu_data.h"
+static bool native_persistent_data;
 
 static int native_node(const char *name, mode_t mode, dev_t device)
 {
@@ -82,7 +85,7 @@ static int native_devices(void)
     return 0;
 }
 
-static int native_ram_data(void)
+static inline int native_ram_data(void)
 {
     if (root_mount("tmpfs", "/mnt", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=256M")) return -1;
     char backing[1024], target[1024], devices[1024];
@@ -156,7 +159,7 @@ static int native_policy_and_storage(void)
     if (loaded != (ssize_t)total) return -1;
     snprintf(path, sizeof(path), "%s/mnt/hmos-data.ext4", newroot);
     const char label[] = "u:object_r:hmos_ram_data_file:s0";
-    if (setxattr(path, "security.selinux", label, sizeof(label), 0) ||
+    if ((!native_persistent_data && setxattr(path, "security.selinux", label, sizeof(label), 0)) ||
         hmos_provision_storage(newroot, "/hmos/bootstrap/data-directories") ||
         native_context("u:r:init:s0")) return -1;
     const char *paths[] = {"/system", "/vendor", "/dev", "/data", "/mnt", "/storage"};
@@ -172,8 +175,9 @@ static int native_policy_and_storage(void)
         if (child < 0 || waitpid(child, &status, 0) < 0 || !WIFEXITED(status) || WEXITSTATUS(status)) return -1;
     }
     snprintf(path, sizeof(path), "%s/mnt/hmos-data.ext4", newroot);
-    if (setxattr(path, "security.selinux", label, sizeof(label), 0)) return -1;
-    logmsg("native framework RAM storage and donor labels prepared; init will enable enforcing mode");
+    if (!native_persistent_data && setxattr(path, "security.selinux", label, sizeof(label), 0)) return -1;
+    logmsg("native framework %s storage and donor labels prepared; init will enable enforcing mode",
+           native_persistent_data ? "persistent DSU" : "guest RAM");
     return 0;
 }
 #endif

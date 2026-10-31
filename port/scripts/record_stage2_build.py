@@ -27,14 +27,15 @@ def main():
     inputs += sorted((stage / 'hmos/overrides').rglob('*'))
     if native:
         inputs += sorted((stage / 'hmos/bootstrap').rglob('*'))
-        inputs += [ROOT / 'port/src' / name for name in ('native_framework.h', 'native_storage.h', 'ram_data.h', 'vendor_layout.h')]
+        inputs += [ROOT / 'port/src' / name for name in ('native_framework.h', 'native_storage.h', 'ram_data.h', 'vendor_layout.h', 'dsu_data.h')]
         inputs += [ROOT / 'port/scripts' / name for name in ('framework_profile.py', 'prepare_native_framework.py')]
     hashes = {str(p.relative_to(ROOT)): sha(p) for p in inputs if p.is_file()}
     report = {'image': str(image.relative_to(ROOT)), 'sha256': sha(image),
               'bytes': image.stat().st_size, 'profile': args.profile,
               'input_sha256': hashes, 'framework_candidate_integrated': native,
               'framework_scope': 'eight services; no SceneBoard or hardware startup' if native else None,
-              'private_devices': native, 'ram_ext4_data': native,
+              'private_devices': native, 'ram_ext4_data': False,
+              'persistent_dsu_data': native, 'diagnostic_reboot_timer': not native,
               'payload_image_sha256': expected_hashes(args.profile),
               'vendor_base': 'OP13 stock' if native else 'donor lab fixture',
               'odm_base': 'OP13 stock' if native else None,

@@ -21,12 +21,13 @@ Current results:
   and access-decision checks plus a narrowly scoped composer DRM-map policy
   supplement. Strict donor-policy validation currently fails; native policy
   integration is unfinished.
-- A RAM-only DSU startup image can be built. Its core profile starts hilogd
-  and samgr, does not start SceneBoard, and is not a full ROM.
+- Framework startup now requires persistent DSU `userdata_gsi`, without a
+  RAM-data fallback or a timed framework reboot. This is compiled startup
+  code, not a verified persistent DSU boot or a completed launcher port.
 
-The full framework, SELinux integration, isolated persistent storage, driver
-startup and native DSU handoff remain under development. Samgr readiness has
-not been established. The existing development AVB metadata predates the
+The full framework, SELinux integration, driver startup and native DSU handoff
+remain under development. Guest samgr registration has been observed; OP13
+readiness has not. The existing development AVB metadata predates the
 captured host's security patch and Android version; device acceptance is
 unresolved.
 
@@ -36,6 +37,7 @@ unresolved.
 - [Boot and ARB notes](port/docs/BOOT-AND-ARB.md).
 - [Hardware observations](port/docs/OP13-HARDWARE.md).
 - [Porter review](port/docs/PORTER-AUDIT.md): upstream coverage and adaptations.
+- [Commit review](port/docs/COMMIT-REVIEW.md): implementation gaps and corrections.
 - `port/kernel/`: Linux 6.6 patch, preserving the upstream GPL notices.
 - `port/display/`: adapted display sources and regression tests.
 - `port/src/`: experimental DSU PID-1 bootstrap sources.
@@ -61,7 +63,7 @@ AVB signatures are not OEM signatures. Removing a stale footer from a generated
 image does not disable ARB.
 
 Keep bootloader, firmware and vbmeta outside this port's write path. The
-experimental HarmonyOS startup keeps writable state in RAM and excludes
+framework startup uses the exact persistent DSU data mapping and excludes
 physical Android userdata, metadata, persist and misc. Do not run the
 upstream Redmi clean-install scripts on OP13. No flashing commands are provided
 as an installation procedure for this unfinished port.

@@ -36,5 +36,6 @@
   "modules_automatically_loaded": false,
   "build_manifest_sha256": "63c648df1e67b3213b31125ab34d3e487ca867b18d697352c04004928ac991f7",
   "intermediate_artifacts_cleaned_for_space": true,
-  "artifact_present": false
+  "artifact_present": false,
+  "superseded_by": "Persistent DSU startup code; historical RAM-only image is not the requested launcher port"
 }

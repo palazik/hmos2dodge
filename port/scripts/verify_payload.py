@@ -127,11 +127,14 @@ def verify(image, report_path, check_bootstrap=False, profile='minimal', check_d
             validation = json.loads((regular_policy.parent / 'validation.json').read_text())
             if validation['vm_diagnostics_only'] or policy != regular_policy.read_bytes():
                 raise SystemExit('FAIL native image contains an unexpected or guest-only policy')
-            seed = fs.lookup('hmos/bootstrap/data.ext4')
-            if fs.inode(seed)[1] != 128 * 1024 * 1024:
-                raise SystemExit('FAIL RAM ext4 template size')
+            try:
+                fs.lookup('hmos/bootstrap/data.ext4')
+            except FileNotFoundError:
+                pass
+            else:
+                raise SystemExit('FAIL obsolete RAM-data seed in persistent framework image')
             report['native_policy_sha256'] = hashlib.sha256(policy).hexdigest()
-            report['ram_ext4_template_bytes'] = fs.inode(seed)[1]
+            report['data_storage'] = 'persistent userdata_gsi; ext4; no runtime formatting'
         for service in services:
             path_ok = native_cfg is not None or service['path'] == ['/system/bin/' + service['name']]
             if not path_ok or service.get('critical', [0])[0] != 0:

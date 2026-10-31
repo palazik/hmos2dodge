@@ -4,7 +4,7 @@ task_root=$(cd "$(dirname "$0")/../.." && pwd)
 task_sysroot="$task_root/work/musl-cross"
 task_stage="$task_root/work/stage2-root"
 task_output="$task_root/out/experiments/stage2"
-task_profile=${1:-minimal}
+task_profile=${1:-framework}
 task_build_mode=${2:-}
 if [[ -n "$task_build_mode" && "$task_build_mode" != --prepare-only ]]; then
     echo 'Second argument must be --prepare-only or omitted' >&2
@@ -43,19 +43,9 @@ if [[ "$task_profile" == framework ]]; then
     chmod -R u+w "$task_stage/hmos/bootstrap/vendor_etc" "$task_stage/hmos/bootstrap/init_modules"
     cp -a "$task_native/vendor_etc" "$task_native/init_modules" "$task_stage/hmos/bootstrap/"
     cp "$task_native/data-directories" "$task_stage/hmos/bootstrap/data-directories"
-    task_data="$task_stage/hmos/bootstrap/data.ext4"
-    python3 - "$task_data" <<'PY'
-import os, stat, sys
-path = sys.argv[1]
-if os.path.lexists(path) and not stat.S_ISREG(os.lstat(path).st_mode):
-    raise SystemExit('Refusing non-regular RAM-data template path')
-fd = os.open(path, os.O_CREAT | os.O_WRONLY | os.O_TRUNC | os.O_NOFOLLOW, 0o600)
-if not stat.S_ISREG(os.fstat(fd).st_mode):
-    raise SystemExit('Refusing to format non-regular RAM-data template')
-os.ftruncate(fd, 128 * 1024 * 1024)
-os.close(fd)
-PY
-    mkfs.ext4 -q -F -m 0 -U 5dc8c93c-079d-4dbc-92ab-fc077d500013 "$task_data"
+    # Persistent data comes from DSU's userdata_gsi mapping. Retire only
+    # this builder's old RAM seed; never format a device at startup.
+    rm -f -- "$task_stage/hmos/bootstrap/data.ext4"
 fi
 mkdir -p "$task_stage/hmos/overrides/vendor/lib64"
 python3 "$task_root/port/scripts/prepare_ui_config.py"

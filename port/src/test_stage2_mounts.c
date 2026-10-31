@@ -6,6 +6,14 @@
 
 int main(void)
 {
+    const char *rejected_data[] = {"/dev/block/by-name/userdata", "/dev/block/sda",
+                                    "/dev/block/dm-0/../userdata", "/tmp/userdata_gsi"};
+    for (size_t i = 0; i < sizeof(rejected_data) / sizeof(rejected_data[0]); i++) {
+        errno = 0;
+        if (mount_dsu_data(rejected_data[i], "/unused") != -1 || errno != EINVAL) return 18;
+    }
+    if (mount_dsu_data("/dev/block/dm-999999", "/unused") != -1 || errno != ENODEV) return 19;
+    puts("PASS: physical userdata aliases and unverified DSU devices rejected before mounting");
     newroot = "/donor";
     if (system_root_view("/source") ||
         readonly_bind("/stock/vendor", "/donor/vendor") ||

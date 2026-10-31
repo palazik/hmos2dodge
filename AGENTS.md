@@ -12,6 +12,10 @@
   Do not describe test candidates as ARB-safe without device-specific proof.
 - Keep bootloader/firmware/vbmeta partitions outside the port's write path.
   Distinguish offline development signatures from OEM signatures and trust.
+- The normal port must use persistent DSU userdata, not a RAM-only data
+  filesystem or a diagnostic reboot timer. Keep the full launcher as the
+  target; do not substitute a minimal startup probe for the requested ROM.
+- Use conventional commit subjects: fix:, feat:, refactor:, docs:, chore:.
 - Keep HarmonyOS writable storage isolated from physical Android userdata,
   metadata, persist, misc and firmware partitions in experimental startup.
 - LTO was disabled at the user's request for subsequent kernel builds.
