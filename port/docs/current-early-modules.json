@@ -1,0 +1,21 @@
+{
+  "scope": "Current vendor-boot module candidate audit, no native loading or hardware proof",
+  "image": "vendor_boot.img",
+  "image_sha256": "ba81b50a633cfc4b7a720110d32e5db8735d5b48fefbaddda2790aee67d86b8b",
+  "extracted_module_count": 520,
+  "release": "6.6.118-android15-8-o",
+  "captured_module_overlap": 367,
+  "byte_identical_overlapping_modules": 367,
+  "display_gpu_closure_modules": 109,
+  "early_modules_added": 55,
+  "matching_import_crcs": 7342,
+  "mismatching_import_crcs": 0,
+  "unresolved_imports": 0,
+  "missing_provider_modules": [],
+  "previous_kgsl_osvelte_mismatches_resolved": true,
+  "staged_payload": "out/modules/op13-current",
+  "auto_load": false,
+  "modules_loaded": false,
+  "original_vendor_boot_modified": false,
+  "full_audit_sha256": "e3e706403f283832221fe30dda9101eab020463f1bf040cee8cf2929e8584232"
+}
