@@ -113,10 +113,21 @@ def select(stage):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--profile', choices=('core', 'framework', 'foundation'), default='core')
+    parser.add_argument('--profile', choices=('core', 'framework', 'foundation', 'native'), default='core')
     args = parser.parse_args()
     stage = ROOT / ('work/system-vm/runtime-root-' + args.profile)
-    files, unresolved = select(stage)
+    if args.profile == 'native':
+        nested, unresolved = select(stage / 'native-root')
+        files = {Path('native-root') / path for path in nested}
+        files.update((Path('.'), Path('init'), Path('dev'), Path('sys'), Path('proc')))
+        for name in ('vm', 'hmos'):
+            files.add(Path(name))
+            files.update(path.relative_to(stage) for path in (stage / name).rglob('*'))
+        for path in list(files):
+            files.update(path.parents)
+        files = sorted(files, key=str)
+    else:
+        files, unresolved = select(stage)
     record_path = ROOT / f'out/vm/runtime-inputs-{args.profile}.json'
     record = json.loads(record_path.read_text())
     record['unresolved_sa_libraries'] = unresolved

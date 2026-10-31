@@ -3,10 +3,10 @@
 set -euo pipefail
 task_root=$(cd "$(dirname "$0")/../.." && pwd)
 task_profile=${1:-core}
-case "$task_profile" in core|framework|foundation) ;; *) exit 2 ;; esac
+case "$task_profile" in core|framework|foundation|native) ;; *) exit 2 ;; esac
 task_stage="$task_root/work/system-vm/runtime-root-$task_profile"
 mkdir -p "$task_root/work/logs"
-if [[ "$task_profile" == foundation ]]; then
+if [[ "$task_profile" == foundation || "$task_profile" == native ]]; then
     mkdir -p "$task_root/work/framework-assets"
     "$task_root/bin/Linux/x86_64/extract.erofs" -i "$task_root/hmos5/system.img" \
         -X /system/app/SystemResources -s -o "$task_root/work/framework-assets" \
@@ -20,8 +20,15 @@ if [[ "$task_profile" == foundation ]]; then
 fi
 bash "$task_root/port/scripts/build_vm_probe.sh"
 bash "$task_root/port/scripts/build_vm_sa_query.sh"
-python3 "$task_root/port/scripts/prepare_vm_runtime.py" --profile "$task_profile"
-task_data="$task_stage/vm/data.ext4"
+if [[ "$task_profile" == native ]]; then
+    python3 "$task_root/port/scripts/prepare_vm_runtime.py" --profile foundation
+    python3 "$task_root/port/scripts/prepare_native_framework.py"
+    python3 "$task_root/port/scripts/prepare_native_vm.py"
+    task_data="$task_stage/hmos/bootstrap/data.ext4"
+else
+    python3 "$task_root/port/scripts/prepare_vm_runtime.py" --profile "$task_profile"
+    task_data="$task_stage/vm/data.ext4"
+fi
 # Format only a newly generated regular file. It enters cpio and becomes a
 # guest-RAM loop filesystem; it is never attached as a host disk.
 rm -f -- "$task_data"

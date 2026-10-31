@@ -1,0 +1,8 @@
+; SPDX-License-Identifier: Apache-2.0
+; A generated ext4 file in RAM backs experimental /data. Never label an
+; Android partition or persistent file with this type.
+(type hmos_ram_data_file)
+(roletype object_r hmos_ram_data_file)
+(allow hmos_ram_data_file rootfs (filesystem (associate)))
+(allow hmos_ram_data_file tmpfs (filesystem (associate)))
+(allow kernel hmos_ram_data_file (file (read write open getattr)))

@@ -114,14 +114,34 @@ def verify(image, report_path, check_bootstrap=False, profile='minimal', check_d
         print(f'PASS {name}: every embedded byte matches source', flush=True)
     if check_bootstrap:
         cfg = json.loads(b''.join(fs.chunks(fs.lookup('hmos/bootstrap/etc/init.cfg'))))
-        expected_services = {'minimal': set(), 'logging': {'hilogd'}, 'core': {'hilogd', 'samgr'}}[profile]
+        expected_services = {'minimal': set(), 'logging': {'hilogd'}, 'core': {'hilogd', 'samgr'},
+                             'framework': {'hilogd', 'samgr', 'accesstoken_service', 'accountmgr',
+                                           'appspawn', 'foundation', 'huks_service', 'installs'}}[profile]
         services = cfg.get('services', [])
         if {s['name'] for s in services} != expected_services or cfg.get('import') != []:
             raise SystemExit('FAIL bootstrap services/imports do not match the declared profile')
+        native_cfg = None
+        if profile == 'framework':
+            native_cfg = json.loads((ROOT / 'out/framework/native/etc/init.cfg').read_text())
+            if cfg != native_cfg:
+                raise SystemExit('FAIL native framework config differs from prepared component')
+            policy = b''.join(fs.chunks(fs.lookup('hmos/bootstrap/vendor_etc/selinux/prebuild_sepolicy/policy.31')))
+            regular_policy = ROOT / 'out/selinux/donor-runtime-op13/policy.31'
+            validation = json.loads((regular_policy.parent / 'validation.json').read_text())
+            if validation['vm_diagnostics_only'] or policy != regular_policy.read_bytes():
+                raise SystemExit('FAIL native image contains an unexpected or guest-only policy')
+            seed = fs.lookup('hmos/bootstrap/data.ext4')
+            if fs.inode(seed)[1] != 128 * 1024 * 1024:
+                raise SystemExit('FAIL RAM ext4 template size')
+            report['native_policy_sha256'] = hashlib.sha256(policy).hexdigest()
+            report['ram_ext4_template_bytes'] = fs.inode(seed)[1]
         for service in services:
-            if service['path'] != ['/system/bin/' + service['name']] or service.get('critical', [0])[0] != 0:
+            path_ok = native_cfg is not None or service['path'] == ['/system/bin/' + service['name']]
+            if not path_ok or service.get('critical', [0])[0] != 0:
                 raise SystemExit('FAIL unexpected bootstrap service executable or critical flag')
         allowed = {'mkdir', 'setparam', 'write', 'start'}
+        if profile == 'framework':
+            allowed |= {'setrlimit', 'restorecon', 'chown', 'chmod', 'load_access_token_id'}
         for job in cfg['jobs']:
             for command in job['cmds']:
                 if command.split()[0] not in allowed or '/dev/block' in command:
@@ -156,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument('--image', type=Path, default=IMAGE)
     parser.add_argument('--report', type=Path, default=ROOT / 'out/dsu/payload-verification.json')
     parser.add_argument('--check-bootstrap', action='store_true')
-    parser.add_argument('--profile', choices=('minimal', 'logging', 'core'), default='minimal')
+    parser.add_argument('--profile', choices=('minimal', 'logging', 'core', 'framework'), default='minimal')
     parser.add_argument('--check-display', action='store_true')
     args = parser.parse_args()
     verify(args.image, args.report, args.check_bootstrap, args.profile, args.check_display)

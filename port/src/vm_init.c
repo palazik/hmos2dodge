@@ -9,7 +9,7 @@
 #include <sys/ptrace.h>
 #include <sys/uio.h>
 #include <sys/mman.h>
-#define LO_FLAGS_AUTOCLEAR 4 /* Linux loop UAPI */
+#include "native_storage.h"
 static void vm_mount(const char *source, const char *target, const char *type);
 
 static pid_t vm_traced[64];
@@ -240,34 +240,7 @@ static int vm_private_devices(void)
 
 static int vm_token_storage(void)
 {
-    FILE *directories = fopen("/vm/data-directories", "r");
-    if (!directories) return -1;
-    char path[512];
-    unsigned int mode, uid, gid;
-    while (fscanf(directories, "%511s %o %u %u", path, &mode, &uid, &gid) == 4) {
-        bool private_path = !strncmp(path, "/data/", 6) ||
-                            !strcmp(path, "/mnt/sandbox") || !strncmp(path, "/mnt/sandbox/", 13) ||
-                            !strcmp(path, "/mnt/startup") || !strncmp(path, "/mnt/startup/", 13);
-        if (!private_path || strstr(path, "..") || mode > 07777 ||
-            (mkdir(path, (mode_t)mode) && errno != EEXIST) ||
-            chown(path, (uid_t)uid, (gid_t)gid) || chmod(path, (mode_t)mode)) {
-            fclose(directories);
-            return -1;
-        }
-    }
-    if (!feof(directories)) { fclose(directories); return -1; }
-    fclose(directories);
-    /* Native token allocation occurs while init reads services, before jobs.
-       Provide its private RAM path before that allocation can persist JSON. */
-    mkdir("/data/service", 0711);
-    mkdir("/data/service/el0", 0711);
-    mkdir("/data/service/el0/access_token", 0750);
-    if (chown("/data/service/el0/access_token", 0, 3020)) return -1;
-    int token_config = open("/data/service/el0/access_token/nativetoken.json",
-                            O_CREAT | O_WRONLY | O_CLOEXEC, 0660);
-    if (token_config < 0) return -1;
-    close(token_config);
-    return 0;
+    return hmos_provision_storage("", "/vm/data-directories");
 }
 
 static int vm_restore_labels(void)
@@ -300,7 +273,7 @@ static int vm_restore_labels(void)
     if (loader >= 0) close(loader);
     free(data);
     if (loaded != (ssize_t)consumed) { perror("VM initial policy load"); return -1; }
-    const char backing_label[] = "u:object_r:vm_data_backing_file:s0";
+    const char backing_label[] = "u:object_r:hmos_ram_data_file:s0";
     if (setxattr("/vm/data.ext4", "security.selinux", backing_label, sizeof(backing_label), 0) ||
         vm_token_storage()) return -1;
     int attr = open("/proc/self/attr/current", O_WRONLY | O_CLOEXEC);
@@ -347,25 +320,32 @@ static int vm_data_mount(void)
 {
     /* The backing file came from cpio and lives only in guest RAM. No QEMU
        drive, host directory or physical partition supplies this filesystem. */
-    if (mknod("/dev/vm-loop-control", S_IFCHR | 0600, makedev(10, 237))) return -1;
-    int control = open("/dev/vm-loop-control", O_RDWR | O_CLOEXEC);
-    int number = control < 0 ? -1 : ioctl(control, LOOP_CTL_GET_FREE);
-    if (control >= 0) close(control);
-    if (number < 0) return -1;
-    char node[128];
-    snprintf(node, sizeof(node), "/dev/vm-data-loop%d", number);
-    if (mknod(node, S_IFBLK | 0600, makedev(7, number))) return -1;
-    int loop = open(node, O_RDWR | O_CLOEXEC);
-    int image = open("/vm/data.ext4", O_RDWR | O_CLOEXEC);
-    struct loop_info64 info = {.flags = LO_FLAGS_AUTOCLEAR};
-    int result = -1;
-    if (loop >= 0 && image >= 0 && ioctl(loop, LOOP_SET_FD, image) == 0 &&
-        ioctl(loop, LOOP_SET_STATUS64, &info) == 0 &&
-        mount(node, "/data", "ext4", MS_NOSUID | MS_NODEV, NULL) == 0) result = 0;
-    if (result && loop >= 0) ioctl(loop, LOOP_CLR_FD, 0);
-    if (image >= 0) close(image);
-    if (loop >= 0) close(loop);
-    return result;
+    return hmos_mount_ram_data("/vm/data.ext4", "/data", "/dev");
+}
+
+static int vm_native_fixture(void)
+{
+    /* Exercise the raw wrapper's real helpers, not DSU/Android first stage.
+       All files and device nodes here belong to the diskless guest. */
+    newroot = "/native-root";
+    if (prepare_ipc() || native_devices() ||
+        root_mount("proc", "/proc", "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC, NULL) ||
+        root_mount("/sys", "/sys", NULL, MS_BIND, NULL) ||
+        root_mount(NULL, "/sys", NULL, MS_REMOUNT | MS_BIND | MS_RDONLY, NULL) ||
+        root_mount("tmpfs", "/storage", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=16M") ||
+        native_ram_data()) { perror("VM native device/mount helpers"); return -1; }
+    int marker = open("/native-root/dev/hmos-init-stage2", O_CREAT | O_WRONLY | O_CLOEXEC, 0600);
+    if (marker < 0) return -1;
+    close(marker);
+    if (native_policy_and_storage()) { perror("VM native policy/storage helper"); return -1; }
+    if (chroot(newroot) || chdir("/")) return -1;
+    puts("VM native wrapper helpers passed; original init follows, DSU handoff not exercised");
+    vm_capture();
+    if (native_context("u:r:kernel:s0")) return -1;
+    clearenv(); setenv("PATH", "/system/bin:/vendor/bin", 1);
+    char *const args[] = {"/system/bin/init", "--second-stage", "0", NULL};
+    execv(args[0], args);
+    return -1;
 }
 
 int main(void)
@@ -400,10 +380,16 @@ int main(void)
     test_kernel();
     printf("VM KERNEL CHECK %s failures=%d\n", failures ? "FAIL" : "PASS", failures);
     char profile[64] = {0};
-    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && (!strcmp(profile, "core") || !strcmp(profile, "framework") || !strcmp(profile, "foundation"))) {
+    if (!failures && !read_text("/vm/profile", profile, sizeof(profile)) && (!strcmp(profile, "core") || !strcmp(profile, "framework") || !strcmp(profile, "foundation") || !strcmp(profile, "native"))) {
         int gate = open("/sys/module/access_tokenid/parameters/compat", O_WRONLY | O_CLOEXEC);
         if (gate < 0 || write(gate, "1", 1) != 1) return 4;
         close(gate);
+        if (!strcmp(profile, "native")) {
+            (void)vm_native_fixture();
+            perror("VM native fixture failed");
+            reboot(RB_POWER_OFF);
+            for (;;) sleep(1);
+        }
         vm_mount("selinuxfs", "/sys/fs/selinux", "selinuxfs");
         if (vm_data_mount()) { perror("VM RAM-backed ext4"); reboot(RB_POWER_OFF); return 6; }
         vm_mount("tmpfs", "/mnt", "tmpfs");

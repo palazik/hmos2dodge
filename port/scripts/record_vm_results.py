@@ -9,7 +9,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[2]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--profile', choices=('core', 'framework', 'foundation'), default='core')
+parser.add_argument('--profile', choices=('core', 'framework', 'foundation', 'native'), default='core')
 parser.add_argument('--output', type=Path)
 args = parser.parse_args()
 log_path = ROOT / f'work/logs/vm-{args.profile}.log'
@@ -37,8 +37,8 @@ if args.profile != 'core':
     checks['observer_obtained_sa200'] = 'VM-SA id=200 registered=true' in log
     checks['appspawn_no_segv_observed'] = not bool(re.search(r'Child process appspawn.*signal : 11|VM-TRACE fault .*signal=11', log))
     checks['appspawn_ready_observed'] = bool(re.search(r'SystemSetParameter name bootevent.appspawn.started .*ret: 0', log))
-if args.profile == 'foundation':
-    checks['ashmem_mapping_passed'] = 'VM ashmem size ioctl and shared mapping passed' in log
+if args.profile in ('foundation', 'native'):
+    checks['ashmem_mapping_passed'] = 'VM ashmem size ioctl and shared mapping passed' in log or 'native ashmem size ioctl and shared mapping passed' in log
     checks['ashmem_sharedblock_errors_absent'] = 'failed to create ashmem errno' not in log
     checks['foundation_donor_domain_observed'] = bool(re.search(r'VM-PROCESS foundation pid=\d+ attr/current: u:r:foundation:s0', log))
     checks['observer_obtained_common_event_sa3299'] = 'VM-SA id=3299 registered=true' in log
@@ -46,6 +46,8 @@ if args.profile == 'foundation':
     checks['observer_obtained_huks_sa3510'] = 'VM-SA id=3510 registered=true' in log
     checks['observer_obtained_installd_sa511'] = 'VM-SA id=511 registered=true' in log
     checks['bms_database_ddl_observed'] = 'db:bmsdb.db exe DDL' in log
+if args.profile == 'native':
+    checks['native_wrapper_helpers_executed'] = 'VM native wrapper helpers passed' in log
 report = {
     'scope': 'Diskless QEMU ARM64 virt; kernel identity recorded in inputs; no DSU or OP13 hardware emulation',
     'inputs': inputs,
@@ -72,6 +74,8 @@ report = {
 output = ROOT / ('port/docs/native-kernel-result.json' if args.profile == 'core' else 'port/docs/framework-kernel-result.json')
 if args.profile == 'foundation':
     output = ROOT / 'port/docs/foundation-kernel-result.json'
+if args.profile == 'native':
+    output = ROOT / 'port/docs/native-bootstrap-kernel-result.json'
 if args.output:
     output = args.output
 output.write_text(json.dumps(report, indent=2) + '\n')

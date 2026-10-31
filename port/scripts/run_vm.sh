@@ -9,7 +9,8 @@ case "$task_profile" in
     core) task_initrd="$task_root/out/vm/core-compact.cpio.gz"; task_memory=2048 ;;
     framework) task_initrd="$task_root/out/vm/framework-compact.cpio.gz"; task_memory=4096 ;;
     foundation) task_initrd="$task_root/out/vm/foundation-compact.cpio.gz"; task_memory=4096 ;;
-    *) printf 'Expected probe, core, framework or foundation\n' >&2; exit 2 ;;
+    native) task_initrd="$task_root/out/vm/native-compact.cpio.gz"; task_memory=4096 ;;
+    *) printf 'Expected probe, core, framework, foundation or native\n' >&2; exit 2 ;;
 esac
 task_initrd=${HMOS_VM_INITRD:-"$task_initrd"}
 task_timeout=${HMOS_VM_TIMEOUT:-300}

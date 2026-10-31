@@ -17,20 +17,22 @@
     "kernel": "out/kernel/Image",
     "kernel_sha256": "167e30e173cd73e9f33eb4828d1df25b8428d93ebad23260e66950be34b4c65a",
     "source_sha256": {
-      "port/src/vm_init.c": "17543678321c46fa09bc5776bdbdbd8a1ee5332657b3432e17b1df119601afa3",
+      "port/src/vm_init.c": "7c5c5dd8f2be75a8ba80592eca83ca6b1a5cf811ca89eb3ffe3ae10b75f846b5",
       "port/src/dsu_stage2.c": "3545385417ee352792f930e94a23ff5a4a42bc4bb6c0c41e786db08c03593d4d",
+      "port/src/ram_data.h": "4e3852d1e069588eb51e1c91bf2f42de603b2c915ef058d5bd1cf80dc79ad8a5",
+      "port/selinux/op13-ramdata.cil": "5b0739d5436f5e1a4c6b1a5f3b03395f4bbcbd2c2a8c5c4ad816f2d6dae0d596",
       "port/src/dsu_probe.c": "031db9b9adcee1b3941a1e81470676dda254895cbb8b5f99a412cdb79d4e8505",
       "port/src/vm_sa_query.cpp": "5d959c5c8212b0231ab7642a3c3e7b9d49a04a1545c0ea63d8ee4238d813495f",
       "port/scripts/prepare_framework.py": "b5f56942d91dce58cfeab6011fc82ad56d75fa17333ed2151aad19d014b4ae8b",
       "port/selinux/vm-diagnostics.cil": "3d67b1a0fc8739123dd92067d2882d50b1c93bea8fd6872ca9e1c009b3c3e55e",
-      "port/scripts/prepare_vm_runtime.py": "b5de5dfe36f02430c60debef3ce2953de3dedc868ae0bc38128985f267156032",
+      "port/scripts/prepare_vm_runtime.py": "0fe175249d312eb30f873d013a626ce94b6fcca11cd26cbb2a3ce1ce06229ece",
       "port/scripts/vm_file_list.py": "2fe94ce693e00af3b61edec1c9d4f0b77d19958e7a1d33228306831adaab90b5"
     },
     "disks": [],
     "network": false,
     "private_data": "128 MiB ext4 file inside cpio, loop-mounted from guest RAM only",
     "observer_policy": "port/selinux/vm-diagnostics.cil; guest only, never a phone policy",
-    "policy_sha256": "68c04c1b36eff781111c890b87afcff7b1f8f362f6df81d17f045a265fe5bbd1",
+    "policy_sha256": "11bdf747d6530b3b15204671d45772216400e43de5db9345f30a4013e7c572d2",
     "init_config_sha256": "bc3beea7997b94b9abf65e4bd56a568b8ebea58743a2e5ca6c48ec74b318eba2",
     "init_plugins": [
       "libselinuxadp.z.so"
@@ -63,12 +65,12 @@
     "kernel": "/home/palaziks/hmosnext5_op13/out/kernel/Image",
     "kernel_sha256": "167e30e173cd73e9f33eb4828d1df25b8428d93ebad23260e66950be34b4c65a",
     "initrd": "/tmp/hmos-op13-foundation.cpio",
-    "initrd_sha256": "ae91fc5d65ad18b8d270317f3de05390b6584c9242dd9f6fd8c0dc448e607505",
-    "archive_sha256": "519f79fce0ab17d7a3ed5de64c274d1ff729d31ae7eefed75eba855a6a9025c2"
+    "initrd_sha256": "5f7fd0fe4f7f937184480b4c96de54c0a43d30a8f5de8a99d6911dea1387993a",
+    "archive_sha256": "6195a75161501db8c911b5501896f85628cf719491e603be1dfa73e85111ecae"
   },
   "log": "work/logs/vm-foundation.log",
-  "log_sha256": "8a2dd1b183469066c39795ec9f11332359a3ad6b1d7a5954892bb5de3ffbf6b2",
-  "archive_sha256": "519f79fce0ab17d7a3ed5de64c274d1ff729d31ae7eefed75eba855a6a9025c2",
+  "log_sha256": "fb972cffb1fdc5532ebdb8c61d0a1b53e2974df4ef2161a1288aaac6f0c901a2",
+  "archive_sha256": "6195a75161501db8c911b5501896f85628cf719491e603be1dfa73e85111ecae",
   "checks": {
     "kernel_probe_passed": true,
     "samgr_donor_domain_observed": true,
@@ -88,8 +90,8 @@
     "observer_obtained_installd_sa511": true,
     "bms_database_ddl_observed": true
   },
-  "account_manager_publish_log_observed": false,
-  "access_token_publish_log_observed": true,
+  "account_manager_publish_log_observed": true,
+  "access_token_publish_log_observed": false,
   "early_label_preparation_permissive": true,
   "observer_policy_is_guest_only": true,
   "known_limitations": [
@@ -99,5 +101,6 @@
     "SceneBoard, display, GPU, input and actual OP13 DSU boot untested"
   ],
   "phone_partitions_written": false,
-  "arb_compatibility_established": false
+  "arb_compatibility_established": false,
+  "intermediate_artifacts_cleaned_for_space": true
 }

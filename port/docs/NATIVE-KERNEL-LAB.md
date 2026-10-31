@@ -50,8 +50,9 @@ loader's compilation behavior; strict compilation still fails on the donor's
 `vm-diagnostics.cil` is a separate observer-only supplement. It lets the
 init-domain observer execute the loader, map the donor hilog client, and
 connect to the log reader socket and query access-token SA 3503. A dedicated
-`vm_data_backing_file` type also permits kernel loop writeback to the RAM
-file; generic rootfs writes are not granted. This avoids granting the disabled donor
+`hmos_ram_data_file` type in the regular OP13 supplement permits kernel loop
+writeback to the RAM file; generic rootfs writes are not granted. Earlier
+recorded guests used a guest-only backing type. This avoids granting the disabled donor
 production debug domain access to the VM console. It is compiled into an
 `-op13-vm` output, never the regular `-op13` policy or the raw phone image.
 The observed services retain their donor domains; the observer privileges
@@ -232,3 +233,34 @@ DDL reported by the native BMS/RDB stack is another narrower observation.
 The global account/storage startup graph and application installation still
 need integration; obtaining the account SA alone does not create or activate
 an application user.
+
+# Native wrapper integration
+
+`build_stage2.sh framework` packs an opt-in eight-service bootstrap into
+`out/experiments/stage2-framework/system.img`. It uses the shared canonical
+service model, the regular OP13 policy and only the original SELinux init
+module. Lab observer privileges are excluded. SceneBoard and hardware-service
+startup are not part of this profile.
+
+The actual C wrapper creates a private /dev, copies a blank 128 MiB ext4
+template to RAM, provisions private data paths and restores donor labels
+before original init enables enforcement. It refuses to replace an existing
+loaded policy. The shared loop helper rejects non-regular or non-RAM backing
+files before loop setup. No physical block-device tree enters the private
+environment. Writable Android userdata, metadata, persist and firmware
+partitions are not mounted by this startup.
+
+The `native` lab profile executes `native_devices`, `native_ram_data` and
+`native_policy_and_storage` from that same C wrapper against a nested diskless
+guest fixture. The fixture alone uses the observer supplement; the packaged
+image retains the regular policy. The completed result records all six SA
+queries, appspawn startup, ashmem access, BMS schema DDL, final enforcement
+and no ext4 I/O errors. It does not execute Android first stage, DSU mapping
+selection or OP13 hardware.
+
+The image's six donor payloads are byte-identical to their originals. A
+workspace-local label inspection checked 1,914 bound entries against their
+runtime paths with no mismatches. These checks do not establish native DSU
+acceptance or boot. Development AVB metadata still carries the existing
+July security-patch claim; the captured Android system has an October patch.
+OEM trust, acceptance and device ARB state remain unresolved.

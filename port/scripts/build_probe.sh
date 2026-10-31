@@ -3,8 +3,21 @@ set -euo pipefail
 task_root=$(cd "$(dirname "$0")/../.." && pwd)
 task_sysroot="$task_root/work/musl-cross"
 if [[ -d "$task_root/work/probe-root/hmos" ]]; then
-    mv "$task_root/work/probe-root" "$task_root/work/initial-mount-probe-root"
+    printf 'Stale donor payload in work/probe-root/hmos; clear generated probe staging first\n' >&2
+    exit 2
 fi
+task_cleanup_payload_links() {
+    python3 - "$task_root/work/mount-probe-root/hmos/images" "$task_root/hmos5" <<'PY'
+from pathlib import Path
+import sys
+stage, original = map(Path, sys.argv[1:])
+for name in ('system', 'vendor', 'chip_prod', 'sys_prod', 'cust', 'patch'):
+    path, source = stage / (name + '.img'), original / (name + '.img')
+    if path.exists() and source.exists() and path.samefile(source):
+        path.unlink()
+PY
+}
+trap task_cleanup_payload_links EXIT
 mkdir -p "$task_root/out/dsu" "$task_root/work/probe-root/system/bin" "$task_root/work/probe-root/system/etc"
 gcc -Wall -Wextra -Werror -O2 "$task_root/port/src/dsu_probe.c" -o "$task_root/work/dsu-probe-host"
 "$task_root/work/dsu-probe-host" --selftest

@@ -49,5 +49,13 @@
   "rejected_kernel_experiment": "PIDS controller altered module CRCs; quarantined, excluded from phone kernel; no CRC bypass",
   "native_foundation_lab": "No-LTO kernel in diskless QEMU virt: Foundation donor domain; Binder SA200/3503/3299/401/3510/511; appspawn startup event; native BMS database DDL; ashmem shared-block errors absent; final SELinux enforcing. Full account activation, app installation and SceneBoard unresolved.",
   "framework_packages": "13 original SceneBoard/SystemResources HAP/HSP archives checked for ZIP CRC, manifests and hashes; no signature-trust or execution claim",
-  "early_module_candidates": "Older vendor_boot modules rejected: 4 KGSL/OSvelte cross-module CRC mismatches in 109-module graphics closure. All 35 missing-file providers were loaded in Android capture; DSU residency unverified."
+  "early_module_candidates": "New supplied vendor_boot matches 367 captured module files byte-for-byte; 109-module graphics closure has 7342 matching CRCs, zero mismatches/unresolved imports. Staged separately; no automatic loading.",
+  "native_framework_image": "out/experiments/stage2-framework/system.img",
+  "native_framework_image_sha256": "6b7e37415ac2e1a84e6390dd901e023e5d6ff8895a56b8e4c6ecabaadf18072b",
+  "native_framework_image_scope": "Recorded eight-service build verified, then redundant full container removed at user request. Source integration and small outputs retained; no native OP13 DSU/UI proof.",
+  "latest_module_audit": "port/docs/current-early-modules.json",
+  "ram_data_policy": "Dedicated hmos_ram_data_file permits kernel writeback; Foundation read/write and generic kernel rootfs write remain denied; strict donor failures unchanged at 390.",
+  "large_intermediate_images": "Cleaned: 14.1 GiB disk and 8.5 GiB temporary storage freed; original inputs and Android-tested baseline preserved",
+  "stock_vendor_odm_inputs": "User-approved extraction from /home/palaziks/claudefix/stock/payload.bin to op13_stock/vendor.img and odm.img; source partitions verified against payload hashes",
+  "gpu_firmware": "All four gen80000 files recovered from approved OP13 vendor; hardware integration pending; no firmware partition write/flash"
 }

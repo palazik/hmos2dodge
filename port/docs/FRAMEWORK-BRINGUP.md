@@ -90,4 +90,8 @@ startup event under both the Android-tested kernel and the rebuilt no-LTO
 kernel. It includes the original appspawn seccomp filters and Ark generated
 stub file. Application launch, full sandbox behavior, Foundation and
 SceneBoard readiness remain unverified; the raw phone image still has the
-restricted core profile.
+restricted core profile. A separate opt-in raw framework image now integrates
+eight services, regular policy preparation, private devices and RAM ext4.
+See [native wrapper integration](NATIVE-KERNEL-LAB.md#native-wrapper-integration).
+It excludes render/input/HDF hardware startup and SceneBoard, and has not
+been tested through the OP13 DSU handoff.

@@ -1,0 +1,119 @@
+{
+  "scope": "Diskless QEMU ARM64 virt; kernel identity recorded in inputs; no DSU or OP13 hardware emulation",
+  "inputs": {
+    "profile": "native",
+    "services": [
+      "accesstoken_service",
+      "accountmgr",
+      "appspawn",
+      "foundation",
+      "hilogd",
+      "huks_service",
+      "installs",
+      "samgr"
+    ],
+    "donor_identities_preserved": true,
+    "kernel": "out/kernel/Image",
+    "kernel_sha256": "167e30e173cd73e9f33eb4828d1df25b8428d93ebad23260e66950be34b4c65a",
+    "source_sha256": {
+      "port/src/vm_init.c": "b351b91ec117fa3c889aeb0c609a6777bc7c820827a679a7ad42acb4fb23193f",
+      "port/src/dsu_stage2.c": "769bf23aa55a582187724e86e3e092d013eb9135124e23e538058a2b081ef38f",
+      "port/src/ram_data.h": "d2c7042e9ee1a07ca4d826f570e227cda4e01094b0b678b3125cf612bb72c566",
+      "port/src/native_storage.h": "02da4c92eba8561ed92169bb9b094f85d3d1f764901dff87925c4d878579c6ed",
+      "port/src/native_framework.h": "ccb6dc0e15aa8ca899adc1735047b169fa6d49b8b914fc52aa446dac5b23644c",
+      "port/selinux/op13-ramdata.cil": "5b0739d5436f5e1a4c6b1a5f3b03395f4bbcbd2c2a8c5c4ad816f2d6dae0d596",
+      "port/src/dsu_probe.c": "031db9b9adcee1b3941a1e81470676dda254895cbb8b5f99a412cdb79d4e8505",
+      "port/src/vm_sa_query.cpp": "5d959c5c8212b0231ab7642a3c3e7b9d49a04a1545c0ea63d8ee4238d813495f",
+      "port/scripts/prepare_framework.py": "b5f56942d91dce58cfeab6011fc82ad56d75fa17333ed2151aad19d014b4ae8b",
+      "port/scripts/framework_profile.py": "a09111c20505c10474aa74f785f13e474510dc47360daed09d074bdad5411e85",
+      "port/selinux/vm-diagnostics.cil": "149214e2f8a2504b6e0a6ae7041e8659a751ce3340d53b8f41aea08358e47c00",
+      "port/scripts/prepare_vm_runtime.py": "5beabf49219443bcba33d1566d1936d9b9f9650db70471d42e71319f2754cbd1",
+      "port/scripts/vm_file_list.py": "adae027a7483ecaf8ceb9b498fabb4061cacb2a6bb512ece309c09b9c415d271",
+      "port/scripts/prepare_native_vm.py": "79e66652df5c75bc0a93b7797ddd6dbda961ced87c964f26ecab41eb7cd10261",
+      "port/scripts/prepare_native_framework.py": "8d152e11d5b24a6c1cfa02e7953f029db963eecfa9fa8166d96510647fb64e16"
+    },
+    "disks": [],
+    "network": false,
+    "private_data": "128 MiB ext4 file inside cpio, loop-mounted from guest RAM only",
+    "observer_policy": "port/selinux/vm-diagnostics.cil; guest only, never a phone policy",
+    "policy_sha256": "c04788aea4ef1a1053c1d2fabffcd4a6661c5d34f6c221437a8aba25f832ec86",
+    "init_config_sha256": "b63379489f8381fcf21f5d8bd1f793b0b6b94a9b0e4f1908c92027f8165837e4",
+    "init_plugins": [
+      "libselinuxadp.z.so"
+    ],
+    "adapted_data_directories": [
+      "mkdir /data/service/el1/public/bms 0700 foundation foundation",
+      "mkdir /data/service/el1/public/bms/bundle_manager_service 0700 foundation foundation",
+      "mkdir /data/service/el1/public/bms/bundle_manager_service/lock 0700 foundation foundation"
+    ],
+    "system_resource_sha256": {
+      "system/app/SystemResources/SystemResourcesExt.hap": "d1a101b593a6e2c3b789cc382671f8a7f536bd050a33d7dc2d390b657bc55594",
+      "system/app/SystemResources/SystemResources.hap": "911c1ac27dae9d887c16532eb44a2ed505655f36e6deddc08dd0a5ead5fd4296"
+    },
+    "donor_huks_library_sha256": {
+      "vendor/lib64/chipsetsdk/libhuks_hdi_service_1.1.z.so": "b8d46ab2c79dd038c766311c3603de13fe03088bde0d05a441796e1a8470558a",
+      "vendor/lib64/chipsetsdk/libhuks_ca_hdi.z.so": "30ccbea8961107f21f62d2bbe088928223aceb6b03787b219e275647474c0e21",
+      "vendor/lib64/chipsetsdk/libhuks_ext_hdi_service_1.0.z.so": "5045f51d101aab14236e437c11e99dd15199a4251d3caf2e9771eff9a928b8e3"
+    },
+    "hardware_emulated": "QEMU virt only; OP13 hardware is not emulated",
+    "native_phone_tested": false,
+    "native_bootstrap_policy_sha256": "e6222cb9d9b15cc5377c31e5b5f437c4e83b47791445b371803f72789e29d81d",
+    "native_helper_code_executed": [
+      "native_devices",
+      "native_ram_data",
+      "native_policy_and_storage"
+    ],
+    "dsu_handoff_exercised": false,
+    "op13_hardware_emulated": false,
+    "unresolved_sa_libraries": [
+      {
+        "profile": "/system/profile/foundation.json",
+        "id": 4606,
+        "library": "libwms.z.so"
+      }
+    ]
+  },
+  "launch": {
+    "kernel": "/home/palaziks/hmosnext5_op13/out/kernel/Image",
+    "kernel_sha256": "167e30e173cd73e9f33eb4828d1df25b8428d93ebad23260e66950be34b4c65a",
+    "initrd": "/tmp/hmos-op13-native.cpio",
+    "initrd_sha256": "fef7e3e831dd6bc51549f1af8c16986739da2ac04e3a9b46df9884ee677ba1d1",
+    "archive_sha256": "2ca84179e8b68bc048a7e062e3cb318fad9ef6ab3d211641a389cec24fc07a12"
+  },
+  "log": "work/logs/vm-native.log",
+  "log_sha256": "4a6a7ce0e81ceaa924127582ab9ec9116dbaebf2483792e443a8f52419b57eb1",
+  "archive_sha256": "2ca84179e8b68bc048a7e062e3cb318fad9ef6ab3d211641a389cec24fc07a12",
+  "checks": {
+    "kernel_probe_passed": true,
+    "samgr_donor_domain_observed": true,
+    "samgr_ready_parameter_set": true,
+    "observer_obtained_sa3503": true,
+    "final_selinux_enforcing": true,
+    "ext4_io_errors_absent": true,
+    "observer_obtained_sa200": true,
+    "appspawn_no_segv_observed": true,
+    "appspawn_ready_observed": true,
+    "ashmem_mapping_passed": true,
+    "ashmem_sharedblock_errors_absent": true,
+    "foundation_donor_domain_observed": true,
+    "observer_obtained_common_event_sa3299": true,
+    "observer_obtained_bundle_manager_sa401": true,
+    "observer_obtained_huks_sa3510": true,
+    "observer_obtained_installd_sa511": true,
+    "bms_database_ddl_observed": true,
+    "native_wrapper_helpers_executed": true
+  },
+  "account_manager_publish_log_observed": true,
+  "access_token_publish_log_observed": true,
+  "early_label_preparation_permissive": true,
+  "observer_policy_is_guest_only": true,
+  "known_limitations": [
+    "Original init policy reload logs a failure after the lab preloads policy",
+    "Selected services only; no application launch or full framework readiness",
+    "Missing system services/configuration still produce runtime errors",
+    "SceneBoard, display, GPU, input and actual OP13 DSU boot untested"
+  ],
+  "phone_partitions_written": false,
+  "arb_compatibility_established": false,
+  "intermediate_artifacts_cleaned_for_space": true
+}

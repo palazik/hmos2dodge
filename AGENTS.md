@@ -22,9 +22,13 @@
   DSU, SceneBoard and hardware functionality.
 - Use this project's supplied ROM inputs, OP13 capture and new vendor_boot.img.
   Do not substitute images from other porting projects.
-- The user specifically allows ancillary-image extraction from
-  /home/palaziks/claudefix/stock/payload.bin, but excludes boot, vendor_boot,
-  vendor, odm, system, product, system_ext and every my_* partition. Do not
-  extract or substitute those excluded images; the user supplied good inputs.
+- The user allows extraction of OP13 stock vendor/odm and needed ancillary
+  images from /home/palaziks/claudefix/stock/payload.bin. They still exclude
+  boot, vendor_boot, system, product, system_ext and every my_* partition.
+  Preserve the supplied choices for those excluded inputs.
 - Keep generic ROM extraction and one-off inspection utilities in ignored
   work/tools. Published code should implement, build or validate the HMOS5 port.
+- Do not retain redundant full-ROM containers, temporary backups or stale VM
+  archives. Keep the original ROM inputs and tested Android baseline, and
+  build a full image only when actually needed. Remove staging image hardlinks
+  after packing rather than leaving duplicate-looking trees behind.

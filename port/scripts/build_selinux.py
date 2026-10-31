@@ -27,6 +27,7 @@ def main():
     if args.with_op13:
         inputs.append(ROOT / 'port/selinux/op13-drm.cil')
         inputs.append(ROOT / 'port/selinux/op13-binderfs.cil')
+        inputs.append(ROOT / 'port/selinux/op13-ramdata.cil')
     if args.vm_diagnostics:
         inputs.append(ROOT / 'port/selinux/vm-diagnostics.cil')
     for path in inputs:

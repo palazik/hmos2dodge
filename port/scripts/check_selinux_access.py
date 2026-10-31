@@ -20,6 +20,7 @@ def main():
                         default=ROOT / 'work/policy-tools/usr/lib/x86_64-linux-gnu/libsepol.so.2')
     parser.add_argument('--output', type=Path, default=ROOT / 'out/selinux/access-decisions.json')
     parser.add_argument('--include-vm-observer', action='store_true', help='also query guest observer SA permissions')
+    parser.add_argument('--include-ram-data', action='store_true', help='query the dedicated RAM backing-file type')
     args = parser.parse_args()
     lib = C.CDLL(str(args.library.resolve()))
     libc = C.CDLL(None)
@@ -59,6 +60,10 @@ def main():
     if args.include_vm_observer:
         queries += [('init', 'sa_accesstoken_manager_service', 'samgr_class', ['get']),
                     ('accesstoken_service', 'sa_accesstoken_manager_service', 'samgr_class', ['get', 'add'])]
+    if args.include_ram_data:
+        queries += [('kernel', 'hmos_ram_data_file', 'file', ['read', 'write', 'open', 'getattr']),
+                    ('foundation', 'hmos_ram_data_file', 'file', ['read', 'write', 'open']),
+                    ('kernel', 'rootfs', 'file', ['write'])]
     decisions = []
     for source, target, class_name, permissions in queries:
         source_context, target_context = f'u:r:{source}:s0', f'u:object_r:{target}:s0'

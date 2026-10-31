@@ -8,6 +8,7 @@
 #include <signal.h>
 
 static const char *newroot = "/mnt/hmos-root";
+static int capture_ticks = 20;
 
 static int prepare_ipc(void)
 {
@@ -163,6 +164,8 @@ static int ui_overrides(void)
     return 0;
 }
 
+#include "native_framework.h"
+
 static _Noreturn void stop_boot(const char *reason)
 {
     logmsg("STOP stage2: %s (%s); requesting reboot in 30 seconds", reason, strerror(errno));
@@ -183,7 +186,7 @@ static void start_capture(void)
     int hilog_tick = -1;
     char marker[256], path[512];
     snprintf(path, sizeof(path), "%s/dev/hmos-init-stage2", newroot);
-    for (int tick = 0; tick < 20; tick++) {
+    for (int tick = 0; tick < capture_ticks; tick++) {
         sleep(2);
         if (hilog_child > 0) {
             pid_t reaped = waitpid(hilog_child, NULL, WNOHANG);
@@ -237,9 +240,15 @@ int STAGE2_ENTRY(int argc, char **argv)
     if (getpid() != 1) { fputs("stage2 requires PID 1\n", stderr); return 2; }
     klogfd = open("/dev/kmsg", O_WRONLY | O_CLOEXEC);
     pmsgfd = open("/dev/pmsg0", O_WRONLY | O_CLOEXEC);
-    logmsg("BEGIN HarmonyOS DSU stage2: RAM-only data, minimal init, no hardware services");
+    char profile[64];
+    if (read_text("/hmos/bootstrap/profile", profile, sizeof(profile))) stop_boot("bootstrap profile missing");
+    bool framework = !strcmp(profile, "framework");
+    if (!framework && strcmp(profile, "minimal") && strcmp(profile, "logging") && strcmp(profile, "core")) stop_boot("unsupported bootstrap profile");
+    if (framework) capture_ticks = 60;
+    logmsg("BEGIN HarmonyOS DSU stage2: profile=%s; RAM-only data; no hardware services", profile);
     char unused_data[256] = {0};
     if (!find_dsu(unused_data, sizeof(unused_data))) stop_boot("exact system_gsi mapping missing");
+    if (framework && !access("/sys/fs/selinux/class/process/index", F_OK)) stop_boot("an existing policy is already loaded");
     /* No data mount, filesystem check/repair, or formatting here. */
     int gate = open("/sys/module/access_tokenid/parameters/compat", O_WRONLY | O_CLOEXEC);
     if (gate < 0 || write(gate, "1", 1) != 1) stop_boot("HarmonyOS kernel extensions missing");
@@ -267,14 +276,29 @@ int STAGE2_ENTRY(int argc, char **argv)
                           "/vendor/etc", "/chip_prod/etc", "/sys_prod/etc", "/cust/etc", "/patch_hw/etc"};
     for (size_t i = 0; i < sizeof(masks) / sizeof(masks[0]); i++)
         if (mask_dir(masks[i])) stop_boot("config/plugin mask");
+    if (framework) {
+        const char *sources[] = {"/hmos/bootstrap/init_modules", "/hmos/bootstrap/vendor_etc"};
+        const char *targets[] = {"/system/lib64/init", "/vendor/etc"};
+        for (size_t i = 0; i < sizeof(sources) / sizeof(sources[0]); i++)
+            if (root_mount(sources[i], targets[i], NULL, MS_BIND, NULL) ||
+                root_mount(NULL, targets[i], NULL, MS_REMOUNT | MS_BIND | MS_RDONLY | MS_NOSUID | MS_NODEV, NULL))
+                stop_boot("native framework configuration bind");
+    }
     if (ui_overrides()) stop_boot("OP13 UI configuration overrides");
-    if (root_mount("/dev", "/dev", NULL, MS_BIND | MS_REC, NULL)) stop_boot("device bind");
-    if (mask_dir("/dev/block")) stop_boot("physical block-device mask");
+    if (framework) {
+        if (native_devices()) stop_boot("private framework devices");
+    } else {
+        if (root_mount("/dev", "/dev", NULL, MS_BIND | MS_REC, NULL)) stop_boot("device bind");
+        if (mask_dir("/dev/block")) stop_boot("physical block-device mask");
+    }
     if (root_mount("proc", "/proc", "proc", MS_NOSUID | MS_NODEV | MS_NOEXEC, NULL)) stop_boot("proc");
     if (root_mount("/sys", "/sys", NULL, MS_BIND, NULL) ||
         root_mount(NULL, "/sys", NULL, MS_REMOUNT | MS_BIND | MS_RDONLY, NULL)) stop_boot("read-only sysfs");
-    if (root_mount("tmpfs", "/data", "tmpfs", MS_NOSUID | MS_NODEV,
-                   "mode=0771,size=256M")) stop_boot("RAM-only data");
+    if (framework) {
+        if (root_mount("tmpfs", "/storage", "tmpfs", MS_NOSUID | MS_NODEV, "mode=0755,size=16M") ||
+            native_ram_data()) stop_boot("framework RAM-only storage");
+    } else if (root_mount("tmpfs", "/data", "tmpfs", MS_NOSUID | MS_NODEV,
+                          "mode=0771,size=256M")) stop_boot("RAM-only data");
     /* The system EROFS /metadata path is deliberately never connected to
        Android metadata. The donor graph contains no storage or misc service. */
     char marker_path[512];
@@ -282,7 +306,9 @@ int STAGE2_ENTRY(int argc, char **argv)
     int marker = open(marker_path, O_CREAT | O_TRUNC | O_WRONLY | O_CLOEXEC, 0600);
     if (marker < 0) stop_boot("marker file");
     close(marker);
+    if (framework && native_policy_and_storage()) stop_boot("native policy/storage preparation");
     start_capture();
+    if (framework && native_context("u:r:kernel:s0")) stop_boot("initial native init context");
     if (chroot(newroot) || chdir("/")) stop_boot("chroot");
     clearenv();
     setenv("PATH", "/system/bin:/vendor/bin", 1);

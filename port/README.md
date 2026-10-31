@@ -19,6 +19,10 @@ Current additional work:
   appspawn, software HUKS and on-demand install services now run under the
   no-LTO kernel in an isolated ARM64 guest. Binder registrations and BMS
   database schema creation are observed. This is not OP13/DSU emulation.
+- `out/experiments/stage2-framework/system.img`: opt-in native eight-service
+  framework startup with private devices, regular policy and RAM ext4 data.
+  Its actual C helpers pass the native-kernel guest checks. SceneBoard and
+  hardware startup remain disabled; OP13 DSU boot is untested.
 - [Porter audit](docs/PORTER-AUDIT.md): all 436 selected upstream text files
   match the pinned commit; native Redmi flash/startup assumptions are mapped
   separately from the OP13 work. Full binary/functionality auditing is not claimed.
@@ -51,6 +55,7 @@ Current additional work:
 | `out/kernel/Image` | New no-LTO 6.6.144 build; offline CRC/layout checks and selected guest services pass; Android untested |
 | `out/baseline-android/boot.img` | Preserved user-tested Android boot image with the earlier ThinLTO kernel |
 | `out/boot/op13-hmos-nolto-test.img` | Separate no-LTO candidate using the COS17 boot template; OP13/ARB compatibility unverified |
+| `out/experiments/stage2-framework/system.img` | Raw eight-service native framework experiment; no GUI/hardware startup or DSU-device proof |
 | `out/boot/op13-hmos-test.img` | Temporary boot candidate using `/home/palaziks/cos17/boot.img` as template |
 | `out/boot/op13-hmos-test.json` | Source/kernel/output hashes and preserved boot components |
 | `out/dsu/op13-dsu-probe.img.gz` | Small DSU PID-1/kernel/device probe; does not launch HarmonyOS |
@@ -214,6 +219,8 @@ Additional offline experiments:
 ```sh
 bash port/scripts/run_init_lab.sh
 bash port/scripts/build_stage2.sh core
+python3 port/scripts/build_selinux.py --mode donor-runtime --with-op13
+bash port/scripts/build_stage2.sh framework
 python3 port/scripts/verify_payload.py --image out/experiments/stage2/system.img \
   --report out/experiments/stage2/payload-verification.json --check-bootstrap --profile core --check-display
 python3 port/scripts/prepare_display.py
